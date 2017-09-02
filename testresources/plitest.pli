@@ -1,0 +1,4 @@
+ Hallo: proc options(main);
+ 	  %DCL I FIXED; i = 0;                                             06-07-17
+      put list ('Hallo Welt from ' !! PROCEDURENAME() !! '!');
+ end Hall;

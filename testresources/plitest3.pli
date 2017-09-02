@@ -1,0 +1,4 @@
+ Hallo: proc options(main);
+ 	  %DCL I FIXED; i = 0;
+      put list ('Hallo Welt!');
+ end Hall;

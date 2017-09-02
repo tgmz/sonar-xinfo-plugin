@@ -1,0 +1,59 @@
+/*******************************************************************************
+  * Copyright (c) 13.11.2016 Thomas Zierer.
+  * All rights reserved. This program and the accompanying materials
+  * are made available under the terms of the Eclipse Public License v1.0
+  * which accompanies this distribution, and is available at
+  * http://www.eclipse.org/legal/epl-v10.html
+  *
+  * Contributors:
+  *    Thomas Zierer - initial API and implementation and/or initial documentation
+  *******************************************************************************/
+package de.tgmz.sonar.plugins.xinfo;
+
+import org.sonar.api.Plugin;
+
+import de.tgmz.sonar.plugins.xinfo.languages.AssemblerLanguage;
+import de.tgmz.sonar.plugins.xinfo.languages.AssemblerQualityProfile;
+import de.tgmz.sonar.plugins.xinfo.languages.CobolLanguage;
+import de.tgmz.sonar.plugins.xinfo.languages.CobolQualityProfile;
+import de.tgmz.sonar.plugins.xinfo.languages.PliLanguage;
+import de.tgmz.sonar.plugins.xinfo.languages.PliQualityProfile;
+import de.tgmz.sonar.plugins.xinfo.rules.XinfoRulesDefinition;
+import de.tgmz.sonar.plugins.xinfo.sensors.AssemblerColorizer;
+import de.tgmz.sonar.plugins.xinfo.sensors.AssemblerIssuesLoader;
+import de.tgmz.sonar.plugins.xinfo.sensors.CobolColorizer;
+import de.tgmz.sonar.plugins.xinfo.sensors.CobolIssuesLoader;
+import de.tgmz.sonar.plugins.xinfo.sensors.CpdTokenizerSensor;
+import de.tgmz.sonar.plugins.xinfo.sensors.PliColorizer;
+import de.tgmz.sonar.plugins.xinfo.sensors.PliIssuesLoader;
+
+/**
+ * This class is the entry point for all extensions. It is referenced in pom.xml.
+ */
+public class XinfoPlugin implements Plugin {
+
+  @Override
+  public void define(Context context) {
+    // tutorial on hooks
+    // http://docs.sonarqube.org/display/DEV/Adding+Hooks
+
+    // tutorial on languages
+    context.addExtensions(PliLanguage.class, PliQualityProfile.class);
+    context.addExtensions(CobolLanguage.class, CobolQualityProfile.class);
+    context.addExtensions(AssemblerLanguage.class, AssemblerQualityProfile.class);
+
+    // tutorial on measures
+
+    // tutorial on rules
+    context.addExtension(XinfoRulesDefinition.class);
+
+    context.addExtensions(PliIssuesLoader.class, CobolIssuesLoader.class, AssemblerIssuesLoader.class);
+    
+    context.addExtensions(PliColorizer.class, CobolColorizer.class, AssemblerColorizer.class);
+
+    context.addExtension(CpdTokenizerSensor.class);
+    // tutorial on settings
+
+    // tutorial on web extensions
+  }
+}

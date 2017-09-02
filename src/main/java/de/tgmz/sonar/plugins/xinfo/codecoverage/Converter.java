@@ -1,0 +1,127 @@
+/*******************************************************************************
+  * Copyright (c) 08.08.2017 Thomas Zierer.
+  * All rights reserved. This program and the accompanying materials
+  * are made available under the terms of the Eclipse Public License v1.0
+  * which accompanies this distribution, and is available at
+  * http://www.eclipse.org/legal/epl-v10.html
+  *
+  * Contributors:
+  *    Thomas Zierer - initial API and implementation and/or initial documentation
+  *******************************************************************************/
+package de.tgmz.sonar.plugins.xinfo.codecoverage;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.math.BigInteger;
+import java.util.Iterator;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
+
+import de.tgmz.sonar.plugins.xinfo.SecureDocumentBuilderFactory;
+import de.tgmz.sonar.plugins.xinfo.debugtool.codecoverage.CSECT;
+import de.tgmz.sonar.plugins.xinfo.debugtool.codecoverage.DTCODECOVERAGEFILE;
+import de.tgmz.sonar.plugins.xinfo.debugtool.codecoverage.EXECUTED;
+import de.tgmz.sonar.plugins.xinfo.debugtool.codecoverage.UNEXECUTED;
+import de.tgmz.sonar.plugins.xinfo.sonar.codecoverage.Coverage;
+import de.tgmz.sonar.plugins.xinfo.sonar.codecoverage.Coverage.File.LineToCover;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
+/**
+ * Transforms a Debug Tool code Coverage out into a Sonarqube Code Coverage Input.
+ */
+public class Converter {
+	private static final Converter instance = new Converter();
+	private static final de.tgmz.sonar.plugins.xinfo.sonar.codecoverage.ObjectFactory OF 
+						= new de.tgmz.sonar.plugins.xinfo.sonar.codecoverage.ObjectFactory();
+	private JAXBContext jaxbContext;
+	
+	public static Converter getInstance() {
+		return instance;
+	}
+	
+	public void convert(File root, String ext, InputStream is, OutputStream os) throws ConverterException {
+		DTCODECOVERAGEFILE unmarshal;
+		try {
+			unmarshal = getDtcodecoveragefile(is);
+		} catch (ParserConfigurationException | JAXBException | SAXException | IOException e) {
+			throw new ConverterException("Cannot parse Debug Tool output", e);
+		}
+		
+		Coverage cov = OF.createCoverage();
+		
+		de.tgmz.sonar.plugins.xinfo.sonar.codecoverage.Coverage.File cf = OF.createCoverageFile();
+		
+		CSECT csect = unmarshal.getLOADMODULE().getCOMPILATIONUNIT().getCSECT();
+		
+		cf.setPath(root.toString() + File.separator + csect.getEXTNAME() + ext);
+		
+		for (Iterator<EXECUTED> iterator = csect.getEXECUTED().iterator(); iterator.hasNext();) {
+			String[] executed = iterator.next().getvalue().split("\\s");
+			
+			for (String s : executed) {
+				LineToCover ltc = OF.createCoverageFileLineToCover();
+				ltc.setLineNumber(new BigInteger(s));
+				ltc.setCovered(true);
+				
+				cf.getLineToCover().add(ltc);
+			}
+		}
+		
+		for (Iterator<UNEXECUTED> iterator = csect.getUNEXECUTED().iterator(); iterator.hasNext();) {
+			String[] unexecuted = iterator.next().getvalue().split("\\s");
+			
+			for (String s : unexecuted) {
+				LineToCover ltc = OF.createCoverageFileLineToCover();
+				ltc.setLineNumber(new BigInteger(s));
+				ltc.setCovered(false);
+				
+				cf.getLineToCover().add(ltc);
+			}
+		}
+		
+		cov.getFile().add(cf);
+		
+		try {
+			write(os, cov);
+		} catch (JAXBException | IOException e) {
+			throw new ConverterException("Cannot create Sonar code coverage", e);
+		}
+	}
+
+	private void write(OutputStream os, Coverage cov) throws JAXBException, IOException {
+		jaxbContext = JAXBContext.newInstance(Coverage.class);
+		Marshaller marshaller = jaxbContext.createMarshaller();
+		marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+		
+		marshaller.marshal(cov, os);
+		
+		os.close();
+	}
+
+	@SuppressFBWarnings(value="XXE_DOCUMENT", justification="Not possible due to DocumentBuilderFactory settings")
+	private DTCODECOVERAGEFILE getDtcodecoveragefile(InputStream is)
+			throws ParserConfigurationException, JAXBException, SAXException, IOException {
+		DocumentBuilder documentBuilder = SecureDocumentBuilderFactory.getInstance().getDocumentBuilder();
+
+		jaxbContext = JAXBContext.newInstance(DTCODECOVERAGEFILE.class);
+		Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+		
+		DTCODECOVERAGEFILE unmarshal = null;
+		
+		Document doc = documentBuilder.parse(is);
+
+		unmarshal = (DTCODECOVERAGEFILE) unmarshaller.unmarshal(doc);
+		return unmarshal;
+	}
+
+}

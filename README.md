@@ -5,10 +5,11 @@ Supported languages
 * Enterprise PL/I (best). Option used: XINFO(XML)
 * Enterprise COBOL (fair). Option used: EXIT(ADDEXIT(ELAXMGUX))
 * HL Assembler (so, so). Options used: EX(ADX(ELAXHASM))
+* C/C++. Not supported so far.
 
 Prerequisites
 =============
-* [SonarQube](http://www.sonarqube.org/downloads/) 4.5+
+* [SonarQube](http://www.sonarqube.org/downloads/) 6.3+
 * [SonarQube Scanner](http://docs.sonarqube.org/display/SCAN/Analyzing+with+SonarQube+Scanner) 2.8+
 * Maven 3.0+
 
@@ -23,17 +24,11 @@ Usage
         cp target/sonar-xinfo-plugin-<version>.jar <sonarqube install dir>/extensions/plugins
 
 * Setup the compiler to generate its output in XML format (e.g. PL/I: XINFO(XML))
-* Choose the the way how to provide the compiler messages. This plugin comes with 3 preinstalled providers
-
-1.  FILE: The source and the XINFO files are located somewhere in the file system. Use the property sonar.xinfo.root.xinfo to tell the plugin, where to look for them.  Make sure that pgm.pli|asm|cbl corresponds with pgm.xml
-2.  FTP: The source files are located in the file system, the XINFO files in a remote partitioned dataset. Use the FTP* properties to tell the plugin how to access them. 
-3.  REMOTE COMPILE: The source files are located in the file system, the XINFO files are generated on-the-fly. Use the REMOTE_COMPILE properties to tell the plugin how to generate them. You will have to adjust the *.jcl files in src/main/resources to match your compiler installation.
+* Store sources and XINFO-output somewhere on the filesystem.
+* Use the properties sonar.sources to tell the sonar-scanner where to look for the sources and sonar.xinfo.root.xinfo to tell the plugin where to look for the XINFO-files. Make sure that pgm.pli|asm|cbl corresponds with pgm.xml
  
 * Analyze your sources with SonarQube using Sonar-scanner:
 
-        sonar-scanner
-
-Known limitations
-=================
-* Code is tested on Windows using encoding Cp1252
-* Code is known ** not to work ** with encoding UTF-8 (seems to be the case for all double-byte-character-sets)
+		cd examples
+		sonar-scanner
+        

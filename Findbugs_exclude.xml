@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FindBugsFilter>
+	<!-- Globally excluded bugs -->
+	<Match>
+    <!-- This "bug" sucks! -->
+		<Bug code="EI" />
+	</Match>
+	<Match>
+    <!-- Dito -->
+		<Bug code="EI2" />
+	</Match>
+  <Match>
+    <!-- Sometimes findbugs creates false positives on this, so let the compiler handle it -->
+    <Bug code="UrF" />
+  </Match>
+  <Match>
+      <Class name="de.tgmz.sonar.plugins.xinfo.CreateAssemblerRules" />
+      <Bug code="RV" />
+   </Match>
+  <Match>
+      <Class name="de.tgmz.sonar.plugins.xinfo.CreateCobolRules" />
+      <Bug code="RV" />
+   </Match>
+   <Match>
+      <Package name="~de\.tgmz\.sonar\.plugins\.xinfo\.plicomp.*" />
+   </Match>
+</FindBugsFilter>
+
