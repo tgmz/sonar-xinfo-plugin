@@ -1,9 +1,9 @@
 /*******************************************************************************
   * Copyright (c) 13.11.2016 Thomas Zierer.
   * All rights reserved. This program and the accompanying materials
-  * are made available under the terms of the Eclipse Public License v1.0
+  * are made available under the terms of the Eclipse Public License v2.0
   * which accompanies this distribution, and is available at
-  * http://www.eclipse.org/legal/epl-v10.html
+  * http://www.eclipse.org/legal/epl-v20.html
   *
   * Contributors:
   *    Thomas Zierer - initial API and implementation and/or initial documentation
@@ -75,12 +75,12 @@ public abstract class AbstractColorizer<T extends IColorizing> implements Sensor
 				}
 	
 				if (++ctr % 100 == 0) {
-					LOGGER.info("{} files processed, current is {}", ctr, inputFile.file().getName());
+					LOGGER.info("{} files processed, current is {}", ctr, inputFile.relativePath());
 				}
 				
 				newHighlighting.save();
 			} catch (IOException e) {
-				LOGGER.error("Error creating highlighting on file " + inputFile.toString(), e);
+				LOGGER.error("Error creating highlighting on file " + inputFile.relativePath(), e);
 			}
 		}
 	}

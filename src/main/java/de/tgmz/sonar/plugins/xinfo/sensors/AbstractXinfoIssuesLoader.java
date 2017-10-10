@@ -1,16 +1,15 @@
 /*******************************************************************************
   * Copyright (c) 13.11.2016 Thomas Zierer.
   * All rights reserved. This program and the accompanying materials
-  * are made available under the terms of the Eclipse Public License v1.0
+  * are made available under the terms of the Eclipse Public License v2.0
   * which accompanies this distribution, and is available at
-  * http://www.eclipse.org/legal/epl-v10.html
+  * http://www.eclipse.org/legal/epl-v20.html
   *
   * Contributors:
   *    Thomas Zierer - initial API and implementation and/or initial documentation
   *******************************************************************************/
 package de.tgmz.sonar.plugins.xinfo.sensors;
 
-import java.io.File;
 import java.util.Iterator;
 
 import org.apache.commons.lang.StringUtils;
@@ -69,26 +68,26 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 
 		this.context = aContext;
 		
-		Iterator<File> fileIterator = fileSystem.files(fileSystem.predicates().hasLanguage(lang.getKey())).iterator();
+		Iterator<InputFile> fileIterator = fileSystem.inputFiles(fileSystem.predicates().hasLanguage(lang.getKey())).iterator();
 
 		int ctr = 0;
 		
 		while (fileIterator.hasNext()) {
-			File file = fileIterator.next();
+			InputFile inputFile = fileIterator.next();
 			
 			PACKAGE p;
 			try {
-				p = XinfoProviderFactory.getProvider(context.settings()).getXinfo(new XinfoFileAnalyzable(lang, file));
+				p = XinfoProviderFactory.getProvider(context.settings()).getXinfo(new XinfoFileAnalyzable(lang, inputFile.file()));
 			} catch (XinfoException e) {
-				LOGGER.error("Error getting XINFO for file " + file.getName(), e);
+				LOGGER.error("Error getting XINFO for file " + inputFile.relativePath(), e);
 				
 				continue;
 			}
 				
-			createFindings(p, file);
+			createFindings(p, inputFile);
 			
 			if (++ctr % 100 == 0) {
-				LOGGER.info("{} files processed, current is {}", ctr, file.getName());
+				LOGGER.info("{} files processed, current is {}", ctr, inputFile.relativePath());
 			}
 		}
 	}
@@ -145,7 +144,7 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 		newIssue.at(primaryLocation).save();
 	}
 	
-	private void createFindings(PACKAGE p, File file) {
+	private void createFindings(PACKAGE p, InputFile file) {
 		for (MESSAGE m : p.getMESSAGE()) {
 			String msgLine = m.getMSGLINE();
 			String msgNumber = m.getMSGNUMBER();
@@ -176,13 +175,7 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 				String ruleKey = msgNumber;
 				String message = msgText;
 		
-				InputFile inputFile = fileSystem.inputFile(fileSystem.predicates().hasFilename(file.getName()));
-		
-				if (inputFile != null) {
-					saveIssue(inputFile, line, ruleKey, message);
-				} else {
-					LOGGER.error("Sonar inputfile is null for file " + file.getName());
-				}
+				saveIssue(file, line, ruleKey, message);
 			}
 		}
 		

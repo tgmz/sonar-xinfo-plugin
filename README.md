@@ -18,7 +18,11 @@ Usage
 * Compile the project:
 
         mvn clean package
+        
+* Retry if errors occur (happens sometimes, don't know why)
 
+        mvn package
+        
 * Install:
 
         cp target/sonar-xinfo-plugin-<version>.jar <sonarqube install dir>/extensions/plugins

@@ -1,9 +1,9 @@
 /*******************************************************************************
   * Copyright (c) 09.11.2016 Thomas Zierer.
   * All rights reserved. This program and the accompanying materials
-  * are made available under the terms of the Eclipse Public License v1.0
+  * are made available under the terms of the Eclipse Public License v2.0
   * which accompanies this distribution, and is available at
-  * http://www.eclipse.org/legal/epl-v10.html
+  * http://www.eclipse.org/legal/epl-v20.html
   *
   * Contributors:
   *    Thomas Zierer - initial API and implementation and/or initial documentation
@@ -36,6 +36,9 @@ public class XinfoProviderTest {
 	 * Dummy to access the createXinfo(InputStream) method.
 	 */
 	private static class DummyXinfoProvider extends AbstractXinfoProvider {
+		public DummyXinfoProvider() {
+			super(new MapSettings());
+		}
 		@Override
 		public PACKAGE getXinfo(IXinfoAnalyzable pgm) throws XinfoException {
 			return null;
@@ -48,11 +51,6 @@ public class XinfoProviderTest {
 	}
 
 	@Test
-	public void testNoDots() throws XinfoException, FileNotFoundException {
-		assertEquals(1, XinfoProviderFactory.getProvider(SETTINGS).getXinfo(new XinfoFileAnalyzable(Language.PLI, new File("testresources/plitest.pli"))).getMESSAGE().size());
-	}
-	
-	@Test
 	public void testPliNoXinfo() throws XinfoException, FileNotFoundException {
 		assertEquals(0, XinfoProviderFactory.getProvider(SETTINGS).getXinfo(new XinfoFileAnalyzable(Language.PLI, new File("testresources/plitest3.pli"))).getMESSAGE().size());
 	}
@@ -64,7 +62,7 @@ public class XinfoProviderTest {
 
 	@Test
 	public void testMessageInInclude() throws XinfoException, FileNotFoundException {
-		assertEquals(1, XinfoProviderFactory.getProvider(SETTINGS).getXinfo(new XinfoFileAnalyzable(Language.PLI, new File("testresources/plitest5.pli"))).getMESSAGE().size());
+		assertEquals(2, XinfoProviderFactory.getProvider(SETTINGS).getXinfo(new XinfoFileAnalyzable(Language.PLI, new File("testresources/plitest5.pli"))).getMESSAGE().size());
 	}
 
 	@Test(expected=XinfoException.class)

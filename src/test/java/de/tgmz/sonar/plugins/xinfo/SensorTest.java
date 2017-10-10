@@ -1,9 +1,9 @@
 /*******************************************************************************
   * Copyright (c) 09.11.2016 Thomas Zierer.
   * All rights reserved. This program and the accompanying materials
-  * are made available under the terms of the Eclipse Public License v1.0
+  * are made available under the terms of the Eclipse Public License v2.0
   * which accompanies this distribution, and is available at
-  * http://www.eclipse.org/legal/epl-v10.html
+  * http://www.eclipse.org/legal/epl-v20.html
   *
   * Contributors:
   *    Thomas Zierer - initial API and implementation and/or initial documentation
@@ -12,10 +12,12 @@
 package de.tgmz.sonar.plugins.xinfo;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.io.IOUtils;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.sonar.api.Plugin;
@@ -52,14 +54,22 @@ public class SensorTest {
 		File baseDir = new File(LOC);
 		
 		sensorContext = SensorContextTester.create(baseDir);
-		((SensorContextTester) sensorContext).setSettings(new MapSettings().appendProperty(XinfoSettings.ROOT_XINFO, LOC + File.separator +"xml"));
+		((SensorContextTester) sensorContext).setSettings(new MapSettings().appendProperty(XinfoSettings.XINFO_ROOT, LOC + File.separator +"xml"));
 		
 		((SensorContextTester) sensorContext).fileSystem().add(create("plitest.pli", Language.PLI));
 		((SensorContextTester) sensorContext).fileSystem().add(create("plitest5.pli", Language.PLI));
+		((SensorContextTester) sensorContext).fileSystem().add(create("plitest6.pli", Language.PLI));
 		((SensorContextTester) sensorContext).fileSystem().add(create("asmtest.asm", Language.ASSEMBLER));
 		((SensorContextTester) sensorContext).fileSystem().add(create("cobtest.cbl", Language.COBOL));
 		
 		sensorDescriptor = new DefaultSensorDescriptor();
+		
+		IOUtils.copy(new FileInputStream(new File("testresources/xml/broken.xml.txt")), new FileOutputStream(new File("testresources/xml/plitest6.xml")));
+	}
+	
+	@AfterClass
+	public static void teardownOnce() throws IOException {
+		new File("testresources/xml/plitest6.xml").delete();
 	}
 	
 	private static DefaultInputFile create(String fileName, Language lang) throws IOException {

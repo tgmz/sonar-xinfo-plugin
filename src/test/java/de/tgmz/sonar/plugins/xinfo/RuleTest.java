@@ -1,51 +1,63 @@
 /*******************************************************************************
   * Copyright (c) 10.09.2017 Thomas Zierer.
   * All rights reserved. This program and the accompanying materials
-  * are made available under the terms of the Eclipse Public License v1.0
+  * are made available under the terms of the Eclipse Public License v2.0
   * which accompanies this distribution, and is available at
-  * http://www.eclipse.org/legal/epl-v10.html
+  * http://www.eclipse.org/legal/epl-v20.html
   *
   * Contributors:
   *    Thomas Zierer - initial API and implementation and/or initial documentation
   *******************************************************************************/
 
 package de.tgmz.sonar.plugins.xinfo;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Iterator;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
 import de.tgmz.sonar.plugins.xinfo.languages.Language;
 
 /**
- * Simple testcases for languages
+ * Simple testcases for rules
  */
+@RunWith(value = Parameterized.class)
 public class RuleTest {
-
+	private String msg;
+	
+	public RuleTest(String msg) {
+		super();
+		this.msg = msg;
+	}
+	
 	@Test
 	public void testAnalyzable() throws IOException {
+		assertNotNull(find(msg));
+	}
+	
+	private SonarRule find(String s) {
 		Iterator<SonarRule> it = RuleFactory.getInstance().getRules(Language.PLI).getRules().iterator();
-
+		
 		SonarRule r = null;
 		
 		do {
 			r = it.next();
-		} while (!r.getKey().equals("IBM1479I E"));
+		} while (!r.getKey().equals(s));
 		
-		assertEquals("IBM1479I E", r.getKey());
-		assertEquals("SINGLE", r.getCardinality());
-		assertEquals("No description provided", r.getDescription());
-		assertEquals("IBM1479I E", r.getInternalKey());
-		assertEquals("IBM1479I E", r.getKey());
-		assertEquals("Multiple RETURN statements are not allowed under RULES(NOMULTIEXIT). ", r.getName());
-		assertNull("IBM1479I E", r.getRemediationFunction());
-		assertNull("IBM1479I E", r.getRemediationFunctionBaseEffort());
-		assertEquals("CRITICAL", r.getSeverity());
-		assertEquals("READY", r.getStatus());
-		assertEquals("xinfo", r.getTag().get(0));
-		assertEquals("BUG", r.getType());
+		return r;
+	}
+	
+	@Parameters(name = "{index}: Check for message [{0}]")
+	public static Collection<Object[]> data() {
+		Object[][] data = new Object[][] {
+				{ "IBM1039I I"}, {"IBM1479I E"}, {"IBM3988I S"}
+		};
+		return Arrays.asList(data);
 	}
 }

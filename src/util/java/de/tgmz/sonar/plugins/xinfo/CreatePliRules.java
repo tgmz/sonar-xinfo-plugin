@@ -1,3 +1,13 @@
+/*******************************************************************************
+  * Copyright (c) 09.11.2016 Thomas Zierer.
+  * All rights reserved. This program and the accompanying materials
+  * are made available under the terms of the Eclipse Public License v2.0
+  * which accompanies this distribution, and is available at
+  * http://www.eclipse.org/legal/epl-v20.html
+  *
+  * Contributors:
+  *    Thomas Zierer - initial API and implementation and/or initial documentation
+  *******************************************************************************/
 package de.tgmz.sonar.plugins.xinfo;
 
 import java.io.PrintWriter;
@@ -89,9 +99,12 @@ public class CreatePliRules {
 			sta = end;
 		}
 		
-		// This message is not described 
+		// These messages are not described 
 		String IBM1479I = "IBM1479I E Multiple RETURN statements are not allowed under RULES(NOMULTIEXIT). Explanation: No description provided";
 		createRule(IBM1479I, 0, IBM1479I.length());
+		
+		String IBM3988I = "IBM3988I S Statement has invalid syntax. Explanation: No description provided";
+		createRule(IBM3988I, 0, IBM3988I.length());
 		
 		pw.println("</xinfo-rules>");
 		
@@ -115,6 +128,8 @@ public class CreatePliRules {
 		r.setKey(key);
 		r.setStatus(RuleStatus.READY.toString());
 		r.setTag(Collections.singletonList("xinfo"));
+		r.setRemediationFunction("CONSTANT_ISSUE");
+		r.setRemediationFunctionBaseEffort("0d 0h 10min");
 		
 		int desc = s.indexOf("Explanation: ", sta);
 		r.setDescription(s.substring(desc + "Explanation: ".length(), end));
@@ -142,8 +157,6 @@ public class CreatePliRules {
 		case "IBM1063I I":	// Code generated for DO group would be more efficient if control variable were a 4-byte integer.
 			r.setSeverity("MINOR");
 			r.setTag(Arrays.asList("xinfo", "performance"));
-			r.setRemediationFunction("CONSTANT_ISSUE");
-			r.setRemediationFunctionBaseEffort("0d 0h 10min");
 		default:
 			switch (sev) {
 			case "I": r.setSeverity("MINOR"); break;
