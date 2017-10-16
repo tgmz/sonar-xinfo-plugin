@@ -14,7 +14,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.Locale;
 
 import org.apache.commons.io.IOUtils;
 
@@ -36,7 +35,7 @@ public class XinfoFileAnalyzable implements IXinfoAnalyzable {
 	public String getName() {
 		int i = f.getName().lastIndexOf('.');
 		
-		return (i == -1 ? f.getName() : f.getName().substring(0, i)).toUpperCase(Locale.US);
+		return (i == -1 ? f.getName() : f.getName().substring(0, i));
 	}
 
 	@Override

@@ -36,6 +36,6 @@ public class AnalyzableTest {
 		
 		assertEquals(s, fa.getSource());
 		assertEquals(Language.PLI, fa.getLanguage());
-		assertEquals("PLITEST", fa.getName());
+		assertEquals("plitest", fa.getName());
 	}
 }
