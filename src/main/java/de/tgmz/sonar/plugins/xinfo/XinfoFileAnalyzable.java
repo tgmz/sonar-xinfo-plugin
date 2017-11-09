@@ -10,12 +10,11 @@
   *******************************************************************************/
 package de.tgmz.sonar.plugins.xinfo;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
 
 import org.apache.commons.io.IOUtils;
+import org.sonar.api.batch.fs.InputFile;
 
 import de.tgmz.sonar.plugins.xinfo.languages.Language;
 
@@ -23,24 +22,24 @@ import de.tgmz.sonar.plugins.xinfo.languages.Language;
  * File implementation of {@link XinfoFileAnalyzable}
  */
 public class XinfoFileAnalyzable implements IXinfoAnalyzable {
-	private File f;
+	private InputFile f;
 	private Language language;
 
-	public XinfoFileAnalyzable(Language language, File f) {
+	public XinfoFileAnalyzable(Language language, InputFile f) {
 		this.language = language;
 		this.f = f;
 	}
 
 	@Override
 	public String getName() {
-		int i = f.getName().lastIndexOf('.');
+		int i = f.filename().lastIndexOf('.');
 		
-		return (i == -1 ? f.getName() : f.getName().substring(0, i));
+		return (i == -1 ? f.filename() : f.filename().substring(0, i));
 	}
 
 	@Override
 	public String getSource() throws IOException {
-		return IOUtils.toString(new FileInputStream(f), Charset.defaultCharset());
+		return IOUtils.toString(f.inputStream(), Charset.defaultCharset());
 	}
 
 	@Override

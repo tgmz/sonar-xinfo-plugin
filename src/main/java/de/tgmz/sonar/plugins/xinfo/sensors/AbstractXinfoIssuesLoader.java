@@ -77,9 +77,9 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 			
 			PACKAGE p;
 			try {
-				p = XinfoProviderFactory.getProvider(context.settings()).getXinfo(new XinfoFileAnalyzable(lang, inputFile.file()));
+				p = XinfoProviderFactory.getProvider(context.settings()).getXinfo(new XinfoFileAnalyzable(lang, inputFile));
 			} catch (XinfoException e) {
-				LOGGER.error("Error getting XINFO for file " + inputFile.relativePath(), e);
+				LOGGER.error("Error getting XINFO for file " + inputFile.filename(), e);
 				
 				continue;
 			}
@@ -87,13 +87,13 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 			createFindings(p, inputFile);
 			
 			if (++ctr % 100 == 0) {
-				LOGGER.info("{} files processed, current is {}", ctr, inputFile.relativePath());
+				LOGGER.info("{} files processed, current is {}", ctr, inputFile.filename());
 			}
 		}
 	}
 
 	private void saveIssue(final InputFile inputFile, int line, String externalRuleKey, final String message) {
-		LOGGER.debug("Save issue {} for file {} on line {}", externalRuleKey, inputFile.file().getName(), line);
+		LOGGER.debug("Save issue {} for file {} on line {}", externalRuleKey, inputFile.filename(), line);
 		
 		String ruleKeyToSave;
 		
@@ -133,7 +133,7 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 		
 		if (lineToSave > 0) {
 			if (lineToSave > inputFile.lines()) {
-				LOGGER.info("Linenumber {} for {} is outside range. It was reduced to {}", lineToSave, inputFile.file().getName(), inputFile.lines());
+				LOGGER.info("Linenumber {} for {} is outside range. It was reduced to {}", lineToSave, inputFile.filename(), inputFile.lines());
 				
 				lineToSave = inputFile.lines();
 			}
