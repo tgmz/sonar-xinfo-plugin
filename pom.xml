@@ -384,7 +384,9 @@
 	</ciManagement>
 
 	<scm>
-		<developerConnection>scm:git:https://tgmz.visualstudio.com/DefaultCollection/MyStuff/_git/sonar-zdev-plugin</developerConnection>
+		<developerConnection>scm:git:https://github.com/tgmz/sonar-xinfo-plugin.git</developerConnection>
+		<url>https://github.com/tgmz/sonar-xinfo-plugin.git</url>
+		<connection>https://github.com/tgmz/sonar-xinfo-plugin.git</connection>
 	</scm>
 
 	<developers>
@@ -401,6 +403,7 @@
 
 	<organization>
 		<name>Thomas Zierer</name>
+		<url>https://github.com/tgmz/sonar-xinfo-plugin.git</url>
 	</organization>
 
 	<inceptionYear>2016</inceptionYear>
