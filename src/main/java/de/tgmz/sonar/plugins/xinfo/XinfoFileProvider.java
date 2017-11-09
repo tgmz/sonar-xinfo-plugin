@@ -49,7 +49,7 @@ public class XinfoFileProvider extends AbstractXinfoProvider {
 		
 		xinfoFile = pgm.getName() + ".xml";
 				
-		String xinfoRoot = getConfiguration().get(XinfoConfig.XINFO_ROOT).get();
+		String xinfoRoot = getConfiguration().get(XinfoConfig.XINFO_ROOT).orElse("xml");
 		
 		Path p = Paths.get(xinfoRoot == null ? "" : xinfoRoot).toAbsolutePath();
 		
