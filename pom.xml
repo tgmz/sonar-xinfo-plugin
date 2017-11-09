@@ -13,7 +13,7 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<sonar.apiVersion>6.3</sonar.apiVersion>
+		<sonar.apiVersion>6.7</sonar.apiVersion>
 		<tycho.version>1.0.0</tycho.version>
 		<jdk.min.version>1.7</jdk.min.version>
 		<jacoco.version>0.7.9</jacoco.version>
