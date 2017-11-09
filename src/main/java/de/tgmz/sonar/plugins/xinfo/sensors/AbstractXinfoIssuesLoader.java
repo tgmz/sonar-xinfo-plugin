@@ -77,7 +77,7 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 			
 			PACKAGE p;
 			try {
-				p = XinfoProviderFactory.getProvider(context.settings()).getXinfo(new XinfoFileAnalyzable(lang, inputFile));
+				p = XinfoProviderFactory.getProvider(context.config()).getXinfo(new XinfoFileAnalyzable(lang, inputFile));
 			} catch (XinfoException e) {
 				LOGGER.error("Error getting XINFO for file " + inputFile.filename(), e);
 				

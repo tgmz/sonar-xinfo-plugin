@@ -27,15 +27,15 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.io.IOUtils;
-import org.sonar.api.config.Settings;
+import org.sonar.api.config.Configuration;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+import de.tgmz.sonar.plugins.xinfo.config.XinfoConfig;
 import de.tgmz.sonar.plugins.xinfo.plicomp.PACKAGE;
-import de.tgmz.sonar.plugins.xinfo.settings.XinfoSettings;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
@@ -45,7 +45,7 @@ public abstract class AbstractXinfoProvider implements IXinfoProvider {
 	private static final Logger LOGGER = Loggers.get(AbstractXinfoProvider.class);
 	private DocumentBuilder documentBuilder;
 	private Unmarshaller unmarshaller;
-	private Settings settings;
+	private Configuration configuration;
 
 	public AbstractXinfoProvider() {
 		try {
@@ -58,10 +58,10 @@ public abstract class AbstractXinfoProvider implements IXinfoProvider {
 		}
 	}
 
-	public AbstractXinfoProvider(Settings settings) {
+	public AbstractXinfoProvider(Configuration configuration) {
 		this();
 		
-		this.settings = settings;
+		this.configuration = configuration;
 	}
 
 	@SuppressFBWarnings(value="XXE_DOCUMENT", justification="Not possible due to DocumentBuilderFactory settings")
@@ -99,7 +99,7 @@ public abstract class AbstractXinfoProvider implements IXinfoProvider {
 			// - COBOL and Assembler do not include a prologue. This causes a CharConversionException 
 			//   if xinfo is EBCDIC-encoded
 			try {
-				String c = settings.getString(XinfoSettings.XINFO_ENCODING);
+				String c = configuration.get(XinfoConfig.XINFO_ENCODING).orElse(Charset.defaultCharset().name());
 				
 				String xml = IOUtils.toString(new ByteArrayInputStream(buf), c != null ? Charset.forName(c) : Charset.defaultCharset());
 
@@ -139,7 +139,7 @@ public abstract class AbstractXinfoProvider implements IXinfoProvider {
 		return p;
 	}
 
-	protected Settings getSettings() {
-		return settings;
+	protected Configuration getConfiguration() {
+		return configuration;
 	}
 }

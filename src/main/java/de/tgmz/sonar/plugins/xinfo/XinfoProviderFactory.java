@@ -10,7 +10,7 @@
   *******************************************************************************/
 package de.tgmz.sonar.plugins.xinfo;
 
-import org.sonar.api.config.Settings;
+import org.sonar.api.config.Configuration;
 
 /**
  * Singleton factory for the XinfoProvider to use.
@@ -22,9 +22,9 @@ public final class XinfoProviderFactory {
 		// Empty private constructor to hide the implicit public one
 	}
 	
-	public static IXinfoProvider getProvider(Settings settings) {
+	public static IXinfoProvider getProvider(Configuration configuration) {
 		if (provider == null) {
-			provider = new XinfoFileProvider(settings);
+			provider = new XinfoFileProvider(configuration);
 		}
 		
 		return provider;

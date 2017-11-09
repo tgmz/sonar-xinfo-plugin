@@ -13,8 +13,9 @@ package de.tgmz.sonar.plugins.xinfo;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.sonar.api.config.MapSettings;
-import org.sonar.api.config.Settings;
+import org.sonar.api.config.Configuration;
+import org.sonar.api.config.internal.ConfigurationBridge;
+import org.sonar.api.config.internal.MapSettings;
 
 import de.tgmz.sonar.plugins.xinfo.languages.Language;
 
@@ -23,11 +24,11 @@ import de.tgmz.sonar.plugins.xinfo.languages.Language;
  */
 public class ParserConfigurationProblemTest {
 	private final static String DOC_BUILDER_PROPERTY_NAME = "javax.xml.parsers.DocumentBuilderFactory";
-	private static final Settings SETTINGS = new MapSettings();
+	private static final Configuration CONFIGURATION = new ConfigurationBridge(new MapSettings());
 
 	@Test(expected=XinfoRuntimeException.class)
 	public void testParserConfigurationProblem() throws XinfoException {
-		XinfoProviderFactory.getProvider(SETTINGS).getXinfo(null);	
+		XinfoProviderFactory.getProvider(CONFIGURATION).getXinfo(null);	
 	}
 
 	@Test(expected=XinfoRuntimeException.class)

@@ -27,9 +27,10 @@ import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.SensorDescriptor;
 import org.sonar.api.batch.sensor.internal.DefaultSensorDescriptor;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
-import org.sonar.api.config.MapSettings;
+import org.sonar.api.config.internal.MapSettings;
 import org.sonar.api.server.rule.RulesDefinition;
 
+import de.tgmz.sonar.plugins.xinfo.config.XinfoConfig;
 import de.tgmz.sonar.plugins.xinfo.languages.Language;
 import de.tgmz.sonar.plugins.xinfo.rules.XinfoRulesDefinition;
 import de.tgmz.sonar.plugins.xinfo.sensors.AssemblerColorizer;
@@ -39,7 +40,6 @@ import de.tgmz.sonar.plugins.xinfo.sensors.CobolIssuesLoader;
 import de.tgmz.sonar.plugins.xinfo.sensors.CpdTokenizerSensor;
 import de.tgmz.sonar.plugins.xinfo.sensors.PliColorizer;
 import de.tgmz.sonar.plugins.xinfo.sensors.PliIssuesLoader;
-import de.tgmz.sonar.plugins.xinfo.settings.XinfoSettings;
 
 /**
  * Tests for all sensors.
@@ -51,10 +51,13 @@ public class SensorTest {
 	
 	@BeforeClass
 	public static void setupOnce() throws IOException {
+		MapSettings ms = new MapSettings();
+		ms.appendProperty(XinfoConfig.XINFO_ROOT, LOC + File.separator +"xml");
+		
 		File baseDir = new File(LOC);
 		
 		sensorContext = SensorContextTester.create(baseDir);
-		((SensorContextTester) sensorContext).setSettings(new MapSettings().appendProperty(XinfoSettings.XINFO_ROOT, LOC + File.separator +"xml"));
+		((SensorContextTester) sensorContext).setSettings(ms);
 		
 		((SensorContextTester) sensorContext).fileSystem().add(create("plitest.pli", Language.PLI));
 		((SensorContextTester) sensorContext).fileSystem().add(create("plitest5.pli", Language.PLI));

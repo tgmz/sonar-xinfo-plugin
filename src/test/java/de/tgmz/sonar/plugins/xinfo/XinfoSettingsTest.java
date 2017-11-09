@@ -14,7 +14,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import de.tgmz.sonar.plugins.xinfo.settings.XinfoSettings;
+import de.tgmz.sonar.plugins.xinfo.config.XinfoConfig;
 
 /**
  * Testcase for XinfoSettings.
@@ -22,6 +22,6 @@ import de.tgmz.sonar.plugins.xinfo.settings.XinfoSettings;
 public class XinfoSettingsTest {
 	@Test
 	public void testSettings() {
-		assertTrue(XinfoSettings.definitions().size() > 0);
+		assertTrue(XinfoConfig.definitions().size() > 0);
 	}
 }

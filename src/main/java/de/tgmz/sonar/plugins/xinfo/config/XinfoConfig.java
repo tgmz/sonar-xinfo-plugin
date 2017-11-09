@@ -8,7 +8,7 @@
   * Contributors:
   *    Thomas Zierer - initial API and implementation and/or initial documentation
   *******************************************************************************/
-package de.tgmz.sonar.plugins.xinfo.settings;
+package de.tgmz.sonar.plugins.xinfo.config;
 
 import static java.util.Arrays.asList;
 
@@ -17,15 +17,15 @@ import java.util.List;
 import org.sonar.api.config.PropertyDefinition;
 
 /**
- * Runtime settings.
+ * Runtime config.
  */
-public final class XinfoSettings {
+public final class XinfoConfig {
 	public static final String COLORIZING_LIMIT = "sonar.xinfo.colorizing.limit";
 	public static final String XINFO_ROOT = "sonar.xinfo.root.xinfo";
 	public static final String XINFO_ENCODING = "sonar.xinfo.encoding";
 	public static final String CATEGORY = "Xinfo";
 
-	private XinfoSettings() {
+	private XinfoConfig() {
 		// Only statics
 	}
 
