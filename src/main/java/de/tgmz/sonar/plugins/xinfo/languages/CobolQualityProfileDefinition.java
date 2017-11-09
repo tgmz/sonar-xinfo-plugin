@@ -11,10 +11,10 @@
 package de.tgmz.sonar.plugins.xinfo.languages;
 
 /**
- * Default Quality profile for the projects having files of language "Assembler"
+ * Default Quality profile for the projects having files of language "Cobol"
  */
-public final class AssemblerQualityProfile extends AbstractXinfoQualityProfile {
-	public AssemblerQualityProfile() {
-		super (Language.ASSEMBLER);
+public final class CobolQualityProfileDefinition extends AbstractXinfoQualityProfileDefinition {
+	public CobolQualityProfileDefinition() {
+		super (Language.COBOL);
 	}
 }
