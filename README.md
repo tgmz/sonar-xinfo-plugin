@@ -15,6 +15,14 @@ Prerequisites
 
 Usage
 =====
+* Clone from GitHub:
+
+        git clone https://github.com/tgmz/sonar-xinfo-plugin.git
+        
+* Checkout desired Sonar API version:
+
+        git checkout Sonar-API-x.y
+        
 * Compile the project:
 
         mvn clean package
