@@ -15,7 +15,7 @@ import org.sonar.api.batch.sensor.highlighting.TypeOfText;
 /**
  * Highlighted area.
  */
-public class ColorizingData implements Comparable<ColorizingData> {
+public class ColorizingData {
 	private int startLineNumber;
 	private int startOffset;
 	private int endLineNumber;
@@ -64,32 +64,7 @@ public class ColorizingData implements Comparable<ColorizingData> {
 	 * Two ColorizingData are considered equal if they overlap. 
 	 * So we can simply add them to a Set and let it handle overlapping areas.
 	 */
-	@Override
-	public int compareTo(ColorizingData other) {
-		if (this.getStartLineNumber() > other.getEndLineNumber()) {
-			return 80 * (other.getEndLineNumber() - this.getStartLineNumber());
-		}
-		
-		if (this.getEndLineNumber() < other.getStartLineNumber()) {
-			return 80 * (other.getStartLineNumber() - this.getEndLineNumber());
-		}
-				
-		if (this.getStartOffset() >= other.getEndOffset()) {
-			return other.getEndOffset() - this.getStartOffset();
-		}
-		
-		if (this.getEndOffset() <= other.getStartOffset()) {	// No overlaps
-			return other.getStartOffset() - this.getEndOffset();
-		}
-		
-		return 0;
-	}
-	/* 
-	 * Two ColorizingData are considered equal if they overlap. 
-	 * So we can simply add them to a Set and let it handle overlapping areas.
-	 */
-	@Override
-	public boolean equals(Object obj) {
+	public boolean overlap(Object obj) {
 		if (this == obj) {
 			return true;
 		}
@@ -102,15 +77,28 @@ public class ColorizingData implements Comparable<ColorizingData> {
 			return false;
 		}
 		
-		return compareTo((ColorizingData) obj) == 0;
-	}
-	
-	/*
-	 * Must override. The contract says, that two equal ColorizedData 
-	 * must have the same hashCode but we cannot decide this.  
-	 */
-	@Override
-	public int hashCode() {
-		return 0;
+		ColorizingData other = (ColorizingData) obj;
+		
+		// This area starts after the other ends
+		if (this.getStartLineNumber() > other.getEndLineNumber()) {
+			return false;
+		}
+		
+		// This area ends before the other starts
+		if (this.getEndLineNumber() < other.getStartLineNumber()) {
+			return false;
+		}
+				
+		if (this.getStartLineNumber() == other.getEndLineNumber()
+			&& this.getStartOffset() >= other.getEndOffset()) {
+			return false;
+		}
+		
+		if (this.getEndLineNumber() == other.getStartLineNumber()
+			&& this.getEndOffset() <= other.getStartOffset()) {	// No overlaps
+			return false;
+		}
+		
+		return true;
 	}
 }

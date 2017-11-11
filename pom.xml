@@ -230,7 +230,8 @@
 							<!-- Sets the output directory for the code coverage report. -->
 							<outputDirectory>target/jacoco-ut</outputDirectory>
 							<excludes>
-								<exclude>**/util/*.class,
+								<exclude>
+									de/tgmz/sonar/plugins/xinfo/Create*Rules.class,
 									de/tgmz/sonar/plugins/xinfo/plicomp/*.class,
 									de/tgmz/sonar/plugins/xinfo/debugtool/codecoverage/*.class,
 									de/tgmz/sonar/plugins/xinfo/sonar/codecoverage/*.class</exclude>

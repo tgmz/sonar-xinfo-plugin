@@ -64,7 +64,7 @@ public abstract class AbstractColorizer<T extends IColorizing> implements Sensor
 			try {
 				IColorizing ph = getColorizing(inputFile, Math.max(DEFAULT_LIMIT, context.config().getInt(XinfoConfig.COLORIZING_LIMIT).orElse(Integer.valueOf(5000))));
 	
-				for (Iterator<ColorizingData> iterator = ph.getAreas().iterator(); iterator.hasNext();) {
+				for (Iterator<ColorizingData> iterator = ph.getAreas().getAreas().iterator(); iterator.hasNext();) {
 					ColorizingData hd = iterator.next();
 
 					//CHECKSTYLE DISABLE LineLength for 1 line
