@@ -14,15 +14,12 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.sonar.api.Plugin;
-import org.sonar.api.batch.fs.internal.DefaultInputFile;
-import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.SensorDescriptor;
 import org.sonar.api.batch.sensor.internal.DefaultSensorDescriptor;
@@ -59,11 +56,11 @@ public class SensorTest {
 		sensorContext = SensorContextTester.create(baseDir);
 		((SensorContextTester) sensorContext).setSettings(ms);
 		
-		((SensorContextTester) sensorContext).fileSystem().add(create("plitest.pli", Language.PLI));
-		((SensorContextTester) sensorContext).fileSystem().add(create("plitest5.pli", Language.PLI));
-		((SensorContextTester) sensorContext).fileSystem().add(create("plitest6.pli", Language.PLI));
-		((SensorContextTester) sensorContext).fileSystem().add(create("asmtest.asm", Language.ASSEMBLER));
-		((SensorContextTester) sensorContext).fileSystem().add(create("cobtest.cbl", Language.COBOL));
+		((SensorContextTester) sensorContext).fileSystem().add(SonarTestFileUtil.create(LOC, "plitest.pli", Language.PLI));
+		((SensorContextTester) sensorContext).fileSystem().add(SonarTestFileUtil.create(LOC, "plitest5.pli", Language.PLI));
+		((SensorContextTester) sensorContext).fileSystem().add(SonarTestFileUtil.create(LOC, "plitest6.pli", Language.PLI));
+		((SensorContextTester) sensorContext).fileSystem().add(SonarTestFileUtil.create(LOC, "asmtest.asm", Language.ASSEMBLER));
+		((SensorContextTester) sensorContext).fileSystem().add(SonarTestFileUtil.create(LOC, "cobtest.cbl", Language.COBOL));
 		
 		sensorDescriptor = new DefaultSensorDescriptor();
 		
@@ -75,14 +72,6 @@ public class SensorTest {
 		new File("testresources/xml/plitest6.xml").delete();
 	}
 	
-	private static DefaultInputFile create(String fileName, Language lang) throws IOException {
-		return new TestInputFileBuilder(LOC, fileName)
-						.setCharset(StandardCharsets.UTF_8)
-						.setLanguage(lang.getKey())
-						.initMetadata(IOUtils.toString(new FileInputStream(new File(LOC, fileName)), StandardCharsets.UTF_8))
-						.build();
-	}
-
 	@Test
 	public void testPli() {
 		PliColorizer colorizer = new PliColorizer();
