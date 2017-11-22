@@ -52,7 +52,7 @@ public class SensorTest {
 	@BeforeClass
 	public static void setupOnce() throws IOException {
 		MapSettings ms = new MapSettings();
-		ms.appendProperty(XinfoConfig.XINFO_ROOT, LOC + File.separator +"xml");
+		ms.setProperty(XinfoConfig.XINFO_ROOT, LOC + File.separator +"xml");
 		
 		File baseDir = new File(LOC);
 		

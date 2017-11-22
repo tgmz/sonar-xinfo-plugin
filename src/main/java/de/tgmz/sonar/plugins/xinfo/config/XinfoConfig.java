@@ -21,6 +21,7 @@ import org.sonar.api.config.PropertyDefinition;
  */
 public final class XinfoConfig {
 	public static final String COLORIZING_LIMIT = "sonar.xinfo.colorizing.limit";
+	public static final String IGNORE_INCLUDES = "sonar.xinfo.ignore.includes";
 	public static final String XINFO_ROOT = "sonar.xinfo.root.xinfo";
 	public static final String XINFO_ENCODING = "sonar.xinfo.encoding";
 	public static final String CATEGORY = "Xinfo";
@@ -34,6 +35,10 @@ public final class XinfoConfig {
 				.name("XinfoColorizingLimit")
 				.description("Xinfo Colorizing Limit")
 				.defaultValue(String.valueOf(5000))
+				.category(CATEGORY).build()
+			, PropertyDefinition.builder(IGNORE_INCLUDES)
+				.name("IgnoreIncludes")
+				.description("Ignore includes or copybooks")
 				.category(CATEGORY).build()
 			, PropertyDefinition.builder(XINFO_ROOT)
 				.name("RootXinfo")
