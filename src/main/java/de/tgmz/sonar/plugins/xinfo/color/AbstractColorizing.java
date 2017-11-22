@@ -14,8 +14,6 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.text.NumberFormat;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -32,7 +30,7 @@ public abstract class AbstractColorizing implements IColorizing {
 	private static final Logger LOGGER = Loggers.get(AbstractColorizing.class);
 
 	/** The areas to colorize. */
-	private Set<ColorizingData> areas;
+	private HighligthedAreas areas;
 	private String[] content;
 	private int limit;
 	
@@ -65,13 +63,12 @@ public abstract class AbstractColorizing implements IColorizing {
 		
 		System.arraycopy(readLines.toArray(new String[readLines.size()]), 0, content, 0, content.length);
 		
-		areas = new TreeSet<>();
+		areas = new HighligthedAreas();
 		
 		createAreas();
 	}
 
-	@Override
-	public Set<ColorizingData> getAreas() {
+	public HighligthedAreas getAreas() {
 		return areas;
 	}
 

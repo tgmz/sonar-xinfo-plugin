@@ -1,5 +1,5 @@
 /*******************************************************************************
-  * Copyright (c) 13.11.2016 Thomas Zierer.
+  * Copyright (c) 11.11.2017 Thomas Zierer.
   * All rights reserved. This program and the accompanying materials
   * are made available under the terms of the Eclipse Public License v2.0
   * which accompanies this distribution, and is available at
@@ -10,10 +10,29 @@
   *******************************************************************************/
 package de.tgmz.sonar.plugins.xinfo.color;
 
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+
 /**
- * General interface for Syntax highlighting.
+ * Highlighted areas.
  */
-@FunctionalInterface
-public interface IColorizing {
-	HighligthedAreas getAreas();
+public class HighligthedAreas {
+	private List<ColorizingData> areas;
+
+	public HighligthedAreas() {
+		areas = new LinkedList<>();
+	}
+	public List<ColorizingData> getAreas() {
+		return areas;
+	}
+	public void add(ColorizingData t) {
+		for (Iterator<ColorizingData> iterator = areas.iterator(); iterator.hasNext();) {
+			if (iterator.next().overlap(t)) {
+				return;
+			}
+		}
+		
+		areas.add(t);
+	}
 }
