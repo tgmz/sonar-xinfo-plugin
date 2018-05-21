@@ -19,7 +19,6 @@ import org.apache.commons.io.IOUtils;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.sonar.api.Plugin;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.SensorDescriptor;
 import org.sonar.api.batch.sensor.internal.DefaultSensorDescriptor;
@@ -111,11 +110,6 @@ public class SensorTest {
 	@Test
 	public void testRulesDefinition() {
 		new XinfoRulesDefinition().define(new RulesDefinition.Context());
-	}
-	
-	@Test
-	public void testPlugin() {
-		new XinfoPlugin().define(new Plugin.Context(null));
 	}
 	
 	@Test
