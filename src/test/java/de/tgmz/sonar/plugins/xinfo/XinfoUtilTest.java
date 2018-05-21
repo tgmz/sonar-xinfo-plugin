@@ -57,7 +57,7 @@ public class XinfoUtilTest {
 	}
 	
 	@Test
-	public void testComputeFilefromFileNumbe2() throws XinfoException  {
+	public void testComputeFilefromFileNumber2() throws XinfoException  {
 		FILEREFERENCETABLE frt = OF.createFILEREFERENCETABLE();
 		
 		frt.setFILECOUNT("3");
