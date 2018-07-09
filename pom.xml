@@ -17,8 +17,8 @@
 		<sonar.apiVersion>7.1</sonar.apiVersion>
 		<tycho.version>1.0.0</tycho.version>
 		<jdk.min.version>1.7</jdk.min.version>
-		<jacoco.version>0.7.9</jacoco.version>
-		<dependency-check.version>2.1.1</dependency-check.version>
+		<jacoco.version>0.8.1</jacoco.version>
+		<dependency-check.version>3.2.1</dependency-check.version>
 		<maven.build.timestamp.format>yyyyMMdd</maven.build.timestamp.format>
 	</properties>
 
@@ -38,12 +38,12 @@
 		<dependency>
 			<groupId>commons-net</groupId>
 			<artifactId>commons-net</artifactId>
-			<version>3.5</version>
+			<version>3.6</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
-			<version>2.5</version>
+			<version>2.6</version>
 		</dependency>
 		<dependency>
 			<groupId>com.google.code.findbugs</groupId>
@@ -107,7 +107,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.6.1</version>
+				<version>3.7.0</version>
 				<configuration>
 					<!-- Choose "javac" for the JDK Compiler or "jdt" for Eclipse JDT: -->
 					<compilerId>javac</compilerId>
@@ -125,7 +125,7 @@
 			</plugin>
 			<plugin>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<version>2.19.1</version>
+				<version>2.22.0</version>
 				<configuration>
 					<reuseForks>false</reuseForks>
 					<redirectTestOutputToFile>true</redirectTestOutputToFile>
@@ -394,7 +394,7 @@
 	<scm>
 		<developerConnection>scm:git:https://github.com/tgmz/sonar-xinfo-plugin.git</developerConnection>
 		<url>https://github.com/tgmz/sonar-xinfo-plugin.git</url>
-		<connection>https://github.com/tgmz/sonar-xinfo-plugin.git</connection>
+		<connection>scm:git:https://github.com/tgmz/sonar-xinfo-plugin.git</connection>
 	</scm>
 
 	<developers>
