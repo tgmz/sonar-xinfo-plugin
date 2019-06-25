@@ -252,22 +252,6 @@
 					</systemPropertyVariables>
 				</configuration>
 			</plugin>
-			<plugin>
-				<groupId>org.owasp</groupId>
-				<artifactId>dependency-check-maven</artifactId>
-				<version>${dependency-check.version}</version>
-        <configuration>
-          <skipProvidedScope>true</skipProvidedScope>
-					<nexusAnalyzerEnabled>false</nexusAnalyzerEnabled>
-         </configuration>
-            <executions>
-               <execution>
-                   <goals>
-                       <goal>check</goal>
-                   </goals>
-               </execution>
-            </executions>
-        </plugin>
 		</plugins>
 		<pluginManagement>
 			<plugins>
@@ -365,6 +349,19 @@
 				<version>2.10.4</version>
 				<configuration>
 					<excludePackageNames>de.tgmz.sonar.plugins.xinfo.plicomp,de.tgmz.sonar.plugins.xinfo.debugtool.codecoverage,de.tgmz.sonar.plugins.xinfo.sonar.codecoverage</excludePackageNames>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.owasp</groupId>
+				<artifactId>dependency-check-maven</artifactId>
+				<version>${dependency-check.version}</version>
+				<configuration>
+					<detail>true</detail>
+					<logFile>${project.build.directory}/dependency-check.log</logFile>
+					<nexusAnalyzerEnabled>false</nexusAnalyzerEnabled>
+					<skipProvidedScope>true</skipProvidedScope>
+					<format>HTML</format>
+					<outputDirectory>${sonar.dependencyCheck.reportPath}</outputDirectory>
 				</configuration>
 			</plugin>
 		</plugins>
