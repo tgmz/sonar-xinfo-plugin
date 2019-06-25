@@ -81,10 +81,10 @@ public class AssemblerColorizing extends AbstractColorizing {
 	}
 
 	private void colorizeToken(int lineNumber, int startOffset, int endOffset, String token) {
-		if (INSTRUCTIONS.contains(token.toUpperCase(Locale.US))) {			
+		if (INSTRUCTIONS.contains(token.toUpperCase(Locale.ROOT))) {			
 			getAreas().add(new ColorizingData(lineNumber, startOffset, lineNumber, endOffset, token, TypeOfText.KEYWORD));
 		} else {
-			if (BUILTIN.contains(token.toUpperCase(Locale.US))) {			
+			if (BUILTIN.contains(token.toUpperCase(Locale.ROOT))) {			
 				getAreas().add(new ColorizingData(lineNumber, startOffset, lineNumber, endOffset, token, TypeOfText.KEYWORD_LIGHT));
 			} else {
 				if (NumberUtils.isNumber(token)) {

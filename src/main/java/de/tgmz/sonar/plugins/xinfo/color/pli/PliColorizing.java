@@ -84,10 +84,10 @@ public class PliColorizing extends AbstractColorizing {
 	}
 	
 	private void colorizeToken(int lineNumber, int startOffset, int endOffset, String token) {
-		if (PLI_KEYWORDS.contains(token.toUpperCase(Locale.US))) {			
+		if (PLI_KEYWORDS.contains(token.toUpperCase(Locale.ROOT))) {			
 			getAreas().add(new ColorizingData(lineNumber, startOffset, lineNumber, endOffset, token, TypeOfText.KEYWORD));
 		} else {
-			if (PLI_BUILTIN.contains(token.toUpperCase(Locale.US))) {			
+			if (PLI_BUILTIN.contains(token.toUpperCase(Locale.ROOT))) {			
 				getAreas().add(new ColorizingData(lineNumber, startOffset, lineNumber, endOffset, token, TypeOfText.KEYWORD_LIGHT));
 			} else {
 				if (NumberUtils.isNumber(token)) {
