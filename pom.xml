@@ -18,7 +18,7 @@
 		<tycho.version>1.0.0</tycho.version>
 		<jdk.min.version>1.7</jdk.min.version>
 		<jacoco.version>0.8.1</jacoco.version>
-		<dependency-check.version>3.2.1</dependency-check.version>
+		<dependency-check.version>5.0.0</dependency-check.version>
 		<maven.build.timestamp.format>yyyyMMdd</maven.build.timestamp.format>
 	</properties>
 
@@ -320,22 +320,9 @@
 				</configuration>
 			</plugin>
 			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>findbugs-maven-plugin</artifactId>
-				<version>3.0.4</version>
-				<configuration>
-					<excludeFilterFile>Findbugs_exclude.xml</excludeFilterFile>
-					<effort>Max</effort>
-					<threshold>Low</threshold>
-					<failOnError>true</failOnError>
-					<plugins>
-						<plugin>
-							<groupId>com.h3xstream.findsecbugs</groupId>
-							<artifactId>findsecbugs-plugin</artifactId>
-							<version>1.5.0</version>
-						</plugin>
-					</plugins>
-				</configuration>
+				<groupId>com.github.spotbugs</groupId>
+				<artifactId>spotbugs-maven-plugin</artifactId>
+				<version>3.1.11</version>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
