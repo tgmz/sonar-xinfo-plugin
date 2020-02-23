@@ -591,6 +591,18 @@
 </rule>
 <rule>
     <cardinality>SINGLE</cardinality>
+    <description>If the VALUE type function is applied to a structure type which has an initial attribute on only some of its elements, then the structure instance will be only partially initialized. For example, the compiler will flag the following code with this message because B2 has no initial value - it will have the initial values from type a only if B2 is also declared with the attribute init( value(: a :) ). define structure 1 a, 2 a1 fixed bin(31) init( 17 ), 2 a2 fixed bin(31) init( 19 ); define structure 1 b, 2 b1 fixed bin(31) init( 119 ), 2 b2 type a; dcl x type b; x = value(: b :); </description>
+    <internalKey>IBM2830I I</internalKey>
+    <key>IBM2830I I</key>
+    <name>VALUE(: type name :) will return an instance of the structure type that is only partially initialized. </name>
+    <remediationFunction>CONSTANT_ISSUE</remediationFunction>
+    <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
+    <severity>MINOR</severity>
+    <status>READY</status>
+    <tag>xinfo</tag>
+</rule>
+<rule>
+    <cardinality>SINGLE</cardinality>
     <description>This message warns that the compiler has detected an ASSERT UNREACHABLE statement that can never be run as the flow of control must always pass it by. </description>
     <internalKey>IBM2831I I</internalKey>
     <key>IBM2831I I</key>
@@ -603,10 +615,10 @@
 </rule>
 <rule>
     <cardinality>SINGLE</cardinality>
-    <description>This message is used to report DB2 or CICS backend messages with a return code of 0. </description>
-    <internalKey>IBM3000I I</internalKey>
-    <key>IBM3000I I</key>
-    <name>note </name>
+    <description>The compiler will perform no inling if the TEST option is on. </description>
+    <internalKey>IBM2832I I</internalKey>
+    <key>IBM2832I I</key>
+    <name>INLINE directive will be ignored for procedure name and all other procedures since the TEST option is on. </name>
     <remediationFunction>CONSTANT_ISSUE</remediationFunction>
     <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
     <severity>MINOR</severity>
@@ -615,10 +627,10 @@
 </rule>
 <rule>
     <cardinality>SINGLE</cardinality>
-    <description>The SQL suboption has been specified for the PP option, but the program contains no EXEC SQL statements other than possibly EXEC SQL INCLUDE statements. The DBRMLIB will not be updated. </description>
-    <internalKey>IBM3019I I</internalKey>
-    <key>IBM3019I I</key>
-    <name>Program contains no EXEC SQL statements requiring translation. </name>
+    <description>The compiler will not inline a PROCEDURE that has ENTRY statements. </description>
+    <internalKey>IBM2833I I</internalKey>
+    <key>IBM2833I I</key>
+    <name>INLINE directive will be ignored for procedure name since it contains ENTRY statements. </name>
     <remediationFunction>CONSTANT_ISSUE</remediationFunction>
     <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
     <severity>MINOR</severity>
@@ -627,22 +639,10 @@
 </rule>
 <rule>
     <cardinality>SINGLE</cardinality>
-    <description>A comment ends on a different line than it begins. This may indicate that an end-of-comment delimiter is missing. </description>
-    <internalKey>IBM3020I I</internalKey>
-    <key>IBM3020I I</key>
-    <name>Comment spans line-count lines. </name>
-    <remediationFunction>CONSTANT_ISSUE</remediationFunction>
-    <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
-    <severity>INFO</severity>
-    <status>READY</status>
-    <tag>xinfo</tag>
-</rule>
-<rule>
-    <cardinality>SINGLE</cardinality>
-    <description>A string ends on a different line than it begins. This may indicate that a closing quote is missing. </description>
-    <internalKey>IBM3021I I</internalKey>
-    <key>IBM3021I I</key>
-    <name>String spans line-count lines. </name>
+    <description>The compiler will not inline a PROCEDURE or BEGIN block that contains other PROCEDUREs or BEGIN blocks. </description>
+    <internalKey>IBM2834I I</internalKey>
+    <key>IBM2834I I</key>
+    <name>INLINE directive will be ignored for procedure name since it contains subprocedures and/or BEGIN blocks. </name>
     <remediationFunction>CONSTANT_ISSUE</remediationFunction>
     <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
     <severity>MINOR</severity>
@@ -651,10 +651,142 @@
 </rule>
 <rule>
     <cardinality>SINGLE</cardinality>
-    <description>This message is used by %NOTE statements with a return code of 0. | | | | | | | | | | | | | | | | | | | | | | | | | | | Chapter 2. Compiler Warning Messages (1078-1225, 2600-2799) </description>
-    <internalKey>IBM3024I I</internalKey>
-    <key>IBM3024I I</key>
-    <name>note </name>
+    <description>The compiler will not inline a PROCEDURE that requires has the NODESCRIPTOR option but would normally be passed descriptors with its arguments. </description>
+    <internalKey>IBM2835I I</internalKey>
+    <key>IBM2835I I</key>
+    <name>INLINE directive will be ignored for procedure name since it has OPTIONS(NODESCRIPTOR), but has some parameters with nonconstant extents. </name>
+    <remediationFunction>CONSTANT_ISSUE</remediationFunction>
+    <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
+    <severity>MINOR</severity>
+    <status>READY</status>
+    <tag>xinfo</tag>
+</rule>
+<rule>
+    <cardinality>SINGLE</cardinality>
+    <description>The compiler will not inline a PROCEDURE that which has any labels that are possibly the target of a GOTO from another PROCEDURE or BEGIN block. </description>
+    <internalKey>IBM2836I I</internalKey>
+    <key>IBM2836I I</key>
+    <name>INLINE directive will be ignored for procedure name since it contains labels that may be targets of out-of-block GOTOs. </name>
+    <remediationFunction>CONSTANT_ISSUE</remediationFunction>
+    <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
+    <severity>MINOR</severity>
+    <status>READY</status>
+    <tag>xinfo</tag>
+</rule>
+<rule>
+    <cardinality>SINGLE</cardinality>
+    <description>The compiler will not inline a PROCEDURE that has any PUT DATA or GET DATA statements. </description>
+    <internalKey>IBM2837I I</internalKey>
+    <key>IBM2837I I</key>
+    <name>INLINE directive will be ignored for procedure name since it contains some DATA-directed I/O statements. </name>
+    <remediationFunction>CONSTANT_ISSUE</remediationFunction>
+    <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
+    <severity>MINOR</severity>
+    <status>READY</status>
+    <tag>xinfo</tag>
+</rule>
+<rule>
+    <cardinality>SINGLE</cardinality>
+    <description>The compiler will not inline a PROCEDURE that has any condition enablement that differs from the default. </description>
+    <internalKey>IBM2838I I</internalKey>
+    <key>IBM2838I I</key>
+    <name>INLINE directive will be ignored for procedure name since it has non-default condition enablement. </name>
+    <remediationFunction>CONSTANT_ISSUE</remediationFunction>
+    <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
+    <severity>MINOR</severity>
+    <status>READY</status>
+    <tag>xinfo</tag>
+</rule>
+<rule>
+    <cardinality>SINGLE</cardinality>
+    <description>The compiler will not inline a PROCEDURE that has any ON statementes. </description>
+    <internalKey>IBM2839I I</internalKey>
+    <key>IBM2839I I</key>
+    <name>INLINE directive will be ignored for procedure name since it contains ON-units. </name>
+    <remediationFunction>CONSTANT_ISSUE</remediationFunction>
+    <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
+    <severity>MINOR</severity>
+    <status>READY</status>
+    <tag>xinfo</tag>
+</rule>
+<rule>
+    <cardinality>SINGLE</cardinality>
+    <description>If the first and third arguments to the TRANSLATE built-in function are both constant, then the code is likely trying to reformat a date-time value. This code would be easier to understand if the | | | | | | | | | | | | | | || | | | | | | | | | | REPATTERN built-in function or, if possible, the DATETIME built-in function were used instead. For example, the first two bits of code below assign the same value to the target variable shortdate, and the second two bits of code also assign the same value to the target variable currentdate. However, in each case, the second statement is much clearer. shortdate = translate( ’12.34.5678’, longdate, ’56783412abcdefghijkl’ ); shortdate = repattern( longdate, ’DD.MM.YYYY’, ’YYYYMMDDHHMISS999’ ); currentdate = translate( ’12.34.5678’, datetime(), ’56783412abcdefghijkl’ ); currentdate = datetime( ’DD.MM.YYYY’ ); </description>
+    <internalKey>IBM2840I I</internalKey>
+    <key>IBM2840I I</key>
+    <name>If TRANSLATE is being used to reformat a date-time value, it would be better to use the REPATTERN or DATETIME built-in function instead. </name>
+    <remediationFunction>CONSTANT_ISSUE</remediationFunction>
+    <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
+    <severity>MINOR</severity>
+    <status>READY</status>
+    <tag>xinfo</tag>
+</rule>
+<rule>
+    <cardinality>SINGLE</cardinality>
+    <description>MEMCU12 will perform much better than MEMCONVERT. </description>
+    <internalKey>IBM2841I I</internalKey>
+    <key>IBM2841I I</key>
+    <name>Changing MEMCONVERT(p,n,1200,q,m,1208) to MEMCU12(p,n,q,m) would be better for performance. </name>
+    <remediationFunction>CONSTANT_ISSUE</remediationFunction>
+    <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
+    <severity>MINOR</severity>
+    <status>READY</status>
+    <tag>xinfo</tag>
+</rule>
+<rule>
+    <cardinality>SINGLE</cardinality>
+    <description>MEMCU21 will perform much better than MEMCONVERT. </description>
+    <internalKey>IBM2842I I</internalKey>
+    <key>IBM2842I I</key>
+    <name>Changing MEMCONVERT(p,n,1208,q,m,1200) to MEMCU21(p,n,q,m) would be better for performance. </name>
+    <remediationFunction>CONSTANT_ISSUE</remediationFunction>
+    <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
+    <severity>MINOR</severity>
+    <status>READY</status>
+    <tag>xinfo</tag>
+</rule>
+<rule>
+    <cardinality>SINGLE</cardinality>
+    <description>Defined structures must occupy a number of bytes that is a multiple of the structure’s alignment. So, for example, if a structure contains an aligned fixed bin(31) (or other aligned fullword) field as its most stringently aligned item, then the structure must occupy a multiple of 4 bytes. The following structure does not meet this requirement: define structure 1 point, 2 x fixed bin(31), 2 y char(1); </description>
+    <internalKey>IBM2843I I</internalKey>
+    <key>IBM2843I I</key>
+    <name>The defined structure struct name is alignment byte aligned, but occupies only storage size bytes of storage. </name>
+    <remediationFunction>CONSTANT_ISSUE</remediationFunction>
+    <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
+    <severity>MINOR</severity>
+    <status>READY</status>
+    <tag>xinfo</tag>
+</rule>
+<rule>
+    <cardinality>SINGLE</cardinality>
+    <description>This may represent a problem especially if this occurs in an assignment statement and += was meant instead of =+. </description>
+    <internalKey>IBM2844I I</internalKey>
+    <key>IBM2844I I</key>
+    <name>The characters =+ will be accepted as two separate characters. But perhaps += was meant, and it would be better to separate these characters with a blank. </name>
+    <remediationFunction>CONSTANT_ISSUE</remediationFunction>
+    <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
+    <severity>MINOR</severity>
+    <status>READY</status>
+    <tag>xinfo</tag>
+</rule>
+<rule>
+    <cardinality>SINGLE</cardinality>
+    <description>This may represent a problem especially if this occurs in an assignment statement and -= was meant instead of =-. </description>
+    <internalKey>IBM2845I I</internalKey>
+    <key>IBM2845I I</key>
+    <name>The characters =- will be accepted as two separate characters. But perhaps -= was meant, and it would be better to separate these characters with a blank. </name>
+    <remediationFunction>CONSTANT_ISSUE</remediationFunction>
+    <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
+    <severity>MINOR</severity>
+    <status>READY</status>
+    <tag>xinfo</tag>
+</rule>
+<rule>
+    <cardinality>SINGLE</cardinality>
+    <description>The compiler issues this message if a compilation unit contains a PACKAGE statement with exactly one level-1 procedure which in turn has its own nested procedures. Chapter 2. Compiler Warning Messages (1078-1225, 2600-2799) </description>
+    <internalKey>IBM2846I I</internalKey>
+    <key>IBM2846I I</key>
+    <name>It would be better to convert nested procedures in a PACKAGE into sister level-1 procedures. </name>
     <remediationFunction>CONSTANT_ISSUE</remediationFunction>
     <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
     <severity>MINOR</severity>
@@ -747,10 +879,10 @@
 </rule>
 <rule>
     <cardinality>SINGLE</cardinality>
-    <description>The indicated variable may be used before it has been initialized. </description>
+    <description>The indicated variable may not have been assigned or initialized a value before it is used. </description>
     <internalKey>IBM1085I W</internalKey>
     <key>IBM1085I W</key>
-    <name>variable may be uninitialized when used. </name>
+    <name>variable may be unset when used. </name>
     <remediationFunction>CONSTANT_ISSUE</remediationFunction>
     <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
     <severity>MAJOR</severity>
@@ -1191,7 +1323,7 @@
 </rule>
 <rule>
     <cardinality>SINGLE</cardinality>
-    <description>The indicated character is missing and has been inserted by the parser in order to correct your source. display( ’Program starting’ ); </description>
+    <description>The indicated character is missing and has been inserted by the parser in order to correct your source. display( ’Program starting’ ; </description>
     <internalKey>IBM1122I W</internalKey>
     <key>IBM1122I W</key>
     <name>Missing character assumed before character. </name>
@@ -1911,7 +2043,7 @@
 </rule>
 <rule>
     <cardinality>SINGLE</cardinality>
-    <description>A procedure contains code that will cause it to be recursively invoked, but the procedure was not declared with RECURSIVE attribute. a: proc( n ); ... if n &gt;; then call a; </description>
+    <description>A procedure contains code that will cause it to be recursively invoked, but the procedure was not declared with RECURSIVE attribute. a: proc( n ); ... if n &gt; 0 then call a; </description>
     <internalKey>IBM1182I W</internalKey>
     <key>IBM1182I W</key>
     <name>Invocation of a NONRECURSIVE procedure from within that procedure is invalid. RECURSIVE attribute is assumed. </name>
@@ -2046,7 +2178,7 @@
     <description>This message is produced if a block contains more statements than allowed by the MAXSTMT compiler option. It may point to blocks that are excessively large. </description>
     <internalKey>IBM1193I W</internalKey>
     <key>IBM1193I W</key>
-    <name>statement count statements in block block name </name>
+    <name>statement count statements in block block name. </name>
     <remediationFunction>CONSTANT_ISSUE</remediationFunction>
     <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
     <severity>MAJOR</severity>
@@ -2103,7 +2235,7 @@
 </rule>
 <rule>
     <cardinality>SINGLE</cardinality>
-    <description>An ENTRY reference is used where the result of invoking that entry is probably meant to be used. dcl e1 entry returns( ptr ); dcl q ptr based; e1-&gt;q= null(); dcl e2 entry returns( bit(1) ); if e2 then ... </description>
+    <description>An ENTRY reference is used where the result of invoking that entry is probably meant to be used. dcl e1 entry returns( ptr ); dcl q ptr based; e1-&gt;q = null(); dcl e2 entry returns( bit(1) ); if e2 then ... </description>
     <internalKey>IBM1198I W</internalKey>
     <key>IBM1198I W</key>
     <name>A null argument list is assumed for variable name. </name>
@@ -2428,7 +2560,7 @@
 </rule>
 <rule>
     <cardinality>SINGLE</cardinality>
-    <description>If the target in an explicit or implicit assignment has the DATE attribute, the source should also. If it does not, the DATE attribute will be ignored. So, in the following code, the assignment will be performed as if x did not have the DATE attribute. dcl x char(6) date(’YYMMDD’); x = ’’;; </description>
+    <description>If the target in an explicit or implicit assignment has the DATE attribute, the source should also. If it does not, the DATE attribute will be ignored. So, in the following code, the assignment will be performed as if x did not have the DATE attribute. dcl x char(6) date(’YYMMDD’); x = ’’; </description>
     <internalKey>IBM1225I W</internalKey>
     <key>IBM1225I W</key>
     <name>DATE attribute ignored in conversion from literal. </name>
@@ -3077,7 +3209,7 @@
 </rule>
 <rule>
     <cardinality>SINGLE</cardinality>
-    <description>The INITIAL attribute for BASED has an effect only if the BASED variable is used in an ALLOCATE statement. But for code such as the followiing, it has no effect on either the variable A or B. dcl a fixed bin(31); dcl b bit(32) based(addr(a)) init(’’b); </description>
+    <description>The INITIAL attribute for BASED has an effect only if the BASED variable is used in an ALLOCATE statement. But for code such as the following, it has no effect on either the variable A or B. dcl a fixed bin(31); dcl b bit(32) based(addr(a)) init(’’b); </description>
     <internalKey>IBM2654I W</internalKey>
     <key>IBM2654I W</key>
     <name>INITIAL attribute for BASED on ADDR has no effect on the base variable. </name>
@@ -3101,10 +3233,166 @@
 </rule>
 <rule>
     <cardinality>SINGLE</cardinality>
-    <description>In the following example, DEFBUF does not overlay the first 10 bytes of BUFFER. Instead, each array element of DEFBUF overlays the first byte of the first byte of the corresponding array element of BUFFER. DCL BUFFER(10) CHAR (300); DCL DEFBUF(10) CHAR(1) DEF BUFFER; Chapter 3. Compiler Error Messages (1226-1499, 2400-2599) </description>
+    <description>In the following example, DEFBUF does not overlay the first 10 bytes of BUFFER. Instead, each array element of DEFBUF overlays the first byte of the first byte of the corresponding array element of BUFFER. DCL BUFFER(10) CHAR (300); DCL DEFBUF(10) CHAR(1) DEF BUFFER; </description>
     <internalKey>IBM2656I W</internalKey>
     <key>IBM2656I W</key>
     <name>Simple defining applies to variable name. If string-overlay defining is intended, then add POS(1) to its declaration. </name>
+    <remediationFunction>CONSTANT_ISSUE</remediationFunction>
+    <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
+    <severity>MAJOR</severity>
+    <status>READY</status>
+    <tag>xinfo</tag>
+</rule>
+<rule>
+    <cardinality>SINGLE</cardinality>
+    <description>This is probably a coding error. </description>
+    <internalKey>IBM2657I W</internalKey>
+    <key>IBM2657I W</key>
+    <name>Both logical AND operands are identical. </name>
+    <remediationFunction>CONSTANT_ISSUE</remediationFunction>
+    <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
+    <severity>MAJOR</severity>
+    <status>READY</status>
+    <tag>xinfo</tag>
+</rule>
+<rule>
+    <cardinality>SINGLE</cardinality>
+    <description>This is probably a coding error. </description>
+    <internalKey>IBM2658I W</internalKey>
+    <key>IBM2658I W</key>
+    <name>Both logical OR operands are identical. </name>
+    <remediationFunction>CONSTANT_ISSUE</remediationFunction>
+    <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
+    <severity>MAJOR</severity>
+    <status>READY</status>
+    <tag>xinfo</tag>
+</rule>
+<rule>
+    <cardinality>SINGLE</cardinality>
+    <description>If an AUTOMATIC or STATIC structure consists entirely of scalar fields all of which have the INITIAL attribute and none of which have their address taken, then the compiler could probably generate much better code if all the INITIAL keywords were change to VALUE keywords. If the STATIC or AUTOMATIC attribute is explicitly specified, it would also have to be removed from the declare. </description>
+    <internalKey>IBM2659I W</internalKey>
+    <key>IBM2659I W</key>
+    <name>Generated code would be better if all the INITIAL attributes in the declare for variable name were changed to VALUE. </name>
+    <remediationFunction>CONSTANT_ISSUE</remediationFunction>
+    <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
+    <severity>MAJOR</severity>
+    <status>READY</status>
+    <tag>xinfo</tag>
+</rule>
+<rule>
+    <cardinality>SINGLE</cardinality>
+    <description>This message warns that the compiler has detected code that could lead to an error under some conditions. oops: proc( x ) returns( fixed bin(31 ); dcl x fixed bin(31); select; when( x &gt; 0 ) return( 1 ); when( x = 0 ) return( 0 ); otherwise; end; end; The compiler will issue this message for E15 sort exits unless the E15 sort exit specifies the OPTIONAL attribute as part of the RETURNS option on its PROCEDURE statement. </description>
+    <internalKey>IBM2660I W</internalKey>
+    <key>IBM2660I W</key>
+    <name>Program logic may lead to the END statement for procedure name even though procedure name is a function that should return a value. </name>
+    <remediationFunction>CONSTANT_ISSUE</remediationFunction>
+    <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
+    <severity>MAJOR</severity>
+    <status>READY</status>
+    <tag>xinfo</tag>
+</rule>
+<rule>
+    <cardinality>SINGLE</cardinality>
+    <description>In INLIST( x, y1, y2, ... ), no y value should appear twice. This message will be produced only if the INLIST function is otherwise suitable for transformation into a branch table. </description>
+    <internalKey>IBM2661I W</internalKey>
+    <key>IBM2661I W</key>
+    <name>The string string value appears more than once in the INLIST argument set. </name>
+    <remediationFunction>CONSTANT_ISSUE</remediationFunction>
+    <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
+    <severity>MAJOR</severity>
+    <status>READY</status>
+    <tag>xinfo</tag>
+</rule>
+<rule>
+    <cardinality>SINGLE</cardinality>
+    <description>In INLIST( x, y1, y2, ... ), no y value should appear twice. This message will be produced only if the INLIST function is otherwise suitable for transformation into a branch table. </description>
+    <internalKey>IBM2662I W</internalKey>
+    <key>IBM2662I W</key>
+    <name>INLIST argument set contains duplicate values. </name>
+    <remediationFunction>CONSTANT_ISSUE</remediationFunction>
+    <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
+    <severity>MAJOR</severity>
+    <status>READY</status>
+    <tag>xinfo</tag>
+</rule>
+<rule>
+    <cardinality>SINGLE</cardinality>
+    <description>In a SELECT statement, if a WHEN clause has the same expression as the previousr expression in the WHEN clauses in that SELECT statement, then the code is probably in error. The compiler will not report all such errors, but only those where an expression is duplicated in one of the four previous expressions. </description>
+    <internalKey>IBM2663I W</internalKey>
+    <key>IBM2663I W</key>
+    <name>WHEN clause contains an expression that matches the previous expression in the containing SELECT statement. </name>
+    <remediationFunction>CONSTANT_ISSUE</remediationFunction>
+    <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
+    <severity>MAJOR</severity>
+    <status>READY</status>
+    <tag>xinfo</tag>
+</rule>
+<rule>
+    <cardinality>SINGLE</cardinality>
+    <description>In a SELECT statement, if a WHEN clause has the same expression as one of the earlier expressions in the WHEN clauses in that SELECT statement, then the code is probably in error. The compiler will not report all such errors, but only those where an expression is duplicated in one of the four previous expressions. </description>
+    <internalKey>IBM2664I W</internalKey>
+    <key>IBM2664I W</key>
+    <name>WHEN clause contains an expression that matches the expression count previous in the containing SELECT statement. </name>
+    <remediationFunction>CONSTANT_ISSUE</remediationFunction>
+    <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
+    <severity>MAJOR</severity>
+    <status>READY</status>
+    <tag>xinfo</tag>
+</rule>
+<rule>
+    <cardinality>SINGLE</cardinality>
+    <description>If an EXTERNAL variable is intended to define LE runtime options, then it must be a scalar CHAR VARYING string with an INITIAL value. </description>
+    <internalKey>IBM2665I W</internalKey>
+    <key>IBM2665I W</key>
+    <name>EXTERNAL PLIXOPT declare specifies run-time options only if the variable has the attribute CHARACTER VARYING INITIAL and is not an array. </name>
+    <remediationFunction>CONSTANT_ISSUE</remediationFunction>
+    <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
+    <severity>MAJOR</severity>
+    <status>READY</status>
+    <tag>xinfo</tag>
+</rule>
+<rule>
+    <cardinality>SINGLE</cardinality>
+    <description>Returning the address of a variable in AUTOMATIC storage is likely to produce code that cannot work successfully. </description>
+    <internalKey>IBM2666I W</internalKey>
+    <key>IBM2666I W</key>
+    <name>RETURN expression holds the address of a variable in AUTOMATIC storage. </name>
+    <remediationFunction>CONSTANT_ISSUE</remediationFunction>
+    <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
+    <severity>MAJOR</severity>
+    <status>READY</status>
+    <tag>xinfo</tag>
+</rule>
+<rule>
+    <cardinality>SINGLE</cardinality>
+    <description>The extents in one declare should not depend on the size of a later declare. The compiler will swap the two declares, but this might introduce other problems. It might be better to move the first declare after the second. </description>
+    <internalKey>IBM2667I W</internalKey>
+    <key>IBM2667I W</key>
+    <name>The string lengths in the declare for first depend on the size of second whose declare comes later in the block. Consider moving the first declare after the second. </name>
+    <remediationFunction>CONSTANT_ISSUE</remediationFunction>
+    <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
+    <severity>MAJOR</severity>
+    <status>READY</status>
+    <tag>xinfo</tag>
+</rule>
+<rule>
+    <cardinality>SINGLE</cardinality>
+    <description>This message is produced if a typed structure with some VALUE attributes needs more bytes than allowed by the MAXINIT compiler option. Use of the VALUE type function will add a full copy of the structure to the generated object's constant area and may lead to binder problems. </description>
+    <internalKey>IBM2668I W</internalKey>
+    <key>IBM2668I W</key>
+    <name>Using the VALUE function with the structure type type adds count bytes to the generated object. </name>
+    <remediationFunction>CONSTANT_ISSUE</remediationFunction>
+    <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
+    <severity>MAJOR</severity>
+    <status>READY</status>
+    <tag>xinfo</tag>
+</rule>
+<rule>
+    <cardinality>SINGLE</cardinality>
+    <description>Attributes such as ALIGNED and UNALIGNED may be specified in a DEFINE ALIAS statement, but they will be ignored and should be removed. Chapter 3. Compiler Error Messages (1226-1499, 2400-2599) </description>
+    <internalKey>IBM2669I W</internalKey>
+    <key>IBM2669I W</key>
+    <name>The attribute keyword attribute is ignored in an ALIAS definition. </name>
     <remediationFunction>CONSTANT_ISSUE</remediationFunction>
     <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
     <severity>MAJOR</severity>
@@ -3217,7 +3505,7 @@
 </rule>
 <rule>
     <cardinality>SINGLE</cardinality>
-    <description>The indicated character is missing and has been inserted by the parser in order to correct your source. Under RULES(LAXPUNC), a message with the same text, but lesser severity would be issued display( ’Program starting’ ) ; </description>
+    <description>The indicated character is missing and has been inserted by the parser in order to correct your source. Under RULES(LAXPUNC), a message with the same text, but lesser severity would be issued display( ’Program starting’ ; </description>
     <internalKey>IBM1234I E</internalKey>
     <key>IBM1234I E</key>
     <name>Missing character assumed before character. </name>
@@ -3386,7 +3674,20 @@
 </rule>
 <rule>
     <cardinality>SINGLE</cardinality>
-    <description>The argument to the named built-in function should have arithmetic type. The required implicit conversion will be performed, but this may indicate a programming error. </description>
+    <description>The required implicit conversions will be performed, but this may indicate a programming error. This message will not be issued if the RULES(LAXCONV) option is specified. i = i * ’2’; </description>
+    <internalKey>IBM1247I E</internalKey>
+    <key>IBM1247I E</key>
+    <name>Arithmetic operands should both be numeric. </name>
+    <remediationFunction>CONSTANT_ISSUE</remediationFunction>
+    <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
+    <severity>CRITICAL</severity>
+    <status>READY</status>
+    <tag>xinfo</tag>
+    <type>BUG</type>
+</rule>
+<rule>
+    <cardinality>SINGLE</cardinality>
+    <description>The argument to the named built-in function should have arithmetic type. The required implicit conversion will be performed, but this may indicate a programming error. This message will not be issued if the RULES(LAXCONV) option is specified. </description>
     <internalKey>IBM1248I E</internalKey>
     <key>IBM1248I E</key>
     <name>Argument to BUILTIN name built-in should have arithmetic type. </name>
@@ -3403,6 +3704,32 @@
     <internalKey>IBM1249I E</internalKey>
     <key>IBM1249I E</key>
     <name>Argument to BUILTIN name built-in should have CHARACTER type. </name>
+    <remediationFunction>CONSTANT_ISSUE</remediationFunction>
+    <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
+    <severity>CRITICAL</severity>
+    <status>READY</status>
+    <tag>xinfo</tag>
+    <type>BUG</type>
+</rule>
+<rule>
+    <cardinality>SINGLE</cardinality>
+    <description>The required implicit conversion will be performed, but this may indicate a programming error. This message will not be issued if the RULES(LAXCONV) option is specified. x = max( x, y, z, ’2’ ); </description>
+    <internalKey>IBM1252I E</internalKey>
+    <key>IBM1252I E</key>
+    <name>Argument number argument number to BUILTIN name built-in should have arithmetic type. </name>
+    <remediationFunction>CONSTANT_ISSUE</remediationFunction>
+    <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
+    <severity>CRITICAL</severity>
+    <status>READY</status>
+    <tag>xinfo</tag>
+    <type>BUG</type>
+</rule>
+<rule>
+    <cardinality>SINGLE</cardinality>
+    <description>The required implicit conversion will be performed, but this may indicate a programming error. This message will not be issued if the RULES(LAXCONV) option is specified. a = - b; </description>
+    <internalKey>IBM1254I E</internalKey>
+    <key>IBM1254I E</key>
+    <name>Arithmetic prefix operand should be numeric. </name>
     <remediationFunction>CONSTANT_ISSUE</remediationFunction>
     <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
     <severity>CRITICAL</severity>
@@ -3455,6 +3782,19 @@
     <internalKey>IBM1281I E</internalKey>
     <key>IBM1281I E</key>
     <name>OPTIONS(RETCODE) on ATTACH reference is invalid and will be ignored. </name>
+    <remediationFunction>CONSTANT_ISSUE</remediationFunction>
+    <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
+    <severity>CRITICAL</severity>
+    <status>READY</status>
+    <tag>xinfo</tag>
+    <type>BUG</type>
+</rule>
+<rule>
+    <cardinality>SINGLE</cardinality>
+    <description>In an expression of the form x**y, x and y should not have string type. This message will not be issued if the RULES(LAXCONV) option is specified. </description>
+    <internalKey>IBM1287I E</internalKey>
+    <key>IBM1287I E</key>
+    <name>Exponentiation operands should have numeric type. </name>
     <remediationFunction>CONSTANT_ISSUE</remediationFunction>
     <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
     <severity>CRITICAL</severity>
@@ -3698,7 +4038,7 @@
 </rule>
 <rule>
     <cardinality>SINGLE</cardinality>
-    <description>The external name should contain some nonblank characters. dcl x external( ’’ ); </description>
+    <description>The external name should contain some nonblank characters. dcl x external( ’ ’ ); </description>
     <internalKey>IBM1311I E</internalKey>
     <key>IBM1311I E</key>
     <name>EXTERNAL name contains no non-blank characters and is ignored. </name>
@@ -3910,6 +4250,19 @@
     <internalKey>IBM1328I E</internalKey>
     <key>IBM1328I E</key>
     <name>The CHARACTER VARYING parameter to MAIN should be EBCDIC with the attribute BIGENDIAN. </name>
+    <remediationFunction>CONSTANT_ISSUE</remediationFunction>
+    <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
+    <severity>CRITICAL</severity>
+    <status>READY</status>
+    <tag>xinfo</tag>
+    <type>BUG</type>
+</rule>
+<rule>
+    <cardinality>SINGLE</cardinality>
+    <description>Under RULES(NOMULTIENTRY), there should be no ENTRY statements in your source program. </description>
+    <internalKey>IBM1329I E</internalKey>
+    <key>IBM1329I E</key>
+    <name>ENTRY statements are not allowed under RULES(NOMULTIENTRY). </name>
     <remediationFunction>CONSTANT_ISSUE</remediationFunction>
     <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
     <severity>CRITICAL</severity>
@@ -4569,7 +4922,7 @@
 </rule>
 <rule>
     <cardinality>SINGLE</cardinality>
-    <description>In an assignment to a structure, some element of the structure must have the assignable attribute. dcl 1 a based, 2 nonasgn fixed bin, 2 nonasgn fixed bin; p-&gt;a= 0; </description>
+    <description>In an assignment to a structure, some element of the structure must have the assignable attribute. dcl 1 a based, 2 nonasgn fixed bin, 2 nonasgn fixed bin; p-&gt;a = 0; </description>
     <internalKey>IBM1380I E</internalKey>
     <key>IBM1380I E</key>
     <name>Target structure in assignment contains no elements with the ASSIGNABLE attribute. No assignments will be generated. </name>
@@ -4959,7 +5312,7 @@
 </rule>
 <rule>
     <cardinality>SINGLE</cardinality>
-    <description>An END statement enclosing a statement such as DO or SELECT has been found before the statement required after ELSE. do; if a &gt; then ... else end; </description>
+    <description>An END statement enclosing a statement such as DO or SELECT has been found before the statement required after ELSE. do; if a &gt; b then ... else end; </description>
     <internalKey>IBM1410I E</internalKey>
     <key>IBM1410I E</key>
     <name>Semicolon inserted after ELSE keyword. </name>
@@ -5245,10 +5598,10 @@
 </rule>
 <rule>
     <cardinality>SINGLE</cardinality>
-    <description>An ORDINAL type may be defined only once in any block. </description>
+    <description>A named type may be defined only once in any block. </description>
     <internalKey>IBM1432I E</internalKey>
     <key>IBM1432I E</key>
-    <name>The type type type type name is already defined. The redefinition is ignored. </name>
+    <name>The type type name is already defined. The redefinition is ignored. </name>
     <remediationFunction>CONSTANT_ISSUE</remediationFunction>
     <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
     <severity>CRITICAL</severity>
@@ -5843,6 +6196,19 @@
 </rule>
 <rule>
     <cardinality>SINGLE</cardinality>
+    <description>Under RULES(NOMULTIEEXIT), there should be at most one RETURN statement in each PROCEDURE and BEGIN block in your source program. </description>
+    <internalKey>IBM1479I E</internalKey>
+    <key>IBM1479I E</key>
+    <name>Multiple RETURN statements are not allowed under RULES(NOMULTIEXIT). </name>
+    <remediationFunction>CONSTANT_ISSUE</remediationFunction>
+    <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
+    <severity>CRITICAL</severity>
+    <status>READY</status>
+    <tag>xinfo</tag>
+    <type>BUG</type>
+</rule>
+<rule>
+    <cardinality>SINGLE</cardinality>
     <description>Under RULES(NOMULTICLOSE), there should be no multiple closure of groups in your source program. </description>
     <internalKey>IBM1480I E</internalKey>
     <key>IBM1480I E</key>
@@ -6142,7 +6508,7 @@
 </rule>
 <rule>
     <cardinality>SINGLE</cardinality>
-    <description>Under RULES(NOUNREF), the compiler will issue this message for any level-1 AUTOMATIC variable that is not referenced. </description>
+    <description>The compiler will issue this message for any level-1 variable that is not referenced in a particular storage class named in the RULES option: for example, AUTOMATIC variables under RULES(NOUNREF), BASED variables under RULES(NOUNREFBASED), etc </description>
     <internalKey>IBM2418I E</internalKey>
     <key>IBM2418I E</key>
     <name>Variable variable is unreferenced. </name>
@@ -6441,7 +6807,7 @@
 </rule>
 <rule>
     <cardinality>SINGLE</cardinality>
-    <description>Under RULES(NOGOTO(LOOSE)), there should be no GOTO statements in your source program except for those that exit an ON-unit and those that goto a label in the current block. </description>
+    <description>Under RULES(NOGOTO(LOOSE)) and RULES(NOGOTO(LOOSEFORWARD)), there should be no GOTO statements in your source program except for those that exit an ON-unit and those that goto a label in the current block. </description>
     <internalKey>IBM2441I E</internalKey>
     <key>IBM2441I E</key>
     <name>GOTO exits the current block. </name>
@@ -6766,7 +7132,7 @@
 </rule>
 <rule>
     <cardinality>SINGLE</cardinality>
-    <description>Under DEFAULT(NULLSTRPTR(STRICT)), such comparisons are invalid. | | | | | | | | | | </description>
+    <description>Under DEFAULT(NULLSTRPTR(STRICT)), such comparisons are invalid. </description>
     <internalKey>IBM2466I E</internalKey>
     <key>IBM2466I E</key>
     <name>Comparison of a null string to a pointer is invalid. </name>
@@ -6857,7 +7223,7 @@
 </rule>
 <rule>
     <cardinality>SINGLE</cardinality>
-    <description>Under RULES(NOLAXINTERFACE), every PROCEDURE in the exports list for a compilation unit should be declared. </description>
+    <description>Under RULES(NOLAXINTERFACE), if there is a PACKAGE statement, then every external PROCEDURE other than MAIN must be declared. </description>
     <internalKey>IBM2473I E</internalKey>
     <key>IBM2473I E</key>
     <name>proc name has not been explicitly declared. </name>
@@ -6883,10 +7249,218 @@
 </rule>
 <rule>
     <cardinality>SINGLE</cardinality>
-    <description>Under RULES(NOMULTISEMI), there should be only one semicolon on a line. | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | Chapter 4. Compiler Severe Messages (1500-2399) </description>
+    <description>Under RULES(NOMULTISEMI), there should be only one semicolon on a line. </description>
     <internalKey>IBM2475I E</internalKey>
     <key>IBM2475I E</key>
     <name>Line contains too many semicolons. </name>
+    <remediationFunction>CONSTANT_ISSUE</remediationFunction>
+    <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
+    <severity>CRITICAL</severity>
+    <status>READY</status>
+    <tag>xinfo</tag>
+    <type>BUG</type>
+</rule>
+<rule>
+    <cardinality>SINGLE</cardinality>
+    <description>The indicated element of the options list is invalid for ON-unit BEGIN blocks (although it may be valid for other BEGIN blocks). on zdiv begin options( inline ); </description>
+    <internalKey>IBM2476I E</internalKey>
+    <key>IBM2476I E</key>
+    <name>Item in OPTIONS list is invalid for ON-unit BEGIN blocks. option-name is ignored. </name>
+    <remediationFunction>CONSTANT_ISSUE</remediationFunction>
+    <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
+    <severity>CRITICAL</severity>
+    <status>READY</status>
+    <tag>xinfo</tag>
+    <type>BUG</type>
+</rule>
+<rule>
+    <cardinality>SINGLE</cardinality>
+    <description>The compiler will issue this message for any level-1 automatic variable that is used, but not the target of an assignment statement if the RULES(NOUNSET) option is in effect. </description>
+    <internalKey>IBM2477I E</internalKey>
+    <key>IBM2477I E</key>
+    <name>Variable variable is used, but not set. </name>
+    <remediationFunction>CONSTANT_ISSUE</remediationFunction>
+    <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
+    <severity>CRITICAL</severity>
+    <status>READY</status>
+    <tag>xinfo</tag>
+    <type>BUG</type>
+</rule>
+<rule>
+    <cardinality>SINGLE</cardinality>
+    <description>Under RULES(NOCOMPLEX), the COMPLEX attributes, the COMPLEX built-in function, and "imaginary" constants (such as 1i) must not be used. </description>
+    <internalKey>IBM2478I E</internalKey>
+    <key>IBM2478I E</key>
+    <name>Under RULES(NOCOMPLEX), the COMPLEX attribute, the COMPLEX built-in function, and constants ending with the I suffix are not allowed. </name>
+    <remediationFunction>CONSTANT_ISSUE</remediationFunction>
+    <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
+    <severity>CRITICAL</severity>
+    <status>READY</status>
+    <tag>xinfo</tag>
+    <type>BUG</type>
+</rule>
+<rule>
+    <cardinality>SINGLE</cardinality>
+    <description>Under RULES(NOLAXPACKAGE), every compilation unti must contain a PACKAGE statement. </description>
+    <internalKey>IBM2479I E</internalKey>
+    <key>IBM2479I E</key>
+    <name>Compilation unit does not contain a PACKAGE statement. </name>
+    <remediationFunction>CONSTANT_ISSUE</remediationFunction>
+    <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
+    <severity>CRITICAL</severity>
+    <status>READY</status>
+    <tag>xinfo</tag>
+    <type>BUG</type>
+</rule>
+<rule>
+    <cardinality>SINGLE</cardinality>
+    <description>Under RULES(NOLAXEXPORTS), every PACKAGE that contains procedures must have an EXPORTS clause that names the routines it exports. </description>
+    <internalKey>IBM2480I E</internalKey>
+    <key>IBM2480I E</key>
+    <name>Package contains procedures but no EXPORTS clause naming specifically which procedures are exported. </name>
+    <remediationFunction>CONSTANT_ISSUE</remediationFunction>
+    <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
+    <severity>CRITICAL</severity>
+    <status>READY</status>
+    <tag>xinfo</tag>
+    <type>BUG</type>
+</rule>
+<rule>
+    <cardinality>SINGLE</cardinality>
+    <description>Under RULES(NOLAXSCALE(STRICT)), scale factors for FIXED BIN must be zero. The compiler uses other messages to flag negative scale factors and scale factors greater than the precision, but it uses this message to flag all other positive scale factors such as in the statement below. dcl a fixed bin(15,2); </description>
+    <internalKey>IBM2481I E</internalKey>
+    <key>IBM2481I E</key>
+    <name>Scale factor is greater than 0. </name>
+    <remediationFunction>CONSTANT_ISSUE</remediationFunction>
+    <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
+    <severity>CRITICAL</severity>
+    <status>READY</status>
+    <tag>xinfo</tag>
+    <type>BUG</type>
+</rule>
+<rule>
+    <cardinality>SINGLE</cardinality>
+    <description>If the RULES(NOLAXPARMS) option is in effect, The compiler will issue this message for any level-1 paramter declared without specifying if it is an input, an output or both. </description>
+    <internalKey>IBM2482I E</internalKey>
+    <key>IBM2482I E</key>
+    <name>Parameter variable is declared without INONLY, OUTONLY, or INOUT. </name>
+    <remediationFunction>CONSTANT_ISSUE</remediationFunction>
+    <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
+    <severity>CRITICAL</severity>
+    <status>READY</status>
+    <tag>xinfo</tag>
+    <type>BUG</type>
+</rule>
+<rule>
+    <cardinality>SINGLE</cardinality>
+    <description>Under RULES(NOPADDING(STRICT)), structures should contain no hang. </description>
+    <internalKey>IBM2483I E</internalKey>
+    <key>IBM2483I E</key>
+    <name>The structure identifier is count-byte aligned, but does not have a multiple of count bytes before its first element with that alignment. </name>
+    <remediationFunction>CONSTANT_ISSUE</remediationFunction>
+    <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
+    <severity>CRITICAL</severity>
+    <status>READY</status>
+    <tag>xinfo</tag>
+    <type>BUG</type>
+</rule>
+<rule>
+    <cardinality>SINGLE</cardinality>
+    <description>Under RULES(NOPADDING(STRICT)), structures should contain no hang. </description>
+    <internalKey>IBM2484I E</internalKey>
+    <key>IBM2484I E</key>
+    <name>The structure identifier does not have a multiple of 8 bits before its first element with byte (or greater) alignment. </name>
+    <remediationFunction>CONSTANT_ISSUE</remediationFunction>
+    <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
+    <severity>CRITICAL</severity>
+    <status>READY</status>
+    <tag>xinfo</tag>
+    <type>BUG</type>
+</rule>
+<rule>
+    <cardinality>SINGLE</cardinality>
+    <description>Under RULES(NOPADDING(STRICT)), structures should contain no padding. </description>
+    <internalKey>IBM2485I E</internalKey>
+    <key>IBM2485I E</key>
+    <name>The size of the structure identifier is not a multiple of its alignment. </name>
+    <remediationFunction>CONSTANT_ISSUE</remediationFunction>
+    <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
+    <severity>CRITICAL</severity>
+    <status>READY</status>
+    <tag>xinfo</tag>
+    <type>BUG</type>
+</rule>
+<rule>
+    <cardinality>SINGLE</cardinality>
+    <description>Under RULES(NOPADDING(STRICT)), structures should contain no hang. </description>
+    <internalKey>IBM2486I E</internalKey>
+    <key>IBM2486I E</key>
+    <name>The structure identifier does not have a multiple of 8 bits after its last element with byte (or greater) alignment. </name>
+    <remediationFunction>CONSTANT_ISSUE</remediationFunction>
+    <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
+    <severity>CRITICAL</severity>
+    <status>READY</status>
+    <tag>xinfo</tag>
+    <type>BUG</type>
+</rule>
+<rule>
+    <cardinality>SINGLE</cardinality>
+    <description>Under RULES(NOPADDING(STRICT)), structures should contain no hang. </description>
+    <internalKey>IBM2487I E</internalKey>
+    <key>IBM2487I E</key>
+    <name>The structure identifier does not contain a multiple of 8 bits. </name>
+    <remediationFunction>CONSTANT_ISSUE</remediationFunction>
+    <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
+    <severity>CRITICAL</severity>
+    <status>READY</status>
+    <tag>xinfo</tag>
+    <type>BUG</type>
+</rule>
+<rule>
+    <cardinality>SINGLE</cardinality>
+    <description>Under RULES(IBM), when an arithmetic operation has an operand that is FIXED BIN and an operand that is FIXED DEC with a non-zero scale factor, then the FIXED DEC operand will be converted to FIXED BIN. Under RULES(NOLAXSCALE(STRICT)), this is flagged as an error. </description>
+    <internalKey>IBM2489I E</internalKey>
+    <key>IBM2489I E</key>
+    <name>FIXED DEC(source-precision,source-scale) operand will be converted to FIXED BIN(target-precision,target-scale). This introduces a non-zero scale factor into an integer operation and will produce a res</name>
+    <remediationFunction>CONSTANT_ISSUE</remediationFunction>
+    <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
+    <severity>CRITICAL</severity>
+    <status>READY</status>
+    <tag>xinfo</tag>
+    <type>BUG</type>
+</rule>
+<rule>
+    <cardinality>SINGLE</cardinality>
+    <description>When assigning to a target with the VALUERANGE attribute, the source must have a value in that range. </description>
+    <internalKey>IBM2490I E</internalKey>
+    <key>IBM2490I E</key>
+    <name>Source in assignment does not fit in the the VALUERANGE of the target. </name>
+    <remediationFunction>CONSTANT_ISSUE</remediationFunction>
+    <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
+    <severity>CRITICAL</severity>
+    <status>READY</status>
+    <tag>xinfo</tag>
+    <type>BUG</type>
+</rule>
+<rule>
+    <cardinality>SINGLE</cardinality>
+    <description>When assigning to a target with the VALUELIST attribute, the source must have a value in that list. </description>
+    <internalKey>IBM2491I E</internalKey>
+    <key>IBM2491I E</key>
+    <name>Source in assignment does not occur in the the VALUELIST of the target. </name>
+    <remediationFunction>CONSTANT_ISSUE</remediationFunction>
+    <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
+    <severity>CRITICAL</severity>
+    <status>READY</status>
+    <tag>xinfo</tag>
+    <type>BUG</type>
+</rule>
+<rule>
+    <cardinality>SINGLE</cardinality>
+    <description>If the RULES(NOGLOBAL) option is in effect, the compiler will issue this message for variables that are used in a procedure that is nested inside the procedure in which they were declared. | | | | | | | Chapter 4. Compiler Severe Messages (1500-2399) </description>
+    <internalKey>IBM2492I E</internalKey>
+    <key>IBM2492I E</key>
+    <name>RULES(NOGLOBAL) violation: Variable variable is used inside a nested PROCEDURE. </name>
     <remediationFunction>CONSTANT_ISSUE</remediationFunction>
     <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
     <severity>CRITICAL</severity>
@@ -7224,7 +7798,7 @@
     <description>An expression contains the built-in function ATANH applied to a restricted expression that evaluated to a number outside the domain of that function. </description>
     <internalKey>IBM1525I S</internalKey>
     <key>IBM1525I S</key>
-    <name>ATANH(x) is undefined if x is REAL and ABS(x) &gt; = 1. </name>
+    <name>ATANH(x) is undefined if x is REAL and ABS(x) &gt;= 1. </name>
     <remediationFunction>CONSTANT_ISSUE</remediationFunction>
     <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
     <severity>BLOCKER</severity>
@@ -7585,10 +8159,10 @@
 </rule>
 <rule>
     <cardinality>SINGLE</cardinality>
-    <description>If a third argument is given for one of the built-in functions INDEX, SEARCH or VERIFYR, it must be positive. For SEARCHR and VERIFYR, it must be nonnegative. </description>
+    <description>If a third argument is given for one of the built-in functions INDEX, SEARCH, VERIFYR, or SCRUBOUT, it must be positive. If a third argument is given for one of the built-in functions SEARCHR and VERIFYR, it must be nonnegative. If a fourth argument is given for the built-in function REPLACE, it must be positive. </description>
     <internalKey>IBM1556I S</internalKey>
     <key>IBM1556I S</key>
-    <name>Third argument to BUILTIN name built-in would force STRINGRANGE. </name>
+    <name>Argument number argument number to BUILTIN name built-in would force STRINGRANGE. </name>
     <remediationFunction>CONSTANT_ISSUE</remediationFunction>
     <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
     <severity>BLOCKER</severity>
@@ -7627,7 +8201,7 @@
     <description>An expression contains the BUILTIN function SQRT applied to a restricted expression that evaluated to a number outside the domain of that function. </description>
     <internalKey>IBM1559I S</internalKey>
     <key>IBM1559I S</key>
-    <name>SQRT(x) is undefined if x is REAL and x &lt; 0 . </name>
+    <name>SQRT(x) is undefined if x is REAL and x &lt; 0. </name>
     <remediationFunction>CONSTANT_ISSUE</remediationFunction>
     <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
     <severity>BLOCKER</severity>
@@ -7728,7 +8302,7 @@
 </rule>
 <rule>
     <cardinality>SINGLE</cardinality>
-    <description>The argument to the named built-in function must be a reference (for example, not an expression or a literal), and that reference must be CONNECTED. </description>
+    <description>The argument to the named built-in function must be a reference (for example, not an expression or a literal), and that reference must be CONNECTED. | | | | | | | | | | </description>
     <internalKey>IBM1569I S</internalKey>
     <key>IBM1569I S</key>
     <name>BUILTIN name argument must be a CONNECTED reference. </name>
@@ -7793,10 +8367,10 @@
 </rule>
 <rule>
     <cardinality>SINGLE</cardinality>
-    <description>This applies to the HEXIMAGE built-in subroutine. </description>
+    <description>This applies to HEXIMAGE, CENTER, LEFT, RIGHT, MEMSQUEEZE, etc. </description>
     <internalKey>IBM1576I S</internalKey>
     <key>IBM1576I S</key>
-    <name>Third argument to BUILTIN name built-in must have type CHARACTER(1) NONVARYING. </name>
+    <name>Argument number argument number to BUILTIN name built-in must have type CHARACTER(1) NONVARYING. </name>
     <remediationFunction>CONSTANT_ISSUE</remediationFunction>
     <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
     <severity>BLOCKER</severity>
@@ -8131,7 +8705,7 @@
 </rule>
 <rule>
     <cardinality>SINGLE</cardinality>
-    <description>This applies to the PLISRTx built-in functions. For instance, in the following example, rc should be declared as fixed bin(31), not fixed bin(15). dcl rc fixed bin(15); call plisrta( ’SORT FIELDS=(1,80,CH,A)’, ’RECORD TYPE=F,LENGTH=(80)’, 256000, rc ); </description>
+    <description>This applies to the PLISRTx built-in functions. For instance, in the following example, rc should be declared as fixed bin(31), not fixed bin(15). dcl rc fixed bin(15); call plisrta( ’SORT FIELDS=(1,80,CH,A) ’, ’RECORD TYPE=F,LENGTH=(80) ’, 256000, rc ); </description>
     <internalKey>IBM1602I S</internalKey>
     <key>IBM1602I S</key>
     <name>Fourth argument to BUILTIN name built-in must have the attributes REAL FIXED BIN(31,0). </name>
@@ -9993,7 +10567,7 @@
     <description>These expressions must be reducible to a constant at compile-time. dcl a fixed bin static nonassignable init(0); dcl m fixed bin value( a ); dcl n fixed bin static init( a ); </description>
     <internalKey>IBM1746I S</internalKey>
     <key>IBM1746I S</key>
-    <name>VALUE and STATIC INITIAL expressions must be constant. </name>
+    <name>VALUE, VALUELIST, VALUERANGE, and STATIC INITIAL expressions must be constant. </name>
     <remediationFunction>CONSTANT_ISSUE</remediationFunction>
     <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
     <severity>BLOCKER</severity>
@@ -10510,7 +11084,7 @@
 </rule>
 <rule>
     <cardinality>SINGLE</cardinality>
-    <description>x(...)-&gt; y is invalid unless x returns a POINTER or an OFFSET declared with a qualifying AREA. </description>
+    <description>x(...)-&gt;y is invalid unless x returns a POINTER or an OFFSET declared with a qualifying AREA. </description>
     <internalKey>IBM1787I S</internalKey>
     <key>IBM1787I S</key>
     <name>The ENTRY variable-name may not be used as a locator qualifier. </name>
@@ -12200,10 +12774,10 @@
 </rule>
 <rule>
     <cardinality>SINGLE</cardinality>
-    <description>Each EXTERNAL name must have only one INTERNAL name. So, for example, the following declares would be illegal since the external name Z is specified for two different internal names: X and Y. dcl X fixed bin(31) ext(’Z’); dcl Y fixed bin(31) ext(’Z’); </description>
+    <description>Each EXTERNAL name must be used only once. So, for example, the following declares would be illegal since the external name Z is specified for two different names X and Y. dcl X fixed bin(31) ext(’Z’); dcl Y fixed bin(31) ext(’Z’); </description>
     <internalKey>IBM1919I S</internalKey>
     <key>IBM1919I S</key>
-    <name>The EXTERNAL name string is specified for the differing internal names name and name. </name>
+    <name>The EXTERNAL name string is specified for the differing names name and name. </name>
     <remediationFunction>CONSTANT_ISSUE</remediationFunction>
     <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
     <severity>BLOCKER</severity>
@@ -12382,7 +12956,7 @@
 </rule>
 <rule>
     <cardinality>SINGLE</cardinality>
-    <description>Assign the structure to a temporary and pass the temporary, or omit the parameter description in the entry declaration. </description>
+    <description>Assign the structure to a temporary and pass the temporary, or omit the parameter description in the entry declaration. | | | | | | ||| | | </description>
     <internalKey>IBM1934I S</internalKey>
     <key>IBM1934I S</key>
     <name>If a parameter is a structure with nonconstant extents, only matching structures are supported as arguments. </name>
@@ -13292,10 +13866,10 @@
 </rule>
 <rule>
     <cardinality>SINGLE</cardinality>
-    <description>Like RETURNS descriptors, the attributes STRUCTURE, UNION and DIMENSION are not permitted. Hence, the following are invalid: define alias array (10) fixed bin; define alias point 1, 2 fixed bin, 2 fixed bin; </description>
+    <description>The specified attribute must not be used in a DEFINE ALIAS statement. This includes attributes such as ASSIGNABLE, but, as in RETURNS descriptors, the attributes STRUCTURE, UNION and DIMENSION are not permitted in ALIAS definitions. Hence, the following are invalid: define alias array (10) fixed bin; define alias point 1, 2 fixed bin, 2 fixed bin; </description>
     <internalKey>IBM2012I S</internalKey>
     <key>IBM2012I S</key>
-    <name>The attribute keyword attribute is invalid in an ALIAS descriptor. </name>
+    <name>The attribute keyword attribute is invalid in an ALIAS definition. </name>
     <remediationFunction>CONSTANT_ISSUE</remediationFunction>
     <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
     <severity>BLOCKER</severity>
@@ -13318,7 +13892,7 @@
 </rule>
 <rule>
     <cardinality>SINGLE</cardinality>
-    <description>In ALIAS and STRUCTURE descriptors, each string length and AREA size must be specified with a restricted expression. Like RETURNS descriptors, asterisks and non-constant expressions are not permitted. </description>
+    <description>In ALIAS and STRUCTURE definitions, each string length and AREA size must be specified with a restricted expression. Like RETURNS descriptors, asterisks and non-constant expressions are not permitted. </description>
     <internalKey>IBM2014I S</internalKey>
     <key>IBM2014I S</key>
     <name>Extents in type descriptors must be constant. </name>
@@ -13500,7 +14074,7 @@
 </rule>
 <rule>
     <cardinality>SINGLE</cardinality>
-    <description>The DEFINE STRUCTURE or DEFINE ALIAS statement for a type x must precede any of use of x as attribute type. The following two statements should be in the opposite order. dcl x type point; define structure 1 point 2 x fixed bin(31), 2 y fixed bin(31); </description>
+    <description>The DEFINE STRUCTURE or DEFINE ALIAS statement for a type x must precede any of use of x as attribute type. The following two statements should be in the opposite order. dcl x type point; define structure 1 point, 2 x fixed bin(31), 2 y fixed bin(31); </description>
     <internalKey>IBM2028I S</internalKey>
     <key>IBM2028I S</key>
     <name>TYPEs must be defined before their use. </name>
@@ -13513,10 +14087,10 @@
 </rule>
 <rule>
     <cardinality>SINGLE</cardinality>
-    <description>A DEFINE STRUCTURE statement must specify a structure or union type with level numbers. define structure int fixed bin; </description>
+    <description>A DEFINE STRUCTURE statement can specify just a level 1 name only if there no other attributes specified. The following are invalid define structure 1 int fixed bin; define structure 1 a type b; </description>
     <internalKey>IBM2029I S</internalKey>
     <key>IBM2029I S</key>
-    <name>DEFINE STRUCTURE must specify a structure or union type. </name>
+    <name>A DEFINE STRUCTURE statement must consist of a level one structure name optionally followed by its substructures. Use DEFINE ALIAS to set a name as a synonym for a data type. </name>
     <remediationFunction>CONSTANT_ISSUE</remediationFunction>
     <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
     <severity>BLOCKER</severity>
@@ -13565,7 +14139,7 @@
 </rule>
 <rule>
     <cardinality>SINGLE</cardinality>
-    <description>The syntax allows the name in a structure definition to be followed by a description list, but that description list must consist of exactly one structure description. The following is invalid: define structure 1 point 2 x fixed bin(31), 2 y fixed bin(31), 1 rectangle 2 upper_left type point, 2 lower_right type point; </description>
+    <description>The syntax allows the name in a structure definition to be followed by a description list, but that description list must consist of exactly one structure description. The following is invalid: define structure 1 point, 2 x fixed bin(31), 2 y fixed bin(31), 1 rectangle, 2 upper_left type point, 2 lower_right type point; </description>
     <internalKey>IBM2033I S</internalKey>
     <key>IBM2033I S</key>
     <name>Only one description is allowed in a structure definition. </name>
@@ -14280,7 +14854,7 @@
 </rule>
 <rule>
     <cardinality>SINGLE</cardinality>
-    <description>A FIXED DEC type or argument used with the type function CAST must have the attributes REAL PRECISION(p,q) with p &gt;= q and q &gt;=0. </description>
+    <description>A FIXED DEC type or argument used with the type function CAST must have the attributes REAL PRECISION(p,q) with p &gt;= q and q &gt;= 0. </description>
     <internalKey>IBM2097I S</internalKey>
     <key>IBM2097I S</key>
     <name>FIXED DEC types and arguments in type function must be REAL with non-negative scale factor. </name>
@@ -14618,7 +15192,7 @@
 </rule>
 <rule>
     <cardinality>SINGLE</cardinality>
-    <description>A match for the GENERIC reference has been found, but the match is not suitable because while the GENERIC reference is used as a locator, the matching ENTRY is not a function returning a POINTER. For example, the first GENERIC reference below is invalid, while the second is ok. dcl f1 entry( fixed bin ) returns( fixed bin ); dcl f2 entry( fixed bin, fixed bin ) returns( pointer ); dcl bx based fixed bin; dcl gf generic( f1 when( * ), f2 when( *, * ) ); rc = gf( 0 )-&gt; bx; rc = gf( 0, 0 )-&gt; bx; </description>
+    <description>A match for the GENERIC reference has been found, but the match is not suitable because while the GENERIC reference is used as a locator, the matching ENTRY is not a function returning a POINTER. For example, the first GENERIC reference below is invalid, while the second is ok. dcl f1 entry( fixed bin ) returns( fixed bin ); dcl f2 entry( fixed bin, fixed bin ) returns( pointer ); dcl bx based fixed bin; dcl gf generic( f1 when( * ), f2 when( *, * ) ); rc = gf( 0 )-&gt;bx; rc = gf( 0, 0 )-&gt;bx; </description>
     <internalKey>IBM2128I S</internalKey>
     <key>IBM2128I S</key>
     <name>The ENTRY named ENTRY variable name matches the reference to the GENERIC variable GENERIC variable name, but while the GENERIC reference is used as a function acting as a locator qualifier, the matchi</name>
@@ -14761,10 +15335,10 @@
 </rule>
 <rule>
     <cardinality>SINGLE</cardinality>
-    <description>You are using LE 2.10 (or earlier!), which is not supported by the compiler. </description>
+    <description>The compiler requires that you use z/OS Language Environment V2 R1 or later. </description>
     <internalKey>IBM2139I S</internalKey>
     <key>IBM2139I S</key>
-    <name>The LE runtime is not current enough. </name>
+    <name>The Language Enviroment run-time is not current enough. </name>
     <remediationFunction>CONSTANT_ISSUE</remediationFunction>
     <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
     <severity>BLOCKER</severity>
@@ -15294,10 +15868,10 @@
 </rule>
 <rule>
     <cardinality>SINGLE</cardinality>
-    <description>This applies to the PICSPEC built-in function, for example. </description>
+    <description>The specified argument to the named built-in function must be a restricted expression. This applies to second argument to the PICSPEC built-in function, for example. </description>
     <internalKey>IBM2182I S</internalKey>
     <key>IBM2182I S</key>
-    <name>Second argument to BUILTIN name built-in must be a constant. </name>
+    <name>Argument number argument number to BUILTIN name built-in must be a constant. </name>
     <remediationFunction>CONSTANT_ISSUE</remediationFunction>
     <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
     <severity>BLOCKER</severity>
@@ -15359,7 +15933,7 @@
 </rule>
 <rule>
     <cardinality>SINGLE</cardinality>
-    <description>A DFP literal value when adjusted to have no decimal point (e.g. 3.14E0 would be adjusted to 314E-2) must have an exponent no larger than the maximum for its precision. For precision &lt;=7, the maximum is 90. For 7 &lt; recision &lt;=16, the maximum is 369. For 16 &lt; recision, the maximum is 6111. </description>
+    <description>A DFP literal value when adjusted to have no decimal point (e.g. 3.14E0 would be adjusted to 314E-2) must have an exponent no larger than the maximum for its precision. For precision &lt;= 7, the maximum is 90. For 7 &lt; precision &lt;= 16, the maximum is 369. For 16 &lt; precision, the maximum is 6111. </description>
     <internalKey>IBM2187I S</internalKey>
     <key>IBM2187I S</key>
     <name>The exponent in the literal value is too large for DECIMAL FLOAT with precision precision. </name>
@@ -15372,7 +15946,7 @@
 </rule>
 <rule>
     <cardinality>SINGLE</cardinality>
-    <description>A DFP literal value when adjusted to have no decimal point (e.g. 3.14E0 would be adjusted to 314E-2) must have an exponent no smaller than the minimum for its precision. For precision &lt;=7, the minimum is -95. For 7 &lt; recision &lt;=16, the minimum is -383. For 16 &lt; recision, the minimum is -6143. </description>
+    <description>A DFP literal value when adjusted to have no decimal point (e.g. 3.14E0 would be adjusted to 314E-2) must have an exponent no smaller than the minimum for its precision. For precision &lt;= 7, the minimum is -95. For 7 &lt; precision &lt;= 16, the minimum is -383. For 16 &lt; precision, the minimum is -6143. </description>
     <internalKey>IBM2188I S</internalKey>
     <key>IBM2188I S</key>
     <name>The exponent in the literal value is too small for DECIMAL FLOAT with precision precision. </name>
@@ -15541,7 +16115,7 @@
 </rule>
 <rule>
     <cardinality>SINGLE</cardinality>
-    <description>This applies to the ROUNDAWAYFROMZERO and similar built-in functions. </description>
+    <description>This applies to the ROUNDDEC and similar built-in functions. </description>
     <internalKey>IBM2201I S</internalKey>
     <key>IBM2201I S</key>
     <name>First argument to BUILTIN name built-in must have type REAL DECIMAL FIXED, or REAL DECIMAL FLOAT, and in the latter case, the DFP option must be in effect. </name>
@@ -16724,7 +17298,7 @@
 </rule>
 <rule>
     <cardinality>SINGLE</cardinality>
-    <description>CMPAT(V2) or CMPAT(V3) must be used when compiling any code using this built-in function. </description>
+    <description>CMPAT(V2), CMPAT(V3) or CMPAT(LE) must be used when compiling any code using this built-in function. </description>
     <internalKey>IBM2293I S</internalKey>
     <key>IBM2293I S</key>
     <name>The BUILTIN name built-in is not supported under CMPAT(V1). </name>
@@ -16740,7 +17314,7 @@
     <description>Strings longer than 32767 are not supported under CMPAT(V1) or CMPAT(V2). </description>
     <internalKey>IBM2294I S</internalKey>
     <key>IBM2294I S</key>
-    <name>A value greater than 32K for the STRING subooption of the LIMITS option is valid only under CMPAT(V3). </name>
+    <name>A value greater than 32K for the STRING subooption of the LIMITS option is valid only under CMPAT(V3) and CMPAT(LE). </name>
     <remediationFunction>CONSTANT_ISSUE</remediationFunction>
     <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
     <severity>BLOCKER</severity>
@@ -16841,6 +17415,19 @@
 </rule>
 <rule>
     <cardinality>SINGLE</cardinality>
+    <description>The specified option is not supported under LP(64). This is true, for example, of the SYSTEM(IMS) option. </description>
+    <internalKey>IBM2302I S</internalKey>
+    <key>IBM2302I S</key>
+    <name>The option option is not supported under LP(64). </name>
+    <remediationFunction>CONSTANT_ISSUE</remediationFunction>
+    <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
+    <severity>BLOCKER</severity>
+    <status>READY</status>
+    <tag>xinfo</tag>
+    <type>BUG</type>
+</rule>
+<rule>
+    <cardinality>SINGLE</cardinality>
     <description>The specified value is not a supported codepage. See the Programming Guide for a list of the supported codepages. </description>
     <internalKey>IBM2303I S</internalKey>
     <key>IBM2303I S</key>
@@ -16893,10 +17480,10 @@
 </rule>
 <rule>
     <cardinality>SINGLE</cardinality>
-    <description>The array argument to the named built-in function must have exactly one dimension. This message applies to the BINSEARCH built-in function. </description>
+    <description>The array argument to the named built-in function must have exactly one dimension. For BINSEARCH and QUICKSORT, the array must consist of scalars. This message applies to the BINSEARCH, BINSEARCHX, QUICKSORT, and QUICKSORTX built-in functions. </description>
     <internalKey>IBM2307I S</internalKey>
     <key>IBM2307I S</key>
-    <name>The first argument to the BUILTIN name built-in must be a one-dimensional array of scalars. </name>
+    <name>The first argument to the BUILTIN name built-in must be a suitable one-dimensional array. </name>
     <remediationFunction>CONSTANT_ISSUE</remediationFunction>
     <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
     <severity>BLOCKER</severity>
@@ -16906,7 +17493,7 @@
 </rule>
 <rule>
     <cardinality>SINGLE</cardinality>
-    <description>If the first argument to the named built-in function is NONVARYING BIT, then it must be ALIGNED. This message applies to the BINSEARCH built-in function. </description>
+    <description>If the first argument to the named built-in function is NONVARYING BIT, then it must be ALIGNED. This message applies to the BINSEARCH, BINSEARCHX, QUICKSORT, and QUICKSORTX built-in functions. </description>
     <internalKey>IBM2308I S</internalKey>
     <key>IBM2308I S</key>
     <name>The first argument to the BUILTIN name built-in must be ALIGNED if NONVARYING BIT. </name>
@@ -16932,7 +17519,7 @@
 </rule>
 <rule>
     <cardinality>SINGLE</cardinality>
-    <description>This message applies to the third argument to the BINSEARCHX built-in function and similar functions. This argument is the compare function to be invoked to compare elements during the binary search. It must be a LIMITED ENTRY (and hence must not be a nested PROCEDURE) and must have the other properties listed in the message. | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | Chapter 5. MACRO, CICS, and SQL Preprocessor Messages (3000-3999) </description>
+    <description>This message applies to the third argument to the BINSEARCHX built-in function and similar functions. This argument is the compare function to be invoked to compare elements during the binary search. It must be a LIMITED ENTRY (and hence must not be a nested PROCEDURE) and must have the other properties listed in the message. </description>
     <internalKey>IBM2310I S</internalKey>
     <key>IBM2310I S</key>
     <name>The compare function passed to the BUILTIN name built-in must be a LIMITED ENTRY, must return BYVALUE a NATIVE FIXED BIN(31), must have exactly two BYVALUE POINTER arguments, and must have the OPTLINK</name>
@@ -16942,6 +17529,261 @@
     <status>READY</status>
     <tag>xinfo</tag>
     <type>BUG</type>
+</rule>
+<rule>
+    <cardinality>SINGLE</cardinality>
+    <description>Labels must not be applied to the END statement for a PACKAGE. </description>
+    <internalKey>IBM2311I S</internalKey>
+    <key>IBM2311I S</key>
+    <name>Labels are not allowed on the END statement for a PACKAGE. </name>
+    <remediationFunction>CONSTANT_ISSUE</remediationFunction>
+    <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
+    <severity>BLOCKER</severity>
+    <status>READY</status>
+    <tag>xinfo</tag>
+    <type>BUG</type>
+</rule>
+<rule>
+    <cardinality>SINGLE</cardinality>
+    <description>An expression contains the named built-in function when the specified argument is an aggregate expression. </description>
+    <internalKey>IBM2312I S</internalKey>
+    <key>IBM2312I S</key>
+    <name>Argument number argument number to BUILTIN name built-in must be a scalar expression. </name>
+    <remediationFunction>CONSTANT_ISSUE</remediationFunction>
+    <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
+    <severity>BLOCKER</severity>
+    <status>READY</status>
+    <tag>xinfo</tag>
+    <type>BUG</type>
+</rule>
+<rule>
+    <cardinality>SINGLE</cardinality>
+    <description>An expression contains the named built-in function when the specified argument is a scalar or structure expression. </description>
+    <internalKey>IBM2313I S</internalKey>
+    <key>IBM2313I S</key>
+    <name>Argument number argument number to BUILTIN name built-in must be an array expression. </name>
+    <remediationFunction>CONSTANT_ISSUE</remediationFunction>
+    <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
+    <severity>BLOCKER</severity>
+    <status>READY</status>
+    <tag>xinfo</tag>
+    <type>BUG</type>
+</rule>
+<rule>
+    <cardinality>SINGLE</cardinality>
+    <description>The QUICKSORT built-in supports only a limited set of array types. For example, FIXED BIN and ORDINAL arrays must be REAL and NATIVE. </description>
+    <internalKey>IBM2314I S</internalKey>
+    <key>IBM2314I S</key>
+    <name>BUILTIN name built-in does not support arrays of this type. </name>
+    <remediationFunction>CONSTANT_ISSUE</remediationFunction>
+    <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
+    <severity>BLOCKER</severity>
+    <status>READY</status>
+    <tag>xinfo</tag>
+    <type>BUG</type>
+</rule>
+<rule>
+    <cardinality>SINGLE</cardinality>
+    <description>This message applies to the REGEX and other built-in functions where some arguments must have the attributes REAL FIXED BIN PRECISION(p,0). </description>
+    <internalKey>IBM2315I S</internalKey>
+    <key>IBM2315I S</key>
+    <name>Argument number argument number to BUILTIN name built-in must be REAL FIXED BIN with scale factor zero. </name>
+    <remediationFunction>CONSTANT_ISSUE</remediationFunction>
+    <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
+    <severity>BLOCKER</severity>
+    <status>READY</status>
+    <tag>xinfo</tag>
+    <type>BUG</type>
+</rule>
+<rule>
+    <cardinality>SINGLE</cardinality>
+    <description>This message applies to the REGEX and other built-in functions where some arguments must have the CHARACTER attribute. </description>
+    <internalKey>IBM2316I S</internalKey>
+    <key>IBM2316I S</key>
+    <name>Argument number argument number to BUILTIN name built-in must have CHARACTER type. </name>
+    <remediationFunction>CONSTANT_ISSUE</remediationFunction>
+    <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
+    <severity>BLOCKER</severity>
+    <status>READY</status>
+    <tag>xinfo</tag>
+    <type>BUG</type>
+</rule>
+<rule>
+    <cardinality>SINGLE</cardinality>
+    <description>The indicated argument to the named built-in function must be an ASSIGNABLE reference so that it can be assigned a value. This message applies, for example, to the first two arguments of the REGEX built-in function. </description>
+    <internalKey>IBM2317I S</internalKey>
+    <key>IBM2317I S</key>
+    <name>Argument number argument number to BUILTIN name built-in must be an ASSIGNABLE reference. </name>
+    <remediationFunction>CONSTANT_ISSUE</remediationFunction>
+    <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
+    <severity>BLOCKER</severity>
+    <status>READY</status>
+    <tag>xinfo</tag>
+    <type>BUG</type>
+</rule>
+<rule>
+    <cardinality>SINGLE</cardinality>
+    <description>The VALUELIST and VALUERANGE attributes cannot be used on non-computational tyeps. </description>
+    <internalKey>IBM2318I S</internalKey>
+    <key>IBM2318I S</key>
+    <name>attribute attribute is valid only with computational types. </name>
+    <remediationFunction>CONSTANT_ISSUE</remediationFunction>
+    <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
+    <severity>BLOCKER</severity>
+    <status>READY</status>
+    <tag>xinfo</tag>
+    <type>BUG</type>
+</rule>
+<rule>
+    <cardinality>SINGLE</cardinality>
+    <description>The VALUERANGE attribute cannot be used on COMPLEX numeric tyeps. </description>
+    <internalKey>IBM2319I S</internalKey>
+    <key>IBM2319I S</key>
+    <name>attribute attribute is not valid with COMPLEX types. </name>
+    <remediationFunction>CONSTANT_ISSUE</remediationFunction>
+    <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
+    <severity>BLOCKER</severity>
+    <status>READY</status>
+    <tag>xinfo</tag>
+    <type>BUG</type>
+</rule>
+<rule>
+    <cardinality>SINGLE</cardinality>
+    <description>The argument to the VALIDVALUE built-in function must have one of the above attributes so that its value can be checked against the declared list or range of values. </description>
+    <internalKey>IBM2320I S</internalKey>
+    <key>IBM2320I S</key>
+    <name>First argument to BUILTIN name built-in must be a reference to a variable with the VALIDLIST or VALIDRANGE attribute. </name>
+    <remediationFunction>CONSTANT_ISSUE</remediationFunction>
+    <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
+    <severity>BLOCKER</severity>
+    <status>READY</status>
+    <tag>xinfo</tag>
+    <type>BUG</type>
+</rule>
+<rule>
+    <cardinality>SINGLE</cardinality>
+    <description>The items in VALUELIST and VALUERANGE lists should be unique. </description>
+    <internalKey>IBM2321I S</internalKey>
+    <key>IBM2321I S</key>
+    <name>attribute contains duplicate values. </name>
+    <remediationFunction>CONSTANT_ISSUE</remediationFunction>
+    <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
+    <severity>BLOCKER</severity>
+    <status>READY</status>
+    <tag>xinfo</tag>
+    <type>BUG</type>
+</rule>
+<rule>
+    <cardinality>SINGLE</cardinality>
+    <description>The items in the VALUERANGE attribute should be in strictly ascending order. Both of the following are invalid. dcl a fixed bin valuerange(12,1); dcl b fixed bin valuerange(1,1); </description>
+    <internalKey>IBM2322I S</internalKey>
+    <key>IBM2322I S</key>
+    <name>The second value in the VALUERANGE attribute must be larger than the first. </name>
+    <remediationFunction>CONSTANT_ISSUE</remediationFunction>
+    <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
+    <severity>BLOCKER</severity>
+    <status>READY</status>
+    <tag>xinfo</tag>
+    <type>BUG</type>
+</rule>
+<rule>
+    <cardinality>SINGLE</cardinality>
+    <description>The arguments to the VALIDVALUE built-in function must be comparable. This means that if the first argument has a computational type, then the second must also, and if the first argument has an ordinal type, then the second must have the same ordinal type. </description>
+    <internalKey>IBM2323I S</internalKey>
+    <key>IBM2323I S</key>
+    <name>The second argument to BUILTIN name built-in must have a type that is comparable to the first argument. </name>
+    <remediationFunction>CONSTANT_ISSUE</remediationFunction>
+    <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
+    <severity>BLOCKER</severity>
+    <status>READY</status>
+    <tag>xinfo</tag>
+    <type>BUG</type>
+</rule>
+<rule>
+    <cardinality>SINGLE</cardinality>
+    <description>A label on a PROCEDURE statement constitutes a declaration for an ENTRY constant with that name. That name also appears in a DECLARE statement, but the attributes in those two declarations do not match. </description>
+    <internalKey>IBM2324I S</internalKey>
+    <key>IBM2324I S</key>
+    <name>The attributes derived from the PROCEDURE statement for the ENTRY constant variable name do not match those in its explicit declaration. The EXTERNAL names do not match: one name is external name, and</name>
+    <remediationFunction>CONSTANT_ISSUE</remediationFunction>
+    <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
+    <severity>BLOCKER</severity>
+    <status>READY</status>
+    <tag>xinfo</tag>
+    <type>BUG</type>
+</rule>
+<rule>
+    <cardinality>SINGLE</cardinality>
+    <description>These values specify which bits are set in the ROUTCDE and DESC fields when a WTO or WTOR is issued. These fields consist of 16 bits, and hence the values must be between 1 and 16. | | | | | | | | | | | | | | | | | | | Chapter 5. MACRO, CICS, and SQL Preprocessor Messages (3000-3999) </description>
+    <internalKey>IBM2325I S</internalKey>
+    <key>IBM2325I S</key>
+    <name>The values specified for the ROUTCDE and DESC in a WTO must be between 1 and 16. </name>
+    <remediationFunction>CONSTANT_ISSUE</remediationFunction>
+    <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
+    <severity>BLOCKER</severity>
+    <status>READY</status>
+    <tag>xinfo</tag>
+    <type>BUG</type>
+</rule>
+<rule>
+    <cardinality>SINGLE</cardinality>
+    <description>This message is used to report Db2 or CICS backend messages with a return code of 0. </description>
+    <internalKey>IBM3000I I</internalKey>
+    <key>IBM3000I I</key>
+    <name>note </name>
+    <remediationFunction>CONSTANT_ISSUE</remediationFunction>
+    <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
+    <severity>MINOR</severity>
+    <status>READY</status>
+    <tag>xinfo</tag>
+</rule>
+<rule>
+    <cardinality>SINGLE</cardinality>
+    <description>The SQL suboption has been specified for the PP option, but the program contains no EXEC SQL statements other than possibly EXEC SQL INCLUDE statements. The DBRMLIB will not be updated. </description>
+    <internalKey>IBM3019I I</internalKey>
+    <key>IBM3019I I</key>
+    <name>Program contains no EXEC SQL statements requiring translation. </name>
+    <remediationFunction>CONSTANT_ISSUE</remediationFunction>
+    <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
+    <severity>MINOR</severity>
+    <status>READY</status>
+    <tag>xinfo</tag>
+</rule>
+<rule>
+    <cardinality>SINGLE</cardinality>
+    <description>A comment ends on a different line than it begins. This may indicate that an end-of-comment delimiter is missing. </description>
+    <internalKey>IBM3020I I</internalKey>
+    <key>IBM3020I I</key>
+    <name>Comment spans line-count lines. </name>
+    <remediationFunction>CONSTANT_ISSUE</remediationFunction>
+    <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
+    <severity>INFO</severity>
+    <status>READY</status>
+    <tag>xinfo</tag>
+</rule>
+<rule>
+    <cardinality>SINGLE</cardinality>
+    <description>A string ends on a different line than it begins. This may indicate that a closing quote is missing. </description>
+    <internalKey>IBM3021I I</internalKey>
+    <key>IBM3021I I</key>
+    <name>String spans line-count lines. </name>
+    <remediationFunction>CONSTANT_ISSUE</remediationFunction>
+    <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
+    <severity>MINOR</severity>
+    <status>READY</status>
+    <tag>xinfo</tag>
+</rule>
+<rule>
+    <cardinality>SINGLE</cardinality>
+    <description>This message is used by %NOTE statements with a return code of 0. </description>
+    <internalKey>IBM3024I I</internalKey>
+    <key>IBM3024I I</key>
+    <name>note </name>
+    <remediationFunction>CONSTANT_ISSUE</remediationFunction>
+    <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
+    <severity>MINOR</severity>
+    <status>READY</status>
+    <tag>xinfo</tag>
 </rule>
 <rule>
     <cardinality>SINGLE</cardinality>
@@ -18320,6 +19162,32 @@
 </rule>
 <rule>
     <cardinality>SINGLE</cardinality>
+    <description>Under RULES(NOLAXFIELDS), EXEC SQL SELECT must be followed by one or more field names, not by an asterisk. </description>
+    <internalKey>IBM3568I E</internalKey>
+    <key>IBM3568I E</key>
+    <name>Under RULES(NOLAXFIELDS), EXEC SQL SELECT statements must specify a list of field names. </name>
+    <remediationFunction>CONSTANT_ISSUE</remediationFunction>
+    <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
+    <severity>CRITICAL</severity>
+    <status>READY</status>
+    <tag>xinfo</tag>
+    <type>BUG</type>
+</rule>
+<rule>
+    <cardinality>SINGLE</cardinality>
+    <description>Under RULES(NOLAXFIELDS), EXEC SQL INSERT INTO &lt;table-name&gt; must be followed by one or more field names. </description>
+    <internalKey>IBM3569I E</internalKey>
+    <key>IBM3569I E</key>
+    <name>Under RULES(NOLAXFIELDS), EXEC SQL INSERT INTO statements must specify a list of field names. </name>
+    <remediationFunction>CONSTANT_ISSUE</remediationFunction>
+    <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
+    <severity>CRITICAL</severity>
+    <status>READY</status>
+    <tag>xinfo</tag>
+    <type>BUG</type>
+</rule>
+<rule>
+    <cardinality>SINGLE</cardinality>
     <description>Extents must be positive. dcl x char(-10); </description>
     <internalKey>IBM3570I E</internalKey>
     <key>IBM3570I E</key>
@@ -18983,7 +19851,7 @@
 </rule>
 <rule>
     <cardinality>SINGLE</cardinality>
-    <description>Question marks are valid in the source only if part of one of the trigraphs ??( or ??). | | | </description>
+    <description>Question marks are valid in the source only if part of one of the trigraphs ??( or ??). </description>
     <internalKey>IBM3661I E</internalKey>
     <key>IBM3661I E</key>
     <name>Invalid use of question mark. </name>
@@ -20118,6 +20986,45 @@
     <internalKey>IBM3860I S</internalKey>
     <key>IBM3860I S</key>
     <name>DEFINE STRUCTURE may not specify an array of structures. </name>
+    <remediationFunction>CONSTANT_ISSUE</remediationFunction>
+    <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
+    <severity>BLOCKER</severity>
+    <status>READY</status>
+    <tag>xinfo</tag>
+    <type>BUG</type>
+</rule>
+<rule>
+    <cardinality>SINGLE</cardinality>
+    <description>The open of the .dbrm dataset to be used by the SQL preprocessor failed. A possible cause might be lack of write authoriy to the compile directory. </description>
+    <internalKey>IBM3861I S</internalKey>
+    <key>IBM3861I S</key>
+    <name>Open of dbrm dataset failed. </name>
+    <remediationFunction>CONSTANT_ISSUE</remediationFunction>
+    <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
+    <severity>BLOCKER</severity>
+    <status>READY</status>
+    <tag>xinfo</tag>
+    <type>BUG</type>
+</rule>
+<rule>
+    <cardinality>SINGLE</cardinality>
+    <description>The dynamic allocation of the DBRMLIB failed with the indicated SVC 99 info and error codes. </description>
+    <internalKey>IBM3862I S</internalKey>
+    <key>IBM3862I S</key>
+    <name>Dynamic allocation of DBRMLIB failed with the SVC 99 info code info-code and the SVC 99 error code error-code . </name>
+    <remediationFunction>CONSTANT_ISSUE</remediationFunction>
+    <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
+    <severity>BLOCKER</severity>
+    <status>READY</status>
+    <tag>xinfo</tag>
+    <type>BUG</type>
+</rule>
+<rule>
+    <cardinality>SINGLE</cardinality>
+    <description>In order to perform a compile using the SQL preprocessor without the INCONLY option, your must specify the DBRMLIB compiler option. </description>
+    <internalKey>IBM3863I S</internalKey>
+    <key>IBM3863I S</key>
+    <name>The DBRMLIB compiler option must be specified. </name>
     <remediationFunction>CONSTANT_ISSUE</remediationFunction>
     <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
     <severity>BLOCKER</severity>
@@ -21336,6 +22243,19 @@
 </rule>
 <rule>
     <cardinality>SINGLE</cardinality>
+    <description>The flagged statement is not valid PL/I. This may indicate that a semicolon that is meant for the previous statement is misplaced or that an element of this statement has been erroneously omitted. put skip garbage; </description>
+    <internalKey>IBM3988I S</internalKey>
+    <key>IBM3988I S</key>
+    <name>Statement has invalid syntax. </name>
+    <remediationFunction>CONSTANT_ISSUE</remediationFunction>
+    <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
+    <severity>BLOCKER</severity>
+    <status>READY</status>
+    <tag>xinfo</tag>
+    <type>BUG</type>
+</rule>
+<rule>
+    <cardinality>SINGLE</cardinality>
     <description>This message indicates that there is an error in the preprocessor. Report the problem to IBM. </description>
     <internalKey>IBM3993I S</internalKey>
     <key>IBM3993I S</key>
@@ -21405,32 +22325,6 @@
     <internalKey>IBM3998I S</internalKey>
     <key>IBM3998I S</key>
     <name>note </name>
-    <remediationFunction>CONSTANT_ISSUE</remediationFunction>
-    <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
-    <severity>BLOCKER</severity>
-    <status>READY</status>
-    <tag>xinfo</tag>
-    <type>BUG</type>
-</rule>
-<rule>
-    <cardinality>SINGLE</cardinality>
-    <description>No description provided</description>
-    <internalKey>IBM1479I E</internalKey>
-    <key>IBM1479I E</key>
-    <name>Multiple RETURN statements are not allowed under RULES(NOMULTIEXIT). </name>
-    <remediationFunction>CONSTANT_ISSUE</remediationFunction>
-    <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
-    <severity>CRITICAL</severity>
-    <status>READY</status>
-    <tag>xinfo</tag>
-    <type>BUG</type>
-</rule>
-<rule>
-    <cardinality>SINGLE</cardinality>
-    <description>No description provided</description>
-    <internalKey>IBM3988I S</internalKey>
-    <key>IBM3988I S</key>
-    <name>Statement has invalid syntax. </name>
     <remediationFunction>CONSTANT_ISSUE</remediationFunction>
     <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
     <severity>BLOCKER</severity>

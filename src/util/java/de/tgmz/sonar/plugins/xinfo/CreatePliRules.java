@@ -99,13 +99,6 @@ public class CreatePliRules {
 			sta = end;
 		}
 		
-		// These messages are not described 
-		String IBM1479I = "IBM1479I E Multiple RETURN statements are not allowed under RULES(NOMULTIEXIT). Explanation: No description provided";
-		createRule(IBM1479I, 0, IBM1479I.length());
-		
-		String IBM3988I = "IBM3988I S Statement has invalid syntax. Explanation: No description provided";
-		createRule(IBM3988I, 0, IBM3988I.length());
-		
 		pw.println("</xinfo-rules>");
 		
 		pw.close();
