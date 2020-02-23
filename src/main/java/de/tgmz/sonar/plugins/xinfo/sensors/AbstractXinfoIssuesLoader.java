@@ -12,6 +12,8 @@ package de.tgmz.sonar.plugins.xinfo.sensors;
 
 import java.util.Iterator;
 
+import javax.annotation.Nullable;
+
 import org.apache.commons.lang.StringUtils;
 import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.batch.fs.InputFile;
@@ -93,7 +95,7 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 		}
 	}
 
-	private void saveIssue(final InputFile inputFile, int line, String externalRuleKey, final String message) {
+	private void saveIssue(final InputFile inputFile, int line, String externalRuleKey, final String message, @Nullable Severity severity) {
 		LOGGER.debug("Save issue {} for file {} on line {}", externalRuleKey, inputFile.filename(), line);
 		
 		String ruleKeyToSave;
@@ -116,7 +118,11 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 			SonarRule r = iterator.next();
 			
 			if (ruleKeyToSave.equals(r.getKey())) {
-				newIssue.overrideSeverity(Severity.valueOf(r.getSeverity()));
+				if (severity == null) {
+					newIssue.overrideSeverity(Severity.valueOf(r.getSeverity()));
+				} else {
+					newIssue.overrideSeverity(severity);
+				}
 				
 				found = true;
 			}
@@ -151,10 +157,70 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 				int effectiveMessageLine = computeEffectiveMessageLine(p, m);
 				
 				if (effectiveMessageLine > -1) {
+					Severity severity = null;
+					
 					String ruleKey = m.getMSGNUMBER();
 					String message = m.getMSGTEXT();
-			
-					saveIssue(file, effectiveMessageLine, ruleKey, message);
+					
+					if (context.config().getBoolean(XinfoConfig.XINFO_BLB).orElse(Boolean.FALSE)) {
+						//The procedure procedure is not referenced.
+						if ("IBM1213I W".equals(ruleKey) && message.contains("SEQERR")) {
+							severity = Severity.INFO;
+						}
+						
+						//Variable variable is unreferenced.
+						if ("IBM2418I E".equals(ruleKey) && message.contains("PLERROR")) {
+							severity = Severity.INFO;
+						}
+						
+						//variable name is declared as BASED on the ADDR of variable name,
+						//but variable name requires more storage than variable name.
+						if ("IBM2402I E".equals(ruleKey)) {
+							severity = Severity.BLOCKER;
+						}
+						
+						//RETURN statement without an expression is invalid inside a subprocedure that specified the RETURNS attribute.
+						if ("IBM2409I E".equals(ruleKey)) {
+							severity = Severity.BLOCKER;
+						}
+						
+						//Scale factor is less than 0.  
+						if ("IBM2452I E".equals(ruleKey)) {
+							severity = Severity.BLOCKER;
+						}
+						
+						//SELECT statement contains no OTHERWISE clause
+						if ("IBM1059I I".equals(ruleKey)) {
+							severity = Severity.MAJOR;
+						}
+						
+						//Arithmetic operands should both be numeric
+						if ("IBM1247I E".equals(ruleKey)) {
+							severity = Severity.BLOCKER;
+						}
+						
+						//The variable variable name is declared without any data attributes
+						if ("IBM1482I E".equals(ruleKey)) {
+							severity = Severity.BLOCKER;
+						}
+						
+						//Variable variable name is implicitly declared
+						if ("IBM1373I E".equals(ruleKey)) {
+							severity = Severity.BLOCKER;
+						}
+						
+						//RULES(NOLAXIF) requires BIT(1) expressions in IF, WHILE, etc
+						if ("IBM1274I E".equals(ruleKey)) {
+							severity = Severity.BLOCKER;
+						}
+						
+						//Scale factor is larger than the precision
+						if ("IBM2436I E".equals(ruleKey)) {
+							severity = Severity.BLOCKER;
+						}
+					}
+					
+					saveIssue(file, effectiveMessageLine, ruleKey, message, severity);
 				}
 			} catch (XinfoException e) {
 				LOGGER.error("Error in xinfo", e);
