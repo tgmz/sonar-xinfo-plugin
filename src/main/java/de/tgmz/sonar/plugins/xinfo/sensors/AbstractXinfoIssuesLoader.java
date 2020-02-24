@@ -10,6 +10,7 @@
   *******************************************************************************/
 package de.tgmz.sonar.plugins.xinfo.sensors;
 
+import java.io.IOException;
 import java.util.Iterator;
 
 import javax.annotation.Nullable;
@@ -173,50 +174,15 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 							severity = Severity.INFO;
 						}
 						
-						//variable name is declared as BASED on the ADDR of variable name,
-						//but variable name requires more storage than variable name.
-						if ("IBM2402I E".equals(ruleKey)) {
-							severity = Severity.BLOCKER;
-						}
-						
-						//RETURN statement without an expression is invalid inside a subprocedure that specified the RETURNS attribute.
-						if ("IBM2409I E".equals(ruleKey)) {
-							severity = Severity.BLOCKER;
-						}
-						
-						//Scale factor is less than 0.  
-						if ("IBM2452I E".equals(ruleKey)) {
-							severity = Severity.BLOCKER;
-						}
-						
-						//SELECT statement contains no OTHERWISE clause
-						if ("IBM1059I I".equals(ruleKey)) {
-							severity = Severity.MAJOR;
-						}
-						
-						//Arithmetic operands should both be numeric
-						if ("IBM1247I E".equals(ruleKey)) {
-							severity = Severity.BLOCKER;
-						}
-						
-						//The variable variable name is declared without any data attributes
-						if ("IBM1482I E".equals(ruleKey)) {
-							severity = Severity.BLOCKER;
-						}
-						
-						//Variable variable name is implicitly declared
-						if ("IBM1373I E".equals(ruleKey)) {
-							severity = Severity.BLOCKER;
-						}
-						
-						//RULES(NOLAXIF) requires BIT(1) expressions in IF, WHILE, etc
-						if ("IBM1274I E".equals(ruleKey)) {
-							severity = Severity.BLOCKER;
-						}
-						
-						//Scale factor is larger than the precision
-						if ("IBM2436I E".equals(ruleKey)) {
-							severity = Severity.BLOCKER;
+						//Argument to MAIN procedure is not CHARACTER VARYING.
+						if ("IBM1195I W".equals(ruleKey)) {
+							try {
+								if (file.contents().contains("PIMS")) {
+									severity = Severity.INFO;
+								}
+							} catch (IOException e) {
+								LOGGER.warn("Cannot get contents of {}", file);
+							}
 						}
 					}
 					

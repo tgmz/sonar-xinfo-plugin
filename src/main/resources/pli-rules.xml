@@ -223,7 +223,7 @@
     <name>SELECT statement contains no OTHERWISE clause. </name>
     <remediationFunction>CONSTANT_ISSUE</remediationFunction>
     <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
-    <severity>MINOR</severity>
+    <severity>MAJOR</severity>
     <status>READY</status>
     <tag>xinfo</tag>
 </rule>
@@ -3680,10 +3680,9 @@
     <name>Arithmetic operands should both be numeric. </name>
     <remediationFunction>CONSTANT_ISSUE</remediationFunction>
     <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
-    <severity>CRITICAL</severity>
+    <severity>BLOCKER</severity>
     <status>READY</status>
     <tag>xinfo</tag>
-    <type>BUG</type>
 </rule>
 <rule>
     <cardinality>SINGLE</cardinality>
@@ -3771,10 +3770,9 @@
     <name>RULES(NOLAXIF) requires BIT(1) expressions in IF, WHILE, etc. </name>
     <remediationFunction>CONSTANT_ISSUE</remediationFunction>
     <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
-    <severity>CRITICAL</severity>
+    <severity>BLOCKER</severity>
     <status>READY</status>
     <tag>xinfo</tag>
-    <type>BUG</type>
 </rule>
 <rule>
     <cardinality>SINGLE</cardinality>
@@ -4837,10 +4835,9 @@
     <name>Variable variable name is implicitly declared. </name>
     <remediationFunction>CONSTANT_ISSUE</remediationFunction>
     <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
-    <severity>CRITICAL</severity>
+    <severity>BLOCKER</severity>
     <status>READY</status>
     <tag>xinfo</tag>
-    <type>BUG</type>
 </rule>
 <rule>
     <cardinality>SINGLE</cardinality>
@@ -6241,10 +6238,9 @@
     <name>The variable variable name is declared without any data attributes. </name>
     <remediationFunction>CONSTANT_ISSUE</remediationFunction>
     <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
-    <severity>CRITICAL</severity>
+    <severity>BLOCKER</severity>
     <status>READY</status>
     <tag>xinfo</tag>
-    <type>BUG</type>
 </rule>
 <rule>
     <cardinality>SINGLE</cardinality>
@@ -6306,10 +6302,9 @@
     <name>variable name is declared as BASED on the ADDR of variable name, but variable name requires more storage than variable name. </name>
     <remediationFunction>CONSTANT_ISSUE</remediationFunction>
     <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
-    <severity>CRITICAL</severity>
+    <severity>BLOCKER</severity>
     <status>READY</status>
     <tag>xinfo</tag>
-    <type>BUG</type>
 </rule>
 <rule>
     <cardinality>SINGLE</cardinality>
@@ -6397,10 +6392,9 @@
     <name>RETURN statement without an expression is invalid inside a subprocedure that specified the RETURNS attribute. </name>
     <remediationFunction>CONSTANT_ISSUE</remediationFunction>
     <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
-    <severity>CRITICAL</severity>
+    <severity>BLOCKER</severity>
     <status>READY</status>
     <tag>xinfo</tag>
-    <type>BUG</type>
 </rule>
 <rule>
     <cardinality>SINGLE</cardinality>
@@ -6748,10 +6742,9 @@
     <name>Scale factor is larger than the precision. </name>
     <remediationFunction>CONSTANT_ISSUE</remediationFunction>
     <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
-    <severity>CRITICAL</severity>
+    <severity>BLOCKER</severity>
     <status>READY</status>
     <tag>xinfo</tag>
-    <type>BUG</type>
 </rule>
 <rule>
     <cardinality>SINGLE</cardinality>
@@ -6956,10 +6949,9 @@
     <name>Scale factor is less than 0. </name>
     <remediationFunction>CONSTANT_ISSUE</remediationFunction>
     <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
-    <severity>CRITICAL</severity>
+    <severity>BLOCKER</severity>
     <status>READY</status>
     <tag>xinfo</tag>
-    <type>BUG</type>
 </rule>
 <rule>
     <cardinality>SINGLE</cardinality>
