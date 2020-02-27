@@ -136,6 +136,8 @@ public class CreatePliRules {
 		case "IBM1036I I":	// The next statement-count statements were merged with this statement.
 		case "IBM1041I I":	// Comment spans line-count lines.
 		case "IBM3020I I":	// Comment spans line-count lines.
+		case "IBM1214I W":	// A dummy argument will be created for argument argument
+		case "IBM3000I I":	// This message is used to report DB2 or CICS backend messages with a return code of 0.
 			r.setSeverity("INFO");
 			break;
 		case "IBM2812I I":	// Argument number argument number to BUILTIN name built-in would lead to much better code if declared with the VALUE attribute
@@ -147,9 +149,29 @@ public class CreatePliRules {
 			r.setSeverity("MAJOR");
 			r.setType("BUG");
 			break;
+		case "IBM1059I I":	//SELECT statement contains no OTHERWISE clause
+		case "IBM1060I I":	//Name resolution for identifier selected its declaration in a structure, rather than its non-member declaration in a parent block.
+			r.setSeverity("MAJOR");
+			break;
+		case "IBM2804I I":	//Boolean is compared with something other than '1'b or '0'b.	
+			r.setSeverity("CRITICAL");
+			r.setType("BUG");
+			break;
 		case "IBM1063I I":	// Code generated for DO group would be more efficient if control variable were a 4-byte integer.
 			r.setSeverity("MINOR");
 			r.setTag(Arrays.asList("xinfo", "performance"));
+			break;
+		case "IBM2402I E":	//variable name is declared as BASED on the ADDR of variable name,
+							//but variable name requires more storage than variable name.
+		case "IBM2409I E":	//RETURN statement without an expression is invalid inside a subprocedure that specified the RETURNS attribute.
+		case "IBM2452I E":	//Scale factor is less than 0.  
+		case "IBM1247I E":	//Arithmetic operands should both be numeric  
+		case "IBM1482I E":	//The variable variable name is declared without any data attributes  
+		case "IBM1373I E":	//Variable variable name is implicitly declared  
+		case "IBM1274I E":	//RULES(NOLAXIF) requires BIT(1) expressions in IF, WHILE, etc  
+		case "IBM2436I E":	//Scale factor is larger than the precision  
+			r.setSeverity("BLOCKER");
+			break;
 		default:
 			switch (sev) {
 			case "I": r.setSeverity("MINOR"); break;
