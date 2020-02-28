@@ -24,7 +24,7 @@ public enum Language {
 	
 	private String key;
 	private String name;
-	private String defaultFileSuffixes;
+	private String[] defaultFileSuffixes;
 	private String rulesDefinition;
 	private String repoKey;
 	private String repoName;
@@ -41,7 +41,7 @@ public enum Language {
 	private Language(String key, String name, String defaultFileSuffixes, String rulesDefinition, String repoKey, String repoName) {
 		this.key = key;
 		this.name = name;
-		this.defaultFileSuffixes = defaultFileSuffixes;
+		this.defaultFileSuffixes = defaultFileSuffixes.split(",");
 		this.rulesDefinition = rulesDefinition;
 		this.repoKey = repoKey;
 		this.repoName = repoName;
@@ -68,7 +68,7 @@ public enum Language {
 		return name;
 	}
 
-	public String getDefaultFileSuffixes() {
+	public String[] getDefaultFileSuffixes() {
 		return defaultFileSuffixes;
 	}
 
