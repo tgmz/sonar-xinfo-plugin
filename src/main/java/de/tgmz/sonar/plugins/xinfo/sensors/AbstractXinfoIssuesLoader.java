@@ -10,8 +10,11 @@
   *******************************************************************************/
 package de.tgmz.sonar.plugins.xinfo.sensors;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Iterator;
+import java.util.List;
 
 import javax.annotation.Nullable;
 
@@ -33,7 +36,6 @@ import de.tgmz.sonar.plugins.xinfo.SonarRule;
 import de.tgmz.sonar.plugins.xinfo.XinfoException;
 import de.tgmz.sonar.plugins.xinfo.XinfoFileAnalyzable;
 import de.tgmz.sonar.plugins.xinfo.XinfoProviderFactory;
-import de.tgmz.sonar.plugins.xinfo.XinfoRules;
 import de.tgmz.sonar.plugins.xinfo.config.XinfoConfig;
 import de.tgmz.sonar.plugins.xinfo.languages.Language;
 import de.tgmz.sonar.plugins.xinfo.plicomp.FILE;
@@ -49,7 +51,7 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 	private static final Logger LOGGER = Loggers.get(AbstractXinfoIssuesLoader.class);
 	private final FileSystem fileSystem;
 	private SensorContext context;
-	private XinfoRules xinfoRules;
+	private List<SonarRule> xinfoRules;
 	private Language lang;
 
 	public AbstractXinfoIssuesLoader(final FileSystem fileSystem, Language lang) {
@@ -96,62 +98,6 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 		}
 	}
 
-	private void saveIssue(final InputFile inputFile, int line, String externalRuleKey, final String message, @Nullable Severity severity) {
-		LOGGER.debug("Save issue {} for file {} on line {}", externalRuleKey, inputFile.filename(), line);
-		
-		String ruleKeyToSave;
-		
-		if (lang == Language.COBOL) {
-			// Chars at 3 and 4 indicate the compile phase which issued the message
-			// In ErrMsg these chars are replaced by "XX"
-			ruleKeyToSave = externalRuleKey.substring(0,  3) + "XX" + externalRuleKey.substring(5);
-		} else {
-			ruleKeyToSave = externalRuleKey;
-		}
-		
-		RuleKey ruleKey = RuleKey.of(lang.getRepoKey(), ruleKeyToSave);
-
-		NewIssue newIssue = context.newIssue().forRule(ruleKey);
-		
-		boolean found = false;
-		
-		for (Iterator<SonarRule> iterator = xinfoRules.getRules().iterator(); iterator.hasNext() && !found;) {
-			SonarRule r = iterator.next();
-			
-			if (ruleKeyToSave.equals(r.getKey())) {
-				if (severity == null) {
-					newIssue.overrideSeverity(Severity.valueOf(r.getSeverity()));
-				} else {
-					newIssue.overrideSeverity(severity);
-				}
-				
-				found = true;
-			}
-		}
-
-		if (!found) {
-			LOGGER.error("Xinfo message {} unknown", ruleKeyToSave);
-			
-			return;
-		}
-		
-		NewIssueLocation primaryLocation = newIssue.newLocation().on(inputFile).message(message);
-		
-		int lineToSave = line;
-		
-		if (lineToSave > 0) {
-			if (lineToSave > inputFile.lines()) {
-				LOGGER.info("Linenumber {} for {} is outside range. It was reduced to {}", lineToSave, inputFile.filename(), inputFile.lines());
-				
-				lineToSave = inputFile.lines();
-			}
-			
-			primaryLocation.at(inputFile.selectLine(lineToSave));
-		}
-		
-		newIssue.at(primaryLocation).save();
-	}
-	
 	private void createFindings(PACKAGE p, InputFile file) {
 		for (MESSAGE m : p.getMESSAGE()) {
 			try {
@@ -194,7 +140,79 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 				continue;
 			}
 		}
+		
+		try (BufferedReader br = new BufferedReader(new InputStreamReader(file.inputStream()))) {
+			String s;
+			int i = 1;
+				
+			while ((s = br.readLine()) != null) {
+				if (s.matches("^.*\\s+IMMEDIATE\\s+.*$")) {
+					saveIssue(file, i,  "MC00042", "Dynamic query", null);
+				}
+				
+				++i;
+			}
+		} catch (IOException e) {
+			LOGGER.error("IOException on {}", file.filename());
+		}
+		
 	}
+	private void saveIssue(final InputFile inputFile, int line, String externalRuleKey, final String message, @Nullable Severity severity) {
+		LOGGER.debug("Save issue {} for file {} on line {}", externalRuleKey, inputFile.filename(), line);
+		
+		String ruleKeyToSave;
+		
+		if (lang == Language.COBOL) {
+			// Chars at 3 and 4 indicate the compile phase which issued the message
+			// In ErrMsg these chars are replaced by "XX"
+			ruleKeyToSave = externalRuleKey.substring(0,  3) + "XX" + externalRuleKey.substring(5);
+		} else {
+			ruleKeyToSave = externalRuleKey;
+		}
+		
+		RuleKey ruleKey = RuleKey.of(lang.getRepoKey(), ruleKeyToSave);
+
+		NewIssue newIssue = context.newIssue().forRule(ruleKey);
+		
+		boolean found = false;
+		
+		for (Iterator<SonarRule> iterator = xinfoRules.iterator(); iterator.hasNext() && !found;) {
+			SonarRule r = iterator.next();
+			
+			if (ruleKeyToSave.equals(r.getKey())) {
+				if (severity == null) {
+					newIssue.overrideSeverity(Severity.valueOf(r.getSeverity()));
+				} else {
+					newIssue.overrideSeverity(severity);
+				}
+				
+				found = true;
+			}
+		}
+
+		if (!found) {
+			LOGGER.error("Xinfo message {} unknown", ruleKeyToSave);
+			
+			return;
+		}
+		
+		NewIssueLocation primaryLocation = newIssue.newLocation().on(inputFile).message(message);
+		
+		int lineToSave = line;
+		
+		if (lineToSave > 0) {
+			if (lineToSave > inputFile.lines()) {
+				LOGGER.info("Linenumber {} for {} is outside range. It was reduced to {}", lineToSave, inputFile.filename(), inputFile.lines());
+				
+				lineToSave = inputFile.lines();
+			}
+			
+			primaryLocation.at(inputFile.selectLine(lineToSave));
+		}
+		
+		newIssue.at(primaryLocation).save();
+	}
+	
 	private int computeEffectiveMessageLine(PACKAGE p, MESSAGE m) throws XinfoException {
 		String msgFile = m.getMSGFILE();
 		

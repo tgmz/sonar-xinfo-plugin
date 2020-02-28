@@ -37,7 +37,7 @@ public abstract class AbstractXinfoQualityProfileDefinition implements BuiltInQu
 	    NewBuiltInQualityProfile profile = context.createBuiltInQualityProfile("Xinfo Rules", lang.getKey());
 	    profile.setDefault(false);
 	    
-		Iterator<SonarRule> it = RuleFactory.getInstance().getRules(lang).getRules().iterator();
+		Iterator<SonarRule> it = RuleFactory.getInstance().getRules(lang).iterator();
 
 		while (it.hasNext()) {
 			String s = it.next().getKey();

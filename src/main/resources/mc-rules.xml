@@ -1,4 +1,4 @@
-<rules>
+<mc-rules>
 <rule>
     <cardinality>SINGLE</cardinality>
     <description>Dynamic queries may result in SQL injection</description>
@@ -11,4 +11,4 @@
     <status>READY</status>
     <tag>mc</tag>
 </rule>
-</rules>
+</mc-rules>

@@ -12,10 +12,13 @@ package de.tgmz.sonar.plugins.xinfo;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -35,13 +38,46 @@ public final class RuleFactory {
 	private static final Logger LOGGER = Loggers.get(RuleFactory.class);
 	private static volatile RuleFactory instance;
 	private DocumentBuilder db;
-	private Unmarshaller unmarshaller;
+	private Unmarshaller xium;
+	private Unmarshaller mcum;
 
+	@XmlRootElement(name = "mc-rules")
+	private static final class McRules {
+		private List<SonarRule> rules;
+
+		@XmlElement(name = "rule")
+		public List<SonarRule> getRules() {
+			return rules;
+		}
+
+		@SuppressWarnings("unused")
+		public void setRules(List<SonarRule> rules) {
+			this.rules = rules;
+		}
+	}
+	@XmlRootElement(name = "xinfo-rules")
+	private static final class XinfoRules {
+		private List<SonarRule> rules;
+
+		@XmlElement(name = "rule")
+		public List<SonarRule> getRules() {
+			return rules;
+		}
+
+		@SuppressWarnings("unused")
+		public void setRules(List<SonarRule> rules) {
+			this.rules = rules;
+		}
+	}
+	
 	private RuleFactory() throws ParserConfigurationException, JAXBException {
 		db = SecureDocumentBuilderFactory.getInstance().getDocumentBuilder();
 
 		JAXBContext jaxbContext = JAXBContext.newInstance(XinfoRules.class);
-		unmarshaller = jaxbContext.createUnmarshaller();
+		xium = jaxbContext.createUnmarshaller();
+
+		jaxbContext = JAXBContext.newInstance(McRules.class);
+		mcum = jaxbContext.createUnmarshaller();
 	}
 
 	public static RuleFactory getInstance() {
@@ -63,12 +99,21 @@ public final class RuleFactory {
 	}
 
 	@SuppressFBWarnings(value="XXE_DOCUMENT", justification="Not possible due to DocumentBuilderFactory settings")
-	public XinfoRules getRules(Language l) {
-		try (InputStream is = this.getClass().getClassLoader().getResourceAsStream(l.getRulesDefinition())) {
+	public List<SonarRule> getRules(Language l) {
+		try (InputStream is0 = this.getClass().getClassLoader().getResourceAsStream(l.getRulesDefinition());
+			InputStream is1 = this.getClass().getClassLoader().getResourceAsStream("mc-rules.xml")) {
+			
+			List<SonarRule> result;
+			
+			Document doc = db.parse(new InputSource(is0));
 
-			Document doc = db.parse(new InputSource(is));
+			result = ((XinfoRules) xium.unmarshal(doc)).getRules();
+			
+			doc = db.parse(new InputSource(is1));
 
-			return (XinfoRules) unmarshaller.unmarshal(doc);
+			result.addAll(((McRules) mcum.unmarshal(doc)).getRules());
+			
+			return result;
 		} catch (IOException | SAXException | JAXBException e) {
 			String s = "Error parsing rules";
 			
