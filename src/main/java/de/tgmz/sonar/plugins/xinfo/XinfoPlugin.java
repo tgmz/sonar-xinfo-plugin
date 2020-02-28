@@ -18,12 +18,15 @@ import de.tgmz.sonar.plugins.xinfo.languages.CobolLanguage;
 import de.tgmz.sonar.plugins.xinfo.languages.CobolQualityProfileDefinition;
 import de.tgmz.sonar.plugins.xinfo.languages.PliLanguage;
 import de.tgmz.sonar.plugins.xinfo.languages.PliQualityProfileDefinition;
+import de.tgmz.sonar.plugins.xinfo.rules.McQualityProfileDefinition;
+import de.tgmz.sonar.plugins.xinfo.rules.McRulesDefinition;
 import de.tgmz.sonar.plugins.xinfo.rules.XinfoRulesDefinition;
 import de.tgmz.sonar.plugins.xinfo.sensors.AssemblerColorizer;
 import de.tgmz.sonar.plugins.xinfo.sensors.AssemblerIssuesLoader;
 import de.tgmz.sonar.plugins.xinfo.sensors.CobolColorizer;
 import de.tgmz.sonar.plugins.xinfo.sensors.CobolIssuesLoader;
 import de.tgmz.sonar.plugins.xinfo.sensors.CpdTokenizerSensor;
+import de.tgmz.sonar.plugins.xinfo.sensors.McIssuesLoader;
 import de.tgmz.sonar.plugins.xinfo.sensors.PliColorizer;
 import de.tgmz.sonar.plugins.xinfo.sensors.PliIssuesLoader;
 
@@ -38,7 +41,7 @@ public class XinfoPlugin implements Plugin {
     // http://docs.sonarqube.org/display/DEV/Adding+Hooks
 
     // tutorial on languages
-    context.addExtensions(PliLanguage.class, PliQualityProfileDefinition.class);
+    context.addExtensions(PliLanguage.class, PliQualityProfileDefinition.class, McQualityProfileDefinition.class);
     context.addExtensions(CobolLanguage.class, CobolQualityProfileDefinition.class);
     context.addExtensions(AssemblerLanguage.class, AssemblerQualityProfileDefinition.class);
 
@@ -52,6 +55,8 @@ public class XinfoPlugin implements Plugin {
     context.addExtensions(PliColorizer.class, CobolColorizer.class, AssemblerColorizer.class);
 
     context.addExtension(CpdTokenizerSensor.class);
+    
+    context.addExtensions(McRulesDefinition.class, McIssuesLoader.class);
     // tutorial on settings
 
     // tutorial on web extensions
