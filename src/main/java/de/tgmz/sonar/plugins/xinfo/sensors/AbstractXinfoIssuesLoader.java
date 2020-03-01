@@ -10,7 +10,9 @@
   *******************************************************************************/
 package de.tgmz.sonar.plugins.xinfo.sensors;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Iterator;
 
 import javax.annotation.Nullable;
@@ -28,6 +30,7 @@ import org.sonar.api.rule.RuleKey;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 
+import de.tgmz.sonar.plugins.xinfo.PatternFactory;
 import de.tgmz.sonar.plugins.xinfo.Rule;
 import de.tgmz.sonar.plugins.xinfo.RuleFactory;
 import de.tgmz.sonar.plugins.xinfo.XinfoException;
@@ -36,6 +39,8 @@ import de.tgmz.sonar.plugins.xinfo.XinfoProviderFactory;
 import de.tgmz.sonar.plugins.xinfo.XinfoRules;
 import de.tgmz.sonar.plugins.xinfo.config.XinfoConfig;
 import de.tgmz.sonar.plugins.xinfo.languages.Language;
+import de.tgmz.sonar.plugins.xinfo.mc.Mc;
+import de.tgmz.sonar.plugins.xinfo.mc.McPattern;
 import de.tgmz.sonar.plugins.xinfo.plicomp.FILE;
 import de.tgmz.sonar.plugins.xinfo.plicomp.MESSAGE;
 import de.tgmz.sonar.plugins.xinfo.plicomp.PACKAGE;
@@ -50,6 +55,8 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 	private final FileSystem fileSystem;
 	private SensorContext context;
 	private XinfoRules xinfoRules;
+	private XinfoRules mcRules;
+	private McPattern mcPatterns;
 	private Language lang;
 
 	public AbstractXinfoIssuesLoader(final FileSystem fileSystem, Language lang) {
@@ -57,6 +64,8 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 		this.lang = lang;
 		
 		xinfoRules = RuleFactory.getInstance().getRules(lang);
+		mcRules = RuleFactory.getInstance().getMcRules();
+		mcPatterns = PatternFactory.getInstance().getMcPatterns();
 	}
 
 
@@ -194,7 +203,28 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 				continue;
 			}
 		}
+		
+		findMc(file);
 	}
+	private void findMc(InputFile file) {
+		try (BufferedReader br = new BufferedReader(new InputStreamReader(file.inputStream()))) {
+			String s;
+			int i = 1;
+			
+			while ((s = br.readLine()) != null) {
+				for (Mc mc : mcPatterns.getMc()) {
+					if (s.matches(mc.getRegex())) {
+						saveIssue(file, i, mc.getKey(), getMcDescription(mc.getKey()), null);
+					}
+				}
+				
+				++i;
+			}
+		} catch (IOException e) {
+			LOGGER.error("Error reading {}", file, e);
+		}
+	}
+	
 	private int computeEffectiveMessageLine(PACKAGE p, MESSAGE m) throws XinfoException {
 		String msgFile = m.getMSGFILE();
 		
@@ -218,5 +248,17 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 				return Integer.parseInt(XinfoUtil.computeIncludedFromLine(p.getFILEREFERENCETABLE(), f, lang));
 			}
 		}
+	}
+	
+	private String getMcDescription(String ruleKey) {
+		for (Rule r : mcRules.getRule()) {
+			if (ruleKey.equals(r.getKey())) {
+				return r.getDescription();
+			}
+		}
+		
+		LOGGER.error("Cannto get description for {}", ruleKey);
+		
+		return "";
 	}
 }

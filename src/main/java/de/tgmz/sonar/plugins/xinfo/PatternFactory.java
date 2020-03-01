@@ -26,30 +26,30 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import de.tgmz.sonar.plugins.xinfo.languages.Language;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import de.tgmz.sonar.plugins.xinfo.mc.McPattern;
 
 /**
  * Factory for creating the sonar rules for a {@link Language}
  */
-public final class RuleFactory {
-	private static final Logger LOGGER = Loggers.get(RuleFactory.class);
-	private static volatile RuleFactory instance;
+public final class PatternFactory {
+	private static final Logger LOGGER = Loggers.get(PatternFactory.class);
+	private static volatile PatternFactory instance;
 	private DocumentBuilder db;
-	private Unmarshaller xium;
+	private Unmarshaller mcum;
 
-	private RuleFactory() throws ParserConfigurationException, JAXBException {
+	private PatternFactory() throws ParserConfigurationException, JAXBException {
 		db = SecureDocumentBuilderFactory.getInstance().getDocumentBuilder();
 
-		JAXBContext jaxbContext = JAXBContext.newInstance(XinfoRules.class);
-		xium = jaxbContext.createUnmarshaller();
+		JAXBContext jaxbContext = JAXBContext.newInstance(McPattern.class);
+		mcum = jaxbContext.createUnmarshaller();
 	}
 
-	public static RuleFactory getInstance() {
+	public static PatternFactory getInstance() {
 		if (instance == null) {
 			LOGGER.debug("Create new Factory instance");
 			
 			try {
-				instance = new RuleFactory();
+				instance = new PatternFactory();
 			} catch (ParserConfigurationException | JAXBException e) {
 				String s = "Error creating rule factory";
 				
@@ -60,25 +60,12 @@ public final class RuleFactory {
 		return instance;
 	}
 
-	@SuppressFBWarnings(value="XXE_DOCUMENT", justification="Not possible due to DocumentBuilderFactory settings")
-	public XinfoRules getRules(Language l) {
-		try (InputStream is = this.getClass().getClassLoader().getResourceAsStream(l.getRulesDefinition())) {
+	public McPattern getMcPatterns() {
+		try (InputStream is = this.getClass().getClassLoader().getResourceAsStream("mc-pattern.xml")) {
 
 			Document doc = db.parse(new InputSource(is));
 
-			return (XinfoRules) xium.unmarshal(doc);
-		} catch (IOException | SAXException | JAXBException e) {
-			String s = "Error parsing rules";
-			
-			throw new XinfoRuntimeException(s, e);
-		}
-	}
-	public XinfoRules getMcRules() {
-		try (InputStream is = this.getClass().getClassLoader().getResourceAsStream("mc-rules.xml")) {
-
-			Document doc = db.parse(new InputSource(is));
-
-			return (XinfoRules) xium.unmarshal(doc);
+			return (McPattern) mcum.unmarshal(doc);
 		} catch (IOException | SAXException | JAXBException e) {
 			String s = "Error parsing rules";
 			
