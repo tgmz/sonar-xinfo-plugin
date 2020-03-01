@@ -41,10 +41,10 @@ public class RuleTest {
 		assertNotNull(find(msg));
 	}
 	
-	private SonarRule find(String s) {
-		Iterator<SonarRule> it = RuleFactory.getInstance().getRules(Language.PLI).getRules().iterator();
+	private Rule find(String s) {
+		Iterator<Rule> it = RuleFactory.getInstance().getRules(Language.PLI).getRule().iterator();
 		
-		SonarRule r = null;
+		Rule r = null;
 		
 		do {
 			r = it.next();
@@ -56,7 +56,7 @@ public class RuleTest {
 	@Parameters(name = "{index}: Check for message [{0}]")
 	public static Collection<Object[]> data() {
 		Object[][] data = new Object[][] {
-				{ "IBM1039I I"}, {"IBM1479I E"}, {"IBM3988I S" }, {"IBM1247I E" }
+				{ "IBM1039I I"}, {"IBM1479I E"}, {"IBM3988I S"}, {"IBM1247I E"},
 		};
 		return Arrays.asList(data);
 	}

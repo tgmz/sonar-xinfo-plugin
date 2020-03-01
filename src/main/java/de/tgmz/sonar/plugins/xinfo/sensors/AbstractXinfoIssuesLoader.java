@@ -28,8 +28,8 @@ import org.sonar.api.rule.RuleKey;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 
+import de.tgmz.sonar.plugins.xinfo.Rule;
 import de.tgmz.sonar.plugins.xinfo.RuleFactory;
-import de.tgmz.sonar.plugins.xinfo.SonarRule;
 import de.tgmz.sonar.plugins.xinfo.XinfoException;
 import de.tgmz.sonar.plugins.xinfo.XinfoFileAnalyzable;
 import de.tgmz.sonar.plugins.xinfo.XinfoProviderFactory;
@@ -115,8 +115,8 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 		
 		boolean found = false;
 		
-		for (Iterator<SonarRule> iterator = xinfoRules.getRules().iterator(); iterator.hasNext() && !found;) {
-			SonarRule r = iterator.next();
+		for (Iterator<Rule> iterator = xinfoRules.getRule().iterator(); iterator.hasNext() && !found;) {
+			Rule r = iterator.next();
 			
 			if (ruleKeyToSave.equals(r.getKey())) {
 				if (severity == null) {

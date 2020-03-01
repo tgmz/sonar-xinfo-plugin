@@ -39,12 +39,20 @@ public final class XinfoRulesDefinition implements RulesDefinition {
 		
 		NewRepository repository = context.createRepository(lang.getRepoKey(), lang.getKey()).setName(lang.getRepoName());
 
-		try (InputStream rulesXml = this.getClass().getClassLoader().getResourceAsStream(lang.getRulesDefinition())) {
+		try (InputStream rulesXml = this.getClass().getClassLoader().getResourceAsStream(lang.getRulesDefinition());
+				InputStream mcXml = this.getClass().getClassLoader().getResourceAsStream("mc-rules.xml")) {
+			RulesDefinitionXmlLoader rulesLoader = new RulesDefinitionXmlLoader();
+
 			if (rulesXml != null) {
-				RulesDefinitionXmlLoader rulesLoader = new RulesDefinitionXmlLoader();
 				rulesLoader.load(repository, rulesXml, StandardCharsets.UTF_8.name());
 			} else {
 				LOGGER.error("Cannot find rules definition file {}", lang.getRulesDefinition());
+			}
+			
+			if (mcXml != null) {
+				rulesLoader.load(repository, mcXml, StandardCharsets.UTF_8.name());
+			} else {
+				LOGGER.error("Cannot find mc rules definition file");
 			}
 		} catch (IOException e) {
 			LOGGER.error("Error loading rules for " + lang.toString(), e);
