@@ -56,7 +56,7 @@ public class RuleTest {
 	@Parameters(name = "{index}: Check for message [{0}]")
 	public static Collection<Object[]> data() {
 		Object[][] data = new Object[][] {
-				{ "IBM1039I I"}, {"IBM1479I E"}, {"IBM3988I S"}, {"IBM1247I E"},
+				{ "IBM1039I I"}, {"IBM1479I E"}, {"IBM3988I S"}, {"IBM1247I E"}, {"MC00016"},
 		};
 		return Arrays.asList(data);
 	}

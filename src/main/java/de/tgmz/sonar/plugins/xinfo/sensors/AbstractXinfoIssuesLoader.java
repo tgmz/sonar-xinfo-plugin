@@ -14,6 +14,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.TreeMap;
 
 import javax.annotation.Nullable;
 
@@ -36,11 +38,11 @@ import de.tgmz.sonar.plugins.xinfo.RuleFactory;
 import de.tgmz.sonar.plugins.xinfo.XinfoException;
 import de.tgmz.sonar.plugins.xinfo.XinfoFileAnalyzable;
 import de.tgmz.sonar.plugins.xinfo.XinfoProviderFactory;
-import de.tgmz.sonar.plugins.xinfo.XinfoRules;
 import de.tgmz.sonar.plugins.xinfo.config.XinfoConfig;
 import de.tgmz.sonar.plugins.xinfo.languages.Language;
 import de.tgmz.sonar.plugins.xinfo.mc.Mc;
 import de.tgmz.sonar.plugins.xinfo.mc.McPattern;
+import de.tgmz.sonar.plugins.xinfo.mc.Regex;
 import de.tgmz.sonar.plugins.xinfo.plicomp.FILE;
 import de.tgmz.sonar.plugins.xinfo.plicomp.MESSAGE;
 import de.tgmz.sonar.plugins.xinfo.plicomp.PACKAGE;
@@ -54,17 +56,20 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 	private static final Logger LOGGER = Loggers.get(AbstractXinfoIssuesLoader.class);
 	private final FileSystem fileSystem;
 	private SensorContext context;
-	private XinfoRules xinfoRules;
-	private XinfoRules mcRules;
-	private McPattern mcPatterns;
 	private Language lang;
+	private Map<String, Rule> ruleMap;
+	private McPattern mcPatterns;
 
 	public AbstractXinfoIssuesLoader(final FileSystem fileSystem, Language lang) {
 		this.fileSystem = fileSystem;
 		this.lang = lang;
 		
-		xinfoRules = RuleFactory.getInstance().getRules(lang);
-		mcRules = RuleFactory.getInstance().getMcRules();
+		ruleMap = new TreeMap<>();
+		
+		for (Rule r: RuleFactory.getInstance().getRules(lang).getRule()) {
+			ruleMap.put(r.getKey(), r);
+		}
+		
 		mcPatterns = PatternFactory.getInstance().getMcPatterns();
 	}
 
@@ -124,24 +129,20 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 		
 		boolean found = false;
 		
-		for (Iterator<Rule> iterator = xinfoRules.getRule().iterator(); iterator.hasNext() && !found;) {
-			Rule r = iterator.next();
-			
-			if (ruleKeyToSave.equals(r.getKey())) {
-				if (severity == null) {
-					newIssue.overrideSeverity(Severity.valueOf(r.getSeverity()));
-				} else {
-					newIssue.overrideSeverity(severity);
-				}
-				
-				found = true;
+		Rule r = ruleMap.get(ruleKeyToSave);
+		
+		if (r != null) {
+			if (severity == null) {
+				newIssue.overrideSeverity(Severity.valueOf(r.getSeverity()));
+			} else {
+				newIssue.overrideSeverity(severity);
 			}
-		}
-
-		if (!found) {
-			LOGGER.error("Xinfo message {} unknown", ruleKeyToSave);
+		} else {
+			if (!found) {
+				LOGGER.error("Xinfo message {} unknown", ruleKeyToSave);
 			
-			return;
+				return;
+			}
 		}
 		
 		NewIssueLocation primaryLocation = newIssue.newLocation().on(inputFile).message(message);
@@ -213,11 +214,14 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 			
 			while ((s = br.readLine()) != null) {
 				for (Mc mc : mcPatterns.getMc()) {
-					if (s.matches(mc.getRegex())) {
-						saveIssue(file, i, mc.getKey(), getMcDescription(mc.getKey()), null);
+					for (Regex r : mc.getRegex()) {
+						if (lang.getKey().equals(r.getLang()) || "all".equals(r.getLang())) {
+							if (s.matches(r.getvalue())) {
+								saveIssue(file, i, mc.getKey(), ruleMap.get(mc.getKey()).getDescription(), null);
+							}
+						}
 					}
-				}
-				
+				}	
 				++i;
 			}
 		} catch (IOException e) {
@@ -248,17 +252,5 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 				return Integer.parseInt(XinfoUtil.computeIncludedFromLine(p.getFILEREFERENCETABLE(), f, lang));
 			}
 		}
-	}
-	
-	private String getMcDescription(String ruleKey) {
-		for (Rule r : mcRules.getRule()) {
-			if (ruleKey.equals(r.getKey())) {
-				return r.getDescription();
-			}
-		}
-		
-		LOGGER.error("Cannto get description for {}", ruleKey);
-		
-		return "";
 	}
 }

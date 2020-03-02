@@ -1,6 +1,7 @@
 <?xml encoding="UTF-8"?>
 <!ELEMENT mc-pattern (mc*)>
-<!ELEMENT mc (key,description,regex)>
+<!ELEMENT mc (key,description,regex*)>
 <!ELEMENT key (#PCDATA)>
 <!ELEMENT description (#PCDATA)>
 <!ELEMENT regex (#PCDATA)>
+<!ATTLIST regex lang CDATA "all">

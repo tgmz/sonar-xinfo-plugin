@@ -2,11 +2,11 @@
 	<mc>
 		<key>MC00016</key>
 		<description>EmailSpying</description>
-		<regex>^.*([0-9a-zA-Z]([\+\-_\.][0-9a-zA-Z]+)*)+@(([0-9a-zA-Z][-\w]*[0-9a-zA-Z]*\.)+[a-zA-Z0-9]{2,17}).*$</regex>
+		<regex lang="all">^.*([0-9a-zA-Z]([\+\-_\.][0-9a-zA-Z]+)*)+@(([0-9a-zA-Z][-\w]*[0-9a-zA-Z]*\.)+[a-zA-Z0-9]{2,17}).*$</regex>
 	</mc>
 	<mc>
 		<key>MC00042</key>
 		<description>StaticSQLQuery</description>
-		<regex>^.*\\s+IMMEDIATE\\s+.*$</regex>
+		<regex lang="all">^.*IMMEDIATE.*$</regex>
 	</mc>
 </mc-pattern>
