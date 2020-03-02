@@ -1,0 +1,28 @@
+<xinfo-rules>
+<rule>
+    <cardinality>SINGLE</cardinality>
+    <description>Email Spying</description>
+    <internalKey>MC00016</internalKey>
+    <key>MC00016</key>
+    <name>Email Spying</name>
+    <remediationFunction>CONSTANT_ISSUE</remediationFunction>
+    <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
+    <severity>INFO</severity>
+    <status>READY</status>
+    <tag>mc</tag>
+    <type>VULNERABILITY</type>
+</rule>
+<rule>
+    <cardinality>SINGLE</cardinality>
+    <description>Dynamic queries may result in SQL injection</description>
+    <internalKey>MC00042</internalKey>
+    <key>MC00042</key>
+    <name>Dynamic query</name>
+    <remediationFunction>CONSTANT_ISSUE</remediationFunction>
+    <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
+    <severity>INFO</severity>
+    <status>READY</status>
+    <tag>mc</tag>
+    <type>VULNERABILITY</type>
+</rule>
+</xinfo-rules>

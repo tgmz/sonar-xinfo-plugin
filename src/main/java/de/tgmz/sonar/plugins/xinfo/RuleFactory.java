@@ -62,15 +62,28 @@ public final class RuleFactory {
 
 	@SuppressFBWarnings(value="XXE_DOCUMENT", justification="Not possible due to DocumentBuilderFactory settings")
 	public XinfoRules getRules(Language l) {
+		XinfoRules result;
+		
 		try (InputStream is = this.getClass().getClassLoader().getResourceAsStream(l.getRulesDefinition())) {
-
 			Document doc = db.parse(new InputSource(is));
 
-			return (XinfoRules) xium.unmarshal(doc);
+			result = (XinfoRules) xium.unmarshal(doc);
 		} catch (IOException | SAXException | JAXBException e) {
 			String s = "Error parsing rules";
 			
 			throw new XinfoRuntimeException(s, e);
 		}
+		
+		try (InputStream is = this.getClass().getClassLoader().getResourceAsStream("mc-rules.xml")) {
+			Document doc = db.parse(new InputSource(is));
+
+			result.getRule().addAll(((XinfoRules) xium.unmarshal(doc)).getRule());
+		} catch (IOException | SAXException | JAXBException e) {
+			String s = "Error parsing rules";
+			
+			throw new XinfoRuntimeException(s, e);
+		}
+		
+		return result;
 	}
 }
