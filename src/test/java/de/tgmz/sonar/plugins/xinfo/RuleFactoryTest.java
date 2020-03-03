@@ -36,7 +36,7 @@ public class RuleFactoryTest {
 
 	@Test
 	public void test() {
-		assertTrue("No " + lang.getName() + " rules found", 0 < RuleFactory.getInstance().getRules(lang).size());
+		assertTrue("No " + lang.getName() + " rules found", 0 < RuleFactory.getInstance().getRules(lang).getRule().size());
 	}
 	
 	@Parameters(name = "{index}: Check for language [{0}]")

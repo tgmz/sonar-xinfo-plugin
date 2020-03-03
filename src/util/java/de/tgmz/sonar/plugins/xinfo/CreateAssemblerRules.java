@@ -13,7 +13,6 @@ package de.tgmz.sonar.plugins.xinfo;
 import java.io.FileInputStream;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -40,7 +39,7 @@ public class CreateAssemblerRules {
 		
 		pw.println("<xinfo-rules>");
 		
-		JAXBContext jaxbContext = JAXBContext.newInstance(SonarRule.class);
+		JAXBContext jaxbContext = JAXBContext.newInstance(Rule.class);
 		Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
 
 		// output pretty printed
@@ -90,12 +89,12 @@ public class CreateAssemblerRules {
 			
 			String sev = msg.substring(7, 8);
 			
-			SonarRule r = new SonarRule();
+			Rule r = new Rule();
 			r.setCardinality("SINGLE");
 			r.setInternalKey(key);
 			r.setKey(key);
 			r.setStatus("READY");
-			r.setTag(Collections.singletonList("xinfo"));
+			Tag tag = new Tag(); tag.setvalue("xinfo"); r.getTag().add(tag);
 			
 			String name = s.substring(sta + 9, end).trim();
 			r.setName(name.substring(0, Math.min(name.length(), 200))); // VARCHAR(200) in DB

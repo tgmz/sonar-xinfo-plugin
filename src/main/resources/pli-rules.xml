@@ -235,7 +235,7 @@
     <name>Name resolution for identifier selected its declaration in a structure, rather than its non-member declaration in a parent block. </name>
     <remediationFunction>CONSTANT_ISSUE</remediationFunction>
     <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
-    <severity>MINOR</severity>
+    <severity>MAJOR</severity>
     <status>READY</status>
     <tag>xinfo</tag>
 </rule>
@@ -392,9 +392,10 @@
     <name>Boolean is compared with something other than '1'b or '0'b. </name>
     <remediationFunction>CONSTANT_ISSUE</remediationFunction>
     <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
-    <severity>MINOR</severity>
+    <severity>CRITICAL</severity>
     <status>READY</status>
     <tag>xinfo</tag>
+    <type>BUG</type>
 </rule>
 <rule>
     <cardinality>SINGLE</cardinality>
@@ -2434,7 +2435,7 @@
     <name>A dummy argument will be created for argument number argument-number in entry reference entry name. </name>
     <remediationFunction>CONSTANT_ISSUE</remediationFunction>
     <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
-    <severity>MAJOR</severity>
+    <severity>INFO</severity>
     <status>READY</status>
     <tag>xinfo</tag>
 </rule>
@@ -17725,7 +17726,7 @@
     <name>note </name>
     <remediationFunction>CONSTANT_ISSUE</remediationFunction>
     <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
-    <severity>MINOR</severity>
+    <severity>INFO</severity>
     <status>READY</status>
     <tag>xinfo</tag>
 </rule>

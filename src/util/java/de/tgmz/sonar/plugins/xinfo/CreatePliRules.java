@@ -13,8 +13,6 @@ package de.tgmz.sonar.plugins.xinfo;
 import java.io.PrintWriter;
 import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -55,7 +53,7 @@ public class CreatePliRules {
 		
 		pw.println("<xinfo-rules>");
 		
-		JAXBContext jaxbContext = JAXBContext.newInstance(SonarRule.class);
+		JAXBContext jaxbContext = JAXBContext.newInstance(Rule.class);
 		jaxbMarshaller = jaxbContext.createMarshaller();
 
 		// output pretty printed
@@ -115,12 +113,12 @@ public class CreatePliRules {
 		
 		String sev = msg.substring(9, 10);
 		
-		SonarRule r = new SonarRule();
+		Rule r = new Rule();
 		r.setCardinality("SINGLE");
 		r.setInternalKey(key);
 		r.setKey(key);
 		r.setStatus(RuleStatus.READY.toString());
-		r.setTag(Collections.singletonList("xinfo"));
+		Tag tag = new Tag(); tag.setvalue("xinfo"); r.getTag().add(tag);
 		r.setRemediationFunction("CONSTANT_ISSUE");
 		r.setRemediationFunctionBaseEffort("0d 0h 10min");
 		
@@ -142,7 +140,7 @@ public class CreatePliRules {
 			break;
 		case "IBM2812I I":	// Argument number argument number to BUILTIN name built-in would lead to much better code if declared with the VALUE attribute
 			r.setSeverity("MAJOR");
-			r.setTag(Arrays.asList("xinfo", "performance"));
+			Tag tag0 = new Tag(); tag0.setvalue("performance"); r.getTag().add(tag0);
 			break;
 		case "IBM1208I W":	// INITIAL list for the array variable name contains only one item.
 		case "IBM2603I W":	// INITIAL list for the array variable name contains only one item.
@@ -159,7 +157,7 @@ public class CreatePliRules {
 			break;
 		case "IBM1063I I":	// Code generated for DO group would be more efficient if control variable were a 4-byte integer.
 			r.setSeverity("MINOR");
-			r.setTag(Arrays.asList("xinfo", "performance"));
+			Tag tag1 = new Tag(); tag1.setvalue("performance"); r.getTag().add(tag1);
 			break;
 		case "IBM2402I E":	//variable name is declared as BASED on the ADDR of variable name,
 							//but variable name requires more storage than variable name.

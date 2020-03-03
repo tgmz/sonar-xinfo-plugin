@@ -119,5 +119,4 @@ public class SensorTest {
 		cpdSensor.describe(sensorDescriptor);
 		cpdSensor.execute(sensorContext);
 	}
-
 }
