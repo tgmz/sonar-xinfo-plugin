@@ -1,6 +1,6 @@
  Hallo: proc options(main);
  	DCL S CHAR(1024) VAR INIT('DROP TABLE SYSIBM.SYSTABLES');
  
- 	EXEC SQL 
- 	   EXECUTE IMMEDIATE S;
+ 	exec sql 
+ 	   execute immediate S;
  end Hall;

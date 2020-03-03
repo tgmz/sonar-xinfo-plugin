@@ -16,6 +16,7 @@ import java.io.InputStreamReader;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.regex.Pattern;
 
 import javax.annotation.Nullable;
 
@@ -58,6 +59,7 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 	private SensorContext context;
 	private Language lang;
 	private Map<String, Rule> ruleMap;
+	private Map<String, Pattern> mcPatternMap;
 	private McPattern mcPatterns;
 
 	public AbstractXinfoIssuesLoader(final FileSystem fileSystem, Language lang) {
@@ -71,8 +73,19 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 		}
 		
 		mcPatterns = PatternFactory.getInstance().getMcPatterns();
+		
+		mcPatternMap = new TreeMap<>();
+		
+		for (Mc mc: mcPatterns.getMc()) {
+			for (Regex r : mc.getRegex()) {
+				if (lang.getKey().equals(r.getLang()) || "all".equals(r.getLang())) {
+					Pattern p = "true".equals(r.getCasesensitive()) ? Pattern.compile(r.getvalue()) : Pattern.compile(r.getvalue(), Pattern.CASE_INSENSITIVE); 
+					
+					mcPatternMap.put(mc.getKey(), p);
+				}
+			}
+		}
 	}
-
 
 	@Override
 	public void describe(final SensorDescriptor descriptor) {
@@ -214,12 +227,10 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 			
 			while ((s = br.readLine()) != null) {
 				for (Mc mc : mcPatterns.getMc()) {
-					for (Regex r : mc.getRegex()) {
-						if (lang.getKey().equals(r.getLang()) || "all".equals(r.getLang())) {
-							if (s.matches(r.getvalue())) {
-								saveIssue(file, i, mc.getKey(), ruleMap.get(mc.getKey()).getDescription(), null);
-							}
-						}
+					Pattern p = mcPatternMap.get(mc.getKey());
+					
+					if (p != null && p.matcher(s).matches()) {
+						saveIssue(file, i, mc.getKey(), ruleMap.get(mc.getKey()).getDescription(), null);
 					}
 				}	
 				++i;

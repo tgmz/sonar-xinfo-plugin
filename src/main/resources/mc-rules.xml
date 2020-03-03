@@ -1,10 +1,153 @@
 <xinfo-rules>
 <rule>
     <cardinality>SINGLE</cardinality>
+    <description>Hardcoded External Command</description>
+    <internalKey>MC00001</internalKey>
+    <key>MC00001</key>
+    <name>HardcodedExternalCommand</name>
+    <remediationFunction>CONSTANT_ISSUE</remediationFunction>
+    <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
+    <severity>INFO</severity>
+    <status>READY</status>
+    <tag>mc</tag>
+    <type>VULNERABILITY</type>
+</rule>
+<rule>
+    <cardinality>SINGLE</cardinality>
+    <description>Hardcoded Networ kEndpoint</description>
+    <internalKey>MC00002</internalKey>
+    <key>MC00002</key>
+    <name>HardcodedNetworkEndpoint</name>
+    <remediationFunction>CONSTANT_ISSUE</remediationFunction>
+    <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
+    <severity>INFO</severity>
+    <status>READY</status>
+    <tag>mc</tag>
+    <type>VULNERABILITY</type>
+</rule>
+<rule>
+    <cardinality>SINGLE</cardinality>
+    <description>Network Port Listening</description>
+    <internalKey>MC00003</internalKey>
+    <key>MC00003</key>
+    <name>HardcodedNetworkEndpoint</name>
+    <remediationFunction>CONSTANT_ISSUE</remediationFunction>
+    <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
+    <severity>INFO</severity>
+    <status>READY</status>
+    <tag>mc</tag>
+    <type>VULNERABILITY</type>
+</rule>
+<rule>
+    <cardinality>SINGLE</cardinality>
+    <description>Leaked Secret</description>
+    <internalKey>MC00004</internalKey>
+    <key>MC00004</key>
+    <name>LeakedSecret</name>
+    <remediationFunction>CONSTANT_ISSUE</remediationFunction>
+    <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
+    <severity>INFO</severity>
+    <status>READY</status>
+    <tag>mc</tag>
+    <type>VULNERABILITY</type>
+</rule>
+<rule>
+    <cardinality>SINGLE</cardinality>
+    <description>Hidden Functionality</description>
+    <internalKey>MC00005</internalKey>
+    <key>MC00005</key>
+    <name>HiddenFunctionality</name>
+    <remediationFunction>CONSTANT_ISSUE</remediationFunction>
+    <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
+    <severity>INFO</severity>
+    <status>READY</status>
+    <tag>mc</tag>
+    <type>VULNERABILITY</type>
+</rule>
+<rule>
+    <cardinality>SINGLE</cardinality>
+    <description>Password Bypass</description>
+    <internalKey>MC00006</internalKey>
+    <key>MC00006</key>
+    <name>PasswordBypass</name>
+    <remediationFunction>CONSTANT_ISSUE</remediationFunction>
+    <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
+    <severity>INFO</severity>
+    <status>READY</status>
+    <tag>mc</tag>
+    <type>VULNERABILITY</type>
+</rule>
+<rule>
+    <cardinality>SINGLE</cardinality>
+    <description>Scrambling Static String</description>
+    <internalKey>MC00007</internalKey>
+    <key>MC00007</key>
+    <name>ScramblingStaticString</name>
+    <remediationFunction>CONSTANT_ISSUE</remediationFunction>
+    <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
+    <severity>INFO</severity>
+    <status>READY</status>
+    <tag>mc</tag>
+    <type>VULNERABILITY</type>
+</rule>
+<rule>
+    <cardinality>SINGLE</cardinality>
+    <description>Suspicious SQL Query</description>
+    <internalKey>MC00008</internalKey>
+    <key>MC00008</key>
+    <name>SuspiciousSQLQuery</name>
+    <remediationFunction>CONSTANT_ISSUE</remediationFunction>
+    <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
+    <severity>INFO</severity>
+    <status>READY</status>
+    <tag>mc</tag>
+    <type>VULNERABILITY</type>
+</rule>
+<rule>
+    <cardinality>SINGLE</cardinality>
+    <description>Time Bomb</description>
+    <internalKey>MC00009</internalKey>
+    <key>MC00009</key>
+    <name>TimeBomb</name>
+    <remediationFunction>CONSTANT_ISSUE</remediationFunction>
+    <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
+    <severity>INFO</severity>
+    <status>READY</status>
+    <tag>mc</tag>
+    <type>VULNERABILITY</type>
+</rule>
+<rule>
+    <cardinality>SINGLE</cardinality>
+    <description>Transaction Disruption</description>
+    <internalKey>MC00010</internalKey>
+    <key>MC00010</key>
+    <name>TransactionDisruption</name>
+    <remediationFunction>CONSTANT_ISSUE</remediationFunction>
+    <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
+    <severity>INFO</severity>
+    <status>READY</status>
+    <tag>mc</tag>
+    <type>VULNERABILITY</type>
+</rule>
+<rule>
+    <cardinality>SINGLE</cardinality>
+    <description>Privacy Violation</description>
+    <internalKey>MC00011</internalKey>
+    <key>MC00011</key>
+    <name>PrivacyViolation</name>
+    <remediationFunction>CONSTANT_ISSUE</remediationFunction>
+    <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
+    <severity>INFO</severity>
+    <status>READY</status>
+    <tag>mc</tag>
+    <type>VULNERABILITY</type>
+</rule>
+<rule>
+    <cardinality>SINGLE</cardinality>
     <description>Email Spying</description>
     <internalKey>MC00016</internalKey>
     <key>MC00016</key>
-    <name>Email Spying</name>
+    <name>EmailSpying</name>
     <remediationFunction>CONSTANT_ISSUE</remediationFunction>
     <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
     <severity>INFO</severity>
@@ -17,7 +160,7 @@
     <description>Dynamic queries may result in SQL injection</description>
     <internalKey>MC00042</internalKey>
     <key>MC00042</key>
-    <name>Dynamic query</name>
+    <name>DynamicQuery</name>
     <remediationFunction>CONSTANT_ISSUE</remediationFunction>
     <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
     <severity>INFO</severity>

@@ -1,12 +1,54 @@
 <mc-pattern>
 	<mc>
+		<key>MC00001</key>
+		<regex lang="all" casesensitive="false">^.*rexx.*$</regex>
+	</mc>
+	<mc>
+		<key>MC00002</key>
+		<regex lang="all" casesensitive="false">^.*https?|ftp://.*$</regex>
+	</mc>
+	<mc>
+		<key>MC00003</key>
+		<regex lang="all" casesensitive="false">^.*idmsock|socket.*$</regex>
+	</mc>
+	<mc>
+		<key>MC00004</key>
+		<regex lang="all" casesensitive="false">^.*Y[0-9]E[0-9]{4}|Y[0-9]{5}|YA[0-9]{5}|bab[0-9]{4}.*$</regex>
+	</mc>
+	<mc>
+		<key>MC00005</key>
+		<regex lang="pli" casesensitive="false">^.* %if ".*$</regex>
+	</mc>
+	<mc>
+		<key>MC00006</key>
+		<regex lang="all" casesensitive="false">^.*passw.*$</regex>
+	</mc>
+	<mc>
+		<key>MC00007</key>
+		<regex lang="all" casesensitive="false">^.*csf.*$</regex>
+	</mc>
+	<mc>
+		<key>MC00008</key>
+		<regex lang="all" casesensitive="false">^.*drop table.*$</regex>
+	</mc>
+	<mc>
+		<key>MC00009</key>
+		<regex lang="all" casesensitive="false">^.*[0-9]{2}\.[0-9]{2}\.20[2-9][0-9].*$</regex>
+	</mc>
+	<mc>
+		<key>MC00010</key>
+		<regex lang="all" casesensitive="false">^.*rollb.*$</regex>
+	</mc>
+	<mc>
+		<key>MC00011</key>
+		<regex lang="all" casesensitive="false">^.* PUT.*\(.*$</regex>
+	</mc>
+	<mc>
 		<key>MC00016</key>
-		<description>EmailSpying</description>
-		<regex lang="all">^.*([0-9a-zA-Z]([\+\-_\.][0-9a-zA-Z]+)*)+@(([0-9a-zA-Z][-\w]*[0-9a-zA-Z]*\.)+[a-zA-Z0-9]{2,17}).*$</regex>
+		<regex lang="all" casesensitive="true">^.*([0-9a-zA-Z]([\+\-_\.][0-9a-zA-Z]+)*)+@(([0-9a-zA-Z][-\w]*[0-9a-zA-Z]*\.)+[a-zA-Z0-9]{2,17}).*$</regex>
 	</mc>
 	<mc>
 		<key>MC00042</key>
-		<description>StaticSQLQuery</description>
-		<regex lang="all">^.*IMMEDIATE.*$</regex>
+		<regex lang="all" casesensitive="false">^.* IMMEDIATE .*$</regex>
 	</mc>
 </mc-pattern>

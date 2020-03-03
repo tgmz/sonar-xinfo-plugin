@@ -1,0 +1,54 @@
+grep options
+-E: Extended regular expression
+-i: Case insenstive
+-a: Treat binary as text
+
+HardcodedExternalCommand
+grep -Eia "rexx" *.*
+
+EmailSpying
+grep -Ei "([0-9a-zA-Z]([\+\-_\.][0-9a-zA-Z]+)*)+@(([0-9a-zA-Z][-\w]*[0-9a-zA-Z]*\.)+[a-zA-Z0-9]{2,17})"	
+
+HardcodedNetworkEndpoint
+grep -Ei "https?|ftp://"
+
+NetworkPortListening
+grep -Eia "idmsock|socket"
+
+LeakedSecret
+grep -Ei "Y[0-9]E[0-9]{4}|Y[0-9]{5}|YA[0-9]{5}|bab[0-9]{4}"
+
+HiddenFunctionality
+grep -Eia " %if" *.pli
+ 
+ReflectionAbuse
+-
+
+PasswordBypass
+grep -Ei "passw"
+
+RuntimeCodeDomCompilation
+-
+
+RuntimeReflectionCompilation
+- 
+
+ScramblingStaticString
+grep -Ei "csf" 
+
+StaticSQLQuery
+grep -Ei " immediate " *.pli
+
+SuspiciousSQLQuery
+grep -Ei "drop table" *.pli
+
+SuspiciousString
+
+TimeBomb
+grep -Eia "[0-9]{2}\.[0-9]{2}\.20[2-9][0-9]" *.*
+
+TransactionDisruption
+grep -Ei " rollb" *.pli
+
+PrivacyViolation
+grep -Ei " PUT.*\(" *.pli
