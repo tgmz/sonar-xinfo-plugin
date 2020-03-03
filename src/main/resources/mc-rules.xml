@@ -144,6 +144,19 @@
 </rule>
 <rule>
     <cardinality>SINGLE</cardinality>
+    <description>Hardcoded IP</description>
+    <internalKey>MC00012</internalKey>
+    <key>MC00012</key>
+    <name>HardcodedIP</name>
+    <remediationFunction>CONSTANT_ISSUE</remediationFunction>
+    <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
+    <severity>INFO</severity>
+    <status>READY</status>
+    <tag>mc</tag>
+    <type>VULNERABILITY</type>
+</rule>
+<rule>
+    <cardinality>SINGLE</cardinality>
     <description>Email Spying</description>
     <internalKey>MC00016</internalKey>
     <key>MC00016</key>
