@@ -55,7 +55,7 @@ import de.tgmz.sonar.plugins.xinfo.plicomp.PACKAGE;
  */
 public abstract class AbstractXinfoIssuesLoader implements Sensor {
 	private static final Logger LOGGER = Loggers.get(AbstractXinfoIssuesLoader.class);
-	private static final Pattern COMMENT = Pattern.compile("^\\s*\\/\\*.*\\*\\/\\s*$");
+	private static final Pattern COMMENT = Pattern.compile("^\\s*\\/\\*.*(\\*\\/)?\\s*$");
 	private final FileSystem fileSystem;
 	private SensorContext context;
 	private Language lang;
