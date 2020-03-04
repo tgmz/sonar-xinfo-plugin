@@ -55,6 +55,7 @@ import de.tgmz.sonar.plugins.xinfo.plicomp.PACKAGE;
  */
 public abstract class AbstractXinfoIssuesLoader implements Sensor {
 	private static final Logger LOGGER = Loggers.get(AbstractXinfoIssuesLoader.class);
+	private static final Pattern COMMENT = Pattern.compile("^\\s*\\/\\*.*\\*\\/\\s*$");
 	private final FileSystem fileSystem;
 	private SensorContext context;
 	private Language lang;
@@ -223,9 +224,19 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 	private void findMc(InputFile file) {
 		try (BufferedReader br = new BufferedReader(new InputStreamReader(file.inputStream()))) {
 			String s;
-			int i = 1;
+			int i = 0;
 			
 			while ((s = br.readLine()) != null) {
+				++i; 
+				
+				if (s.length() > 72) {
+					s = s.substring(0,  72);
+				}
+				
+				if (COMMENT.matcher(s).matches()) {
+					continue; 	// Therefore we must increment i first!!!
+				}
+				
 				for (Mc mc : mcPatterns.getMc()) {
 					Pattern p = mcPatternMap.get(mc.getKey());
 					
@@ -233,7 +244,6 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 						saveIssue(file, i, mc.getKey(), ruleMap.get(mc.getKey()).getDescription(), null);
 					}
 				}	
-				++i;
 			}
 		} catch (IOException e) {
 			LOGGER.error("Error reading {}", file, e);
