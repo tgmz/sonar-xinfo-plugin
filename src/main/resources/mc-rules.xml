@@ -14,7 +14,7 @@
 </rule>
 <rule>
     <cardinality>SINGLE</cardinality>
-    <description>Hardcoded Networ kEndpoint</description>
+    <description>Hardcoded Network Endpoint</description>
     <internalKey>MC00002</internalKey>
     <key>MC00002</key>
     <name>HardcodedNetworkEndpoint</name>
@@ -30,7 +30,7 @@
     <description>Network Port Listening</description>
     <internalKey>MC00003</internalKey>
     <key>MC00003</key>
-    <name>HardcodedNetworkEndpoint</name>
+    <name>NetworkPortListening</name>
     <remediationFunction>CONSTANT_ISSUE</remediationFunction>
     <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
     <severity>INFO</severity>

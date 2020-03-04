@@ -1,58 +1,61 @@
 <mc-pattern>
 	<mc>
 		<key>MC00001</key>
-		<regex lang="all" casesensitive="false">^.*rexx.*</regex>
+		<regex lang="all" casesensitive="false">^.*\brexx.*$</regex>
 	</mc>
 	<mc>
 		<key>MC00002</key>
-		<regex lang="all" casesensitive="false">^.*https?|ftp://.*</regex>
+		<regex lang="all" casesensitive="false">^.*https?|ftp://.*$</regex>
 	</mc>
 	<mc>
 		<key>MC00003</key>
-		<regex lang="all" casesensitive="false">^.*idmsock|socket.*</regex>
+		<regex lang="all" casesensitive="false">^.*idmsock|socket.*$</regex>
 	</mc>
 	<mc>
 		<key>MC00004</key>
-		<regex lang="all" casesensitive="false">^.*Y[0-9]E[0-9]{4}|Y[0-9]{5}|YA[0-9]{5}|bab[0-9]{4}.*</regex>
+		<regex lang="all" casesensitive="false">^.*\bY[0-9]E?[0-9]{4}\b.*$</regex>
+		<regex lang="all" casesensitive="false">^.*\bYA[0-9]E?[0-9]{4}\b.*$</regex>
+		<regex lang="all" casesensitive="false">^.*\bbab[0-9]{4}\b.*$</regex>
 	</mc>
 	<mc>
 		<key>MC00005</key>
-		<regex lang="pli" casesensitive="false">^.*\b%if.*</regex>
+		<regex lang="pli" casesensitive="false">^.*\b%if\b.*$</regex>
 	</mc>
 	<mc>
 		<key>MC00006</key>
-		<regex lang="all" casesensitive="false">^.*\bpassw.*</regex>
+		<regex lang="all" casesensitive="false">^.*\bpassw.*$</regex>
 	</mc>
 	<mc>
 		<key>MC00007</key>
-		<regex lang="all" casesensitive="false">^.*csf.*</regex>
+		<regex lang="all" casesensitive="false">^.*csf.*$</regex>
 	</mc>
 	<mc>
 		<key>MC00008</key>
-		<regex lang="all" casesensitive="false">^.*\bdrop\s+table\b.*</regex>
+		<regex lang="all" casesensitive="false">^.*\bdrop\s+table\b.*$</regex>
 	</mc>
 	<mc>
 		<key>MC00009</key>
-		<regex lang="all" casesensitive="false">^.*(\b(0?[1-9]|[12]\d|30|31)[^\w\d\r\n:](0?[1-9]|1[0-2])[^\w\d\r\n:](\d{4}|\d{2})\b)|(\b(0?[1-9]|1[0-2])[^\w\d\r\n:](0?[1-9]|[12]\d|30|31)[^\w\d\r\n:](\d{4}|\d{2})\b)|\b(\d{4})(0[1-9]|1[0-2])(0[1-9]|[12]\d|30|31).*$</regex>
+		<regex lang="all" casesensitive="false">^.*\b((0?[1-9]|[12]\d|30|31)[^\w\d\r\n:](0?[1-9]|1[0-2])[^\w\d\r\n:](\d{4}|\d{2})\b)|(\b(0?[1-9]|1[0-2])[^\w\d\r\n:](0?[1-9]|[12]\d|30|31)[^\w\d\r\n:](\d{4}|\d{2})\b)|\b(\d{4})(0[1-9]|1[0-2])(0[1-9]|[12]\d|30|31)\b.*$</regex>
 	</mc>
 	<mc>
 		<key>MC00010</key>
-		<regex lang="all" casesensitive="false">^.*\brollb.*</regex>
+		<regex lang="all" casesensitive="false">^.*\brollb.*$</regex>
 	</mc>
 	<mc>
 		<key>MC00011</key>
-		<regex lang="all" casesensitive="false">^.*\bput.*\(.*rating|betr|adr.*</regex>
+		<regex lang="pli" casesensitive="false">^.*\bput.*\(.*rating|betr|add?r.*$</regex>
+		<regex lang="cbl" casesensitive="false">^.*\bwrite.*rating|betr|add?r.*$</regex>
 	</mc>
 	<mc>
 		<key>MC00012</key>
-		<regex lang="all" casesensitive="false">^.*((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?).*</regex>
+		<regex lang="all" casesensitive="false">^.*\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b.*$</regex>
 	</mc>
 	<mc>
 		<key>MC00016</key>
-		<regex lang="all" casesensitive="true">^.*([0-9a-zA-Z]([\+\-_\.][0-9a-zA-Z]+)*)+@(([0-9a-zA-Z][-\w]*[0-9a-zA-Z]*\.)+[a-zA-Z0-9]{2,17}).*</regex>
+		<regex lang="all" casesensitive="true">^.*\b([0-9a-zA-Z]([\+\-_\.][0-9a-zA-Z]+)*)+@(([0-9a-zA-Z][-\w]*[0-9a-zA-Z]*\.)+[a-zA-Z0-9]{2,17})\b.*$</regex>
 	</mc>
 	<mc>
 		<key>MC00042</key>
-		<regex lang="all" casesensitive="false">^.*\bIMMEDIATE\b.*</regex>
+		<regex lang="all" casesensitive="false">^.*\bexecute\s+immediate\b.*$</regex>
 	</mc>
 </mc-pattern>
