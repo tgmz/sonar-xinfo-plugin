@@ -157,6 +157,19 @@
 </rule>
 <rule>
     <cardinality>SINGLE</cardinality>
+    <description>Invalid use of tmp</description>
+    <internalKey>MC00013</internalKey>
+    <key>MC00013</key>
+    <name>InvalidUseOfTmp</name>
+    <remediationFunction>CONSTANT_ISSUE</remediationFunction>
+    <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
+    <severity>INFO</severity>
+    <status>READY</status>
+    <tag>mc</tag>
+    <type>VULNERABILITY</type>
+</rule>
+<rule>
+    <cardinality>SINGLE</cardinality>
     <description>Email Spying</description>
     <internalKey>MC00016</internalKey>
     <key>MC00016</key>

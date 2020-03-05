@@ -23,8 +23,6 @@ public class ColorizingData {
 	private int endLineNumber;
 	private int endOffset;
 	private TypeOfText type;
-
-	@SuppressWarnings("unused") 	// Content is only used for debugging
 	private String content;
 
 	public ColorizingData(int startLineNumber, int startOffset, int endLineNumber, int endOffset, String content, TypeOfText type) {
@@ -98,5 +96,9 @@ public class ColorizingData {
 		}
 		
 		return true;
+	}
+
+	public String getContent() {
+		return content;
 	}
 }

@@ -67,8 +67,15 @@ public abstract class AbstractColorizer<T extends IColorizing> implements Sensor
 				for (Iterator<ColorizingData> iterator = ph.getAreas().getAreas().iterator(); iterator.hasNext();) {
 					ColorizingData hd = iterator.next();
 
-					//CHECKSTYLE DISABLE LineLength for 1 line
-					TextRange newRange = ((DefaultInputFile) inputFile).newRange(hd.getStartLineNumber(), hd.getStartOffset(), hd.getEndLineNumber(), hd.getEndOffset());
+					TextRange newRange;
+					try {
+						//CHECKSTYLE DISABLE LineLength for 1 line
+						newRange = ((DefaultInputFile) inputFile).newRange(hd.getStartLineNumber(), hd.getStartOffset(), hd.getEndLineNumber(), hd.getEndOffset());
+					} catch (IllegalArgumentException e) {
+						LOGGER.error("Invalid text range: Line start: {}. Line end: {}, Offset start: {}. Offset end: {} on content {}", hd.getStartLineNumber(), hd.getEndLineNumber(), hd.getStartOffset(), hd.getEndOffset(), hd.getContent());
+						
+						continue;
+					}
 				
 					newHighlighting.highlight(newRange, hd.getType());
 				}
