@@ -64,10 +64,6 @@ public class SasColorizing extends AbstractColorizing {
 			while (m.find()) {
 				String token = getContent()[i].substring(m.start(), m.end());
 			
-				if (m.start() > 71) {
-					continue;
-				}
-			
 				colorizeToken(i+1, m.start(), m.end(), token);
 			}
 		}

@@ -36,6 +36,8 @@ import de.tgmz.sonar.plugins.xinfo.sensors.CobolIssuesLoader;
 import de.tgmz.sonar.plugins.xinfo.sensors.CpdTokenizerSensor;
 import de.tgmz.sonar.plugins.xinfo.sensors.PliColorizer;
 import de.tgmz.sonar.plugins.xinfo.sensors.PliIssuesLoader;
+import de.tgmz.sonar.plugins.xinfo.sensors.SasColorizer;
+import de.tgmz.sonar.plugins.xinfo.sensors.SasIssuesLoader;
 
 /**
  * Tests for all sensors.
@@ -62,6 +64,7 @@ public class SensorTest {
 		((SensorContextTester) sensorContext).fileSystem().add(SonarTestFileUtil.create(LOC, "asmtest.asm", Language.ASSEMBLER));
 		((SensorContextTester) sensorContext).fileSystem().add(SonarTestFileUtil.create(LOC, "cobtest.cbl", Language.COBOL));
 		((SensorContextTester) sensorContext).fileSystem().add(SonarTestFileUtil.create(LOC, "LIP_FIP_SIGN_BASIS_ACCESS.sas", Language.SAS));
+		((SensorContextTester) sensorContext).fileSystem().add(SonarTestFileUtil.create(LOC, "A55126.sas", Language.SAS));
 		
 		sensorDescriptor = new DefaultSensorDescriptor();
 		
@@ -101,6 +104,18 @@ public class SensorTest {
 	public void testAssember() {
 		AssemblerColorizer colorizer = new AssemblerColorizer();
 		AssemblerIssuesLoader issuesLoader = new AssemblerIssuesLoader(sensorContext.fileSystem());
+		
+		colorizer.describe(sensorDescriptor);
+		colorizer.execute(sensorContext);
+		
+		issuesLoader.describe(sensorDescriptor);
+		issuesLoader.execute(sensorContext);
+	}
+
+	@Test
+	public void testSas() {
+		SasColorizer colorizer = new SasColorizer();
+		SasIssuesLoader issuesLoader = new SasIssuesLoader(sensorContext.fileSystem());
 		
 		colorizer.describe(sensorDescriptor);
 		colorizer.execute(sensorContext);

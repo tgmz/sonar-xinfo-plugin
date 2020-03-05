@@ -19,6 +19,7 @@ import de.tgmz.sonar.plugins.xinfo.languages.AssemblerLanguage;
 import de.tgmz.sonar.plugins.xinfo.languages.CobolLanguage;
 import de.tgmz.sonar.plugins.xinfo.languages.Language;
 import de.tgmz.sonar.plugins.xinfo.languages.PliLanguage;
+import de.tgmz.sonar.plugins.xinfo.languages.SasLanguage;
 
 /**
  * Simple testcases for languages
@@ -30,6 +31,7 @@ public class LanguageTest {
 		assertArrayEquals(new String[] {"pli", "pl1", "inc"}, new PliLanguage().getFileSuffixes());
 		assertArrayEquals(new String[] {"cbl", "cob", "cpy"}, new CobolLanguage().getFileSuffixes());
 		assertArrayEquals(new String[] {"asm", "mac"}, new AssemblerLanguage().getFileSuffixes());
+		assertArrayEquals(new String[] {"sas"}, new SasLanguage().getFileSuffixes());
 	}
 
 	@Test
@@ -46,6 +48,9 @@ public class LanguageTest {
 		
 		assertEquals("xinfo-asm", Language.ASSEMBLER.getRepoKey());
 		assertEquals("Xinfo Assembler", Language.ASSEMBLER.getRepoName());
+		
+		assertEquals("xinfo-sas", Language.SAS.getRepoKey());
+		assertEquals("Xinfo SAS", Language.SAS.getRepoName());
 	}
 
 	@Test(expected=IllegalArgumentException.class)

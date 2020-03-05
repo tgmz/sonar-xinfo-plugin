@@ -146,26 +146,7 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 					String message = m.getMSGTEXT();
 					
 					if (context.config().getBoolean(XinfoConfig.XINFO_EXTRA).orElse(Boolean.FALSE)) {
-						//The procedure procedure is not referenced.
-						if ("IBM1213I W".equals(ruleKey) && message.contains("SEQERR")) {
-							severity = Severity.INFO;
-						}
-						
-						//Variable variable is unreferenced.
-						if ("IBM2418I E".equals(ruleKey) && message.contains("PLERROR")) {
-							severity = Severity.INFO;
-						}
-						
-						//Argument to MAIN procedure is not CHARACTER VARYING.
-						if ("IBM1195I W".equals(ruleKey)) {
-							try {
-								if (file.contents().contains("PIMS")) {
-									severity = Severity.INFO;
-								}
-							} catch (IOException e) {
-								LOGGER.warn("Cannot get contents of {}", file);
-							}
-						}
+						severity = computeExtraSeverity(file, ruleKey, message);
 					}
 					
 					saveIssue(file, effectiveMessageLine, ruleKey, message, severity);
@@ -178,6 +159,31 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 		}
 		
 		findMc(file);
+	}
+
+	private Severity computeExtraSeverity(InputFile file, String ruleKey, String message) {
+		//The procedure procedure is not referenced.
+		if ("IBM1213I W".equals(ruleKey) && message.contains("SEQERR")) {
+			return Severity.INFO;
+		}
+		
+		//Variable variable is unreferenced.
+		if ("IBM2418I E".equals(ruleKey) && message.contains("PLERROR")) {
+			return Severity.INFO;
+		}
+		
+		//Argument to MAIN procedure is not CHARACTER VARYING.
+		if ("IBM1195I W".equals(ruleKey)) {
+			try {
+				if (file.contents().contains("PIMS")) {
+					return Severity.INFO;
+				}
+			} catch (IOException e) {
+				LOGGER.warn("Cannot get contents of {}", file);
+			}
+		}
+		
+		return null;
 	}
 
 	private void saveIssue(final InputFile inputFile, int line, String externalRuleKey, final String message, @Nullable Severity severity) {
