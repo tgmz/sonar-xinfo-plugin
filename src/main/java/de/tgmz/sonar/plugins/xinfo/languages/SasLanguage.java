@@ -11,7 +11,7 @@
 package de.tgmz.sonar.plugins.xinfo.languages;
 
 /**
- * This class defines the PL/I language for Sonar.
+ * This class defines the SAS language for Sonar.
  */
 public final class SasLanguage extends LanguageBridge {
 	public SasLanguage() {

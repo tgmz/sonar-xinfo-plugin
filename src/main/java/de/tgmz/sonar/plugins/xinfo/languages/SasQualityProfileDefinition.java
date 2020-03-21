@@ -11,7 +11,7 @@
 package de.tgmz.sonar.plugins.xinfo.languages;
 
 /**
- * Default Quality profile for the projects having files of language "pli"
+ * Default Quality profile for the projects having files of language "sas"
  */
 public final class SasQualityProfileDefinition extends AbstractXinfoQualityProfileDefinition {
 	public SasQualityProfileDefinition() {

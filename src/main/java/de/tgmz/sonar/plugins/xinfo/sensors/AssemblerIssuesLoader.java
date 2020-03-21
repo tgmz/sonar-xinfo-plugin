@@ -15,7 +15,7 @@ import org.sonar.api.batch.fs.FileSystem;
 import de.tgmz.sonar.plugins.xinfo.languages.Language;
 
 /**
- * Sensor for QA of HL Assembler programes.
+ * Sensor for QA of HL Assembler programs.
  */
 public class AssemblerIssuesLoader extends AbstractXinfoIssuesLoader {
 
