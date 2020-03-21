@@ -21,6 +21,7 @@ public enum Language {
 	COBOL("cbl", "Cobol", "cbl,cob,cpy", "cobol-rules.xml", "xinfo-cbl", "Xinfo COBOL"),
 	ASSEMBLER("asm", "Assembler", "asm,mac", "assembler-rules.xml", "xinfo-asm", "Xinfo Assembler"),
 	SAS("sas", "SAS", "sas", "sas-rules.xml", "xinfo-sas", "Xinfo SAS"),
+	MACRO("mac", "Macro", "inc,mac,cpy", "mac-rules.xml", "xinfo-mac", "Xinfo Macro"),
 	;
 	
 	private String key;
@@ -49,18 +50,13 @@ public enum Language {
 	}
 
 	public static Language getByKey(String key) {
-		switch (key) {
-		case "pli":
-			return PLI;
-		case "cbl":
-			return COBOL;
-		case "asm":
-			return ASSEMBLER;
-		case "sas":
-			return SAS;
-		default:
-			throw new IllegalArgumentException("No language for key [" + key + "]");
+		for (Language l : values()) {
+			if (key.equals(l.key)) {
+				return l;
+			}
 		}
+
+		throw new IllegalArgumentException("No language for key [" + key + "]");
 	}
 
 	public String getKey() {

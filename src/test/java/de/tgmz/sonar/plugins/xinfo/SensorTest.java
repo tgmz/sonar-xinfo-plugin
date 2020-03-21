@@ -67,6 +67,7 @@ public class SensorTest {
 		((SensorContextTester) sensorContext).fileSystem().add(SonarTestFileUtil.create(LOC, "cobtest.cbl", Language.COBOL));
 		((SensorContextTester) sensorContext).fileSystem().add(SonarTestFileUtil.create(LOC, "LIP_FIP_SIGN_BASIS_ACCESS.sas", Language.SAS));
 		((SensorContextTester) sensorContext).fileSystem().add(SonarTestFileUtil.create(LOC, "A55126.sas", Language.SAS));
+		((SensorContextTester) sensorContext).fileSystem().add(SonarTestFileUtil.create(LOC, "mactest.inc", Language.MACRO));
 		
 		sensorDescriptor = new DefaultSensorDescriptor();
 		
