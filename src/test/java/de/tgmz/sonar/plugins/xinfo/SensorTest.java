@@ -51,6 +51,7 @@ public class SensorTest {
 	public static void setupOnce() throws IOException {
 		MapSettings ms = new MapSettings();
 		ms.setProperty(XinfoConfig.XINFO_ROOT, LOC + File.separator +"xml");
+		ms.setProperty(XinfoConfig.XINFO_EXTRA, "true");
 		
 		File baseDir = new File(LOC);
 		
@@ -61,6 +62,7 @@ public class SensorTest {
 		((SensorContextTester) sensorContext).fileSystem().add(SonarTestFileUtil.create(LOC, "plitest5.pli", Language.PLI));
 		((SensorContextTester) sensorContext).fileSystem().add(SonarTestFileUtil.create(LOC, "plitest6.pli", Language.PLI));
 		((SensorContextTester) sensorContext).fileSystem().add(SonarTestFileUtil.create(LOC, "plitest7.pli", Language.PLI));
+		((SensorContextTester) sensorContext).fileSystem().add(SonarTestFileUtil.create(LOC, "plitest8.pli", Language.PLI));
 		((SensorContextTester) sensorContext).fileSystem().add(SonarTestFileUtil.create(LOC, "asmtest.asm", Language.ASSEMBLER));
 		((SensorContextTester) sensorContext).fileSystem().add(SonarTestFileUtil.create(LOC, "cobtest.cbl", Language.COBOL));
 		((SensorContextTester) sensorContext).fileSystem().add(SonarTestFileUtil.create(LOC, "LIP_FIP_SIGN_BASIS_ACCESS.sas", Language.SAS));
