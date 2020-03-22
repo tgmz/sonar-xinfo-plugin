@@ -34,6 +34,7 @@ import de.tgmz.sonar.plugins.xinfo.sensors.AssemblerIssuesLoader;
 import de.tgmz.sonar.plugins.xinfo.sensors.CobolColorizer;
 import de.tgmz.sonar.plugins.xinfo.sensors.CobolIssuesLoader;
 import de.tgmz.sonar.plugins.xinfo.sensors.CpdTokenizerSensor;
+import de.tgmz.sonar.plugins.xinfo.sensors.MacroIssuesLoader;
 import de.tgmz.sonar.plugins.xinfo.sensors.PliColorizer;
 import de.tgmz.sonar.plugins.xinfo.sensors.PliIssuesLoader;
 import de.tgmz.sonar.plugins.xinfo.sensors.SasColorizer;
@@ -110,6 +111,14 @@ public class SensorTest {
 		
 		colorizer.describe(sensorDescriptor);
 		colorizer.execute(sensorContext);
+		
+		issuesLoader.describe(sensorDescriptor);
+		issuesLoader.execute(sensorContext);
+	}
+
+	@Test
+	public void testMacro() {
+		MacroIssuesLoader issuesLoader = new MacroIssuesLoader(sensorContext.fileSystem());
 		
 		issuesLoader.describe(sensorDescriptor);
 		issuesLoader.execute(sensorContext);

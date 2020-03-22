@@ -14,6 +14,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.ExecutionException;
@@ -70,7 +72,7 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 	protected SensorContext context;
 	private Language lang;
 	private Map<String, Rule> ruleMap;
-	private Map<String, Pattern> mcPatternMap;
+	private Map<String, List<Pattern>> mcPatternListMap;
 	private McPattern mcPatterns;
 
 	public AbstractXinfoIssuesLoader(final FileSystem fileSystem, Language lang) {
@@ -85,14 +87,26 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 		
 		mcPatterns = PatternFactory.getInstance().getMcPatterns();
 		
-		mcPatternMap = new TreeMap<>();
+		mcPatternListMap = new TreeMap<>();
 		
 		for (Mc mc: mcPatterns.getMc()) {
 			for (Regex r : mc.getRegex()) {
-				if (lang.getKey().equals(r.getLang()) || "all".equals(r.getLang())) {
-					Pattern p = "true".equals(r.getCasesensitive()) ? Pattern.compile(r.getvalue()) : Pattern.compile(r.getvalue(), Pattern.CASE_INSENSITIVE); 
-					
-					mcPatternMap.put(mc.getKey(), p);
+				String[] languagesForPattern = r.getLang().split("\\,");
+				
+				for (String languageForPattern : languagesForPattern) {
+					if (lang.getKey().equals(languageForPattern) || "all".equals(r.getLang())) {
+						Pattern p = "true".equals(r.getCasesensitive()) ? Pattern.compile(r.getvalue()) : Pattern.compile(r.getvalue(), Pattern.CASE_INSENSITIVE); 
+
+						List<Pattern> list = mcPatternListMap.get(mc.getKey());
+						
+						if (list == null) { 
+							list = new LinkedList<>();
+							
+							mcPatternListMap.put(mc.getKey(), list);
+						}
+						
+						list.add(p);
+					}
 				}
 			}
 		}
@@ -255,11 +269,13 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 				}
 				
 				for (Mc mc : mcPatterns.getMc()) {
-					Pattern p = mcPatternMap.get(mc.getKey());
+					List<Pattern> pl = mcPatternListMap.get(mc.getKey());
 					
-					if (p != null) {
-						if (match(p, s) == MatcherResult.MATCH) {
-							saveIssue(file, i, mc.getKey(), ruleMap.get(mc.getKey()).getDescription(), null);
+					if (pl != null) {
+						for (Pattern p : pl) {
+							if (match(p, s) == MatcherResult.MATCH) {
+								saveIssue(file, i, mc.getKey(), ruleMap.get(mc.getKey()).getDescription(), null);
+							}
 						}
 					}
 				}	

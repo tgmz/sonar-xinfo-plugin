@@ -19,7 +19,7 @@
 	</mc>
 	<mc>
 		<key>MC00005</key>
-		<regex lang="pli" casesensitive="false">^.*\b%if\b.*$</regex>
+		<regex lang="pli,mac" casesensitive="false">^.*\b%if\b.*$</regex>
 	</mc>
 	<mc>
 		<key>MC00006</key>
@@ -44,12 +44,12 @@
 	</mc>
 	<mc>
 		<key>MC00011</key>
-		<regex lang="pli" casesensitive="false">^.*\bput.*\(.*rating\b.*$</regex>
-		<regex lang="pli" casesensitive="false">^.*\bput.*\(.*betr\b.*$</regex>
-		<regex lang="pli" casesensitive="false">^.*\bput.*\(.*add?r\b.*$</regex>
-		<regex lang="cbl" casesensitive="false">^.*\bwrite.*rating\b.*$</regex>
-		<regex lang="cbl" casesensitive="false">^.*\bwrite.*betr\b.*$</regex>
-		<regex lang="cbl" casesensitive="false">^.*\bwrite.*add?r\b.*$</regex>
+		<regex lang="pli,mac" casesensitive="false">^.*\bput.*\(.*rating\b.*$</regex>
+		<regex lang="pli,mac" casesensitive="false">^.*\bput.*\(.*betr\b.*$</regex>
+		<regex lang="pli,mac" casesensitive="false">^.*\bput.*\(.*add?r\b.*$</regex>
+		<regex lang="cbl,mac" casesensitive="false">^.*\bwrite.*rating\b.*$</regex>
+		<regex lang="cbl,mac" casesensitive="false">^.*\bwrite.*betr\b.*$</regex>
+		<regex lang="cbl,mac" casesensitive="false">^.*\bwrite.*add?r\b.*$</regex>
 		<regex lang="sas" casesensitive="false">^.*\bput.*rating\b*$</regex>
 		<regex lang="sas" casesensitive="false">^.*\bput.*rating\b*$</regex>
 		<regex lang="sas" casesensitive="false">^.*\bput.*betr\b*$</regex>

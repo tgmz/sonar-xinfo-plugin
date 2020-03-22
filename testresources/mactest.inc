@@ -1,2 +1,4 @@
-	3 X		CHAR(03),
+	3 X		CHAR(30) INIT ('evil@hacker.com');
+	
+	PUT SKIP LIST (SALDO_BETR);
 	
