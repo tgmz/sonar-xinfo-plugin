@@ -10,16 +10,25 @@
   *******************************************************************************/
 package de.tgmz.sonar.plugins.xinfo.sensors;
 
-import org.sonar.api.batch.fs.FileSystem;
+import java.io.IOException;
+import java.nio.charset.Charset;
 
+import org.sonar.api.batch.fs.InputFile;
+
+import de.tgmz.sonar.plugins.xinfo.color.sas.SasColorizing;
 import de.tgmz.sonar.plugins.xinfo.languages.Language;
 
 /**
- * Sensor for QA of HL Assembler programs.
+ * Sensor for syntaxhighlighting of SAS programes.
  */
-public class AssemblerIssuesLoader extends AbstractXinfoIssuesLoader {
+public class SasColorizer extends AbstractColorizer<SasColorizing> {
 
-	public AssemblerIssuesLoader(final FileSystem fileSystem) {
-		super(fileSystem, Language.ASSEMBLER);
+	public SasColorizer() {
+		super(Language.SAS);
+	}
+
+	@Override
+	protected SasColorizing getColorizing(InputFile f, Charset charset, int limit) throws IOException {
+		return new SasColorizing(f, charset, limit);
 	}
 }

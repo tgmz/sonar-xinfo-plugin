@@ -24,7 +24,7 @@ public final class XinfoConfig {
 	public static final String IGNORE_INCLUDES = "sonar.xinfo.ignore.includes";
 	public static final String XINFO_ROOT = "sonar.xinfo.root.xinfo";
 	public static final String XINFO_ENCODING = "sonar.xinfo.encoding";
-	public static final String XINFO_BLB = "sonar.xinfo.blb";
+	public static final String XINFO_EXTRA = "sonar.xinfo.extra";
 	public static final String CATEGORY = "Xinfo";
 
 	private XinfoConfig() {
@@ -49,9 +49,9 @@ public final class XinfoConfig {
 				.name("EncodingXinfo")
 				.description("XINFO encoding")
 				.category(CATEGORY).build()
-			, PropertyDefinition.builder(XINFO_BLB)
-				.name("BLBXinfo")
-				.description("BLB specifics")
+			, PropertyDefinition.builder(XINFO_EXTRA)
+				.name("ExtraXinfo")
+				.description("Extra specifics")
 				.category(CATEGORY).build()
 			);
 	}

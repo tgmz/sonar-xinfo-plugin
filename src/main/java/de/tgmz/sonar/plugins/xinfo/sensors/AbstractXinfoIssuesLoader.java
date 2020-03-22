@@ -14,8 +14,16 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.regex.Pattern;
 
 import javax.annotation.Nullable;
@@ -47,6 +55,8 @@ import de.tgmz.sonar.plugins.xinfo.mc.Regex;
 import de.tgmz.sonar.plugins.xinfo.plicomp.FILE;
 import de.tgmz.sonar.plugins.xinfo.plicomp.MESSAGE;
 import de.tgmz.sonar.plugins.xinfo.plicomp.PACKAGE;
+import de.tgmz.sonar.plugins.xinfo.sensors.matcher.CallableMatcher;
+import de.tgmz.sonar.plugins.xinfo.sensors.matcher.MatcherResult;
 
 /**
  * This Sensor loads the results of an analysis performed by 
@@ -56,11 +66,13 @@ import de.tgmz.sonar.plugins.xinfo.plicomp.PACKAGE;
 public abstract class AbstractXinfoIssuesLoader implements Sensor {
 	private static final Logger LOGGER = Loggers.get(AbstractXinfoIssuesLoader.class);
 	private static final Pattern COMMENT = Pattern.compile("^\\s*\\/\\*.*(\\*\\/)?\\s*$");
-	private final FileSystem fileSystem;
-	private SensorContext context;
+	private static final int TIMEOUT = 1000;
+	private static final ExecutorService executor = Executors.newFixedThreadPool( 10 );
+	protected final FileSystem fileSystem;
+	protected SensorContext context;
 	private Language lang;
 	private Map<String, Rule> ruleMap;
-	private Map<String, Pattern> mcPatternMap;
+	private Map<String, List<Pattern>> mcPatternListMap;
 	private McPattern mcPatterns;
 
 	public AbstractXinfoIssuesLoader(final FileSystem fileSystem, Language lang) {
@@ -75,14 +87,26 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 		
 		mcPatterns = PatternFactory.getInstance().getMcPatterns();
 		
-		mcPatternMap = new TreeMap<>();
+		mcPatternListMap = new TreeMap<>();
 		
 		for (Mc mc: mcPatterns.getMc()) {
 			for (Regex r : mc.getRegex()) {
-				if (lang.getKey().equals(r.getLang()) || "all".equals(r.getLang())) {
-					Pattern p = "true".equals(r.getCasesensitive()) ? Pattern.compile(r.getvalue()) : Pattern.compile(r.getvalue(), Pattern.CASE_INSENSITIVE); 
-					
-					mcPatternMap.put(mc.getKey(), p);
+				String[] languagesForPattern = r.getLang().split("\\,");
+				
+				for (String languageForPattern : languagesForPattern) {
+					if (lang.getKey().equals(languageForPattern) || "all".equals(r.getLang())) {
+						Pattern p = "true".equals(r.getCasesensitive()) ? Pattern.compile(r.getvalue()) : Pattern.compile(r.getvalue(), Pattern.CASE_INSENSITIVE); 
+
+						List<Pattern> list = mcPatternListMap.get(mc.getKey());
+						
+						if (list == null) { 
+							list = new LinkedList<>();
+							
+							mcPatternListMap.put(mc.getKey(), list);
+						}
+						
+						list.add(p);
+					}
 				}
 			}
 		}
@@ -124,6 +148,58 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 		}
 	}
 
+	private void createFindings(PACKAGE p, InputFile file) {
+		for (MESSAGE m : p.getMESSAGE()) {
+			try {
+				int effectiveMessageLine = computeEffectiveMessageLine(p, m);
+				
+				if (effectiveMessageLine > -1) {
+					Severity severity = null;
+					
+					String ruleKey = m.getMSGNUMBER();
+					String message = m.getMSGTEXT();
+					
+					if (context.config().getBoolean(XinfoConfig.XINFO_EXTRA).orElse(Boolean.FALSE)) {
+						severity = computeExtraSeverity(file, ruleKey, message);
+					}
+					
+					saveIssue(file, effectiveMessageLine, ruleKey, message, severity);
+				}
+			} catch (XinfoException e) {
+				LOGGER.error("Error in xinfo", e);
+			
+				continue;
+			}
+		}
+		
+		findMc(file);
+	}
+
+	private Severity computeExtraSeverity(InputFile file, String ruleKey, String message) {
+		//The procedure procedure is not referenced.
+		if ("IBM1213I W".equals(ruleKey) && message.contains("SEQERR")) {
+			return Severity.INFO;
+		}
+		
+		//Variable variable is unreferenced.
+		if ("IBM2418I E".equals(ruleKey) && message.contains("PLERROR")) {
+			return Severity.INFO;
+		}
+		
+		//Argument to MAIN procedure is not CHARACTER VARYING.
+		if ("IBM1195I W".equals(ruleKey)) {
+			try {
+				if (file.contents().contains("PIMS")) {
+					return Severity.INFO;
+				}
+			} catch (IOException e) {
+				LOGGER.warn("Cannot get contents of {}", file);
+			}
+		}
+		
+		return null;
+	}
+
 	private void saveIssue(final InputFile inputFile, int line, String externalRuleKey, final String message, @Nullable Severity severity) {
 		LOGGER.debug("Save issue {} for file {} on line {}", externalRuleKey, inputFile.filename(), line);
 		
@@ -141,8 +217,6 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 
 		NewIssue newIssue = context.newIssue().forRule(ruleKey);
 		
-		boolean found = false;
-		
 		Rule r = ruleMap.get(ruleKeyToSave);
 		
 		if (r != null) {
@@ -152,11 +226,9 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 				newIssue.overrideSeverity(severity);
 			}
 		} else {
-			if (!found) {
-				LOGGER.error("Xinfo message {} unknown", ruleKeyToSave);
+			LOGGER.error("Xinfo message {} unknown", ruleKeyToSave);
 			
-				return;
-			}
+			return;
 		}
 		
 		NewIssueLocation primaryLocation = newIssue.newLocation().on(inputFile).message(message);
@@ -176,52 +248,7 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 		newIssue.at(primaryLocation).save();
 	}
 	
-	private void createFindings(PACKAGE p, InputFile file) {
-		for (MESSAGE m : p.getMESSAGE()) {
-			try {
-				int effectiveMessageLine = computeEffectiveMessageLine(p, m);
-				
-				if (effectiveMessageLine > -1) {
-					Severity severity = null;
-					
-					String ruleKey = m.getMSGNUMBER();
-					String message = m.getMSGTEXT();
-					
-					if (context.config().getBoolean(XinfoConfig.XINFO_BLB).orElse(Boolean.FALSE)) {
-						//The procedure procedure is not referenced.
-						if ("IBM1213I W".equals(ruleKey) && message.contains("SEQERR")) {
-							severity = Severity.INFO;
-						}
-						
-						//Variable variable is unreferenced.
-						if ("IBM2418I E".equals(ruleKey) && message.contains("PLERROR")) {
-							severity = Severity.INFO;
-						}
-						
-						//Argument to MAIN procedure is not CHARACTER VARYING.
-						if ("IBM1195I W".equals(ruleKey)) {
-							try {
-								if (file.contents().contains("PIMS")) {
-									severity = Severity.INFO;
-								}
-							} catch (IOException e) {
-								LOGGER.warn("Cannot get contents of {}", file);
-							}
-						}
-					}
-					
-					saveIssue(file, effectiveMessageLine, ruleKey, message, severity);
-				}
-			} catch (XinfoException e) {
-				LOGGER.error("Error in xinfo", e);
-			
-				continue;
-			}
-		}
-		
-		findMc(file);
-	}
-	private void findMc(InputFile file) {
+	protected void findMc(InputFile file) {
 		try (BufferedReader br = new BufferedReader(new InputStreamReader(file.inputStream()))) {
 			String s;
 			int i = 0;
@@ -229,7 +256,7 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 			while ((s = br.readLine()) != null) {
 				++i; 
 				
-				if (s.length() > 72) {
+				if (lang != Language.SAS && s.length() > 72) {
 					s = s.substring(0,  72);
 				}
 				
@@ -238,10 +265,14 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 				}
 				
 				for (Mc mc : mcPatterns.getMc()) {
-					Pattern p = mcPatternMap.get(mc.getKey());
+					List<Pattern> pl = mcPatternListMap.get(mc.getKey());
 					
-					if (p != null && p.matcher(s).matches()) {
-						saveIssue(file, i, mc.getKey(), ruleMap.get(mc.getKey()).getDescription(), null);
+					if (pl != null) {
+						for (Pattern p : pl) {
+							if (match(p, s) == MatcherResult.MATCH) {
+								saveIssue(file, i, mc.getKey(), ruleMap.get(mc.getKey()).getDescription(), null);
+							}
+						}
 					}
 				}	
 			}
@@ -273,5 +304,26 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 				return Integer.parseInt(XinfoUtil.computeIncludedFromLine(p.getFILEREFERENCETABLE(), f, lang));
 			}
 		}
+	}
+	private MatcherResult match(Pattern p, String s) {
+		Future<Boolean> fb = executor.submit(new CallableMatcher(p, s));
+		
+		try {
+			if (fb.get(TIMEOUT, TimeUnit.MILLISECONDS)) {
+				LOGGER.debug("String {} matched pattern [{}]", s, p);
+
+				return MatcherResult.MATCH;
+			}
+		} catch (TimeoutException e) {
+			LOGGER.error("Error matching {} against {} in less than {} millseconds, possible redos attack", s, p, TIMEOUT);
+			
+			return MatcherResult.ERROR;
+		} catch (InterruptedException | ExecutionException e) {
+			LOGGER.error("Error matching {} against {}", s, p, e);
+			
+			return MatcherResult.ERROR;
+		}
+		
+		return MatcherResult.MISMATCH;
 	}
 }

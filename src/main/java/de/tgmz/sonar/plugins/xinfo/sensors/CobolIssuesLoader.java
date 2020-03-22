@@ -15,7 +15,7 @@ import org.sonar.api.batch.fs.FileSystem;
 import de.tgmz.sonar.plugins.xinfo.languages.Language;
 
 /**
- * Sensor for QA of Enterprise Cobol programes.
+ * Sensor for QA of Enterprise Cobol programs.
  */
 public class CobolIssuesLoader extends AbstractXinfoIssuesLoader {
 

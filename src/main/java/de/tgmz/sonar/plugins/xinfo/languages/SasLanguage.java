@@ -8,18 +8,13 @@
   * Contributors:
   *    Thomas Zierer - initial API and implementation and/or initial documentation
   *******************************************************************************/
-package de.tgmz.sonar.plugins.xinfo.sensors;
-
-import org.sonar.api.batch.fs.FileSystem;
-
-import de.tgmz.sonar.plugins.xinfo.languages.Language;
+package de.tgmz.sonar.plugins.xinfo.languages;
 
 /**
- * Sensor for QA of HL Assembler programs.
+ * This class defines the SAS language for Sonar.
  */
-public class AssemblerIssuesLoader extends AbstractXinfoIssuesLoader {
-
-	public AssemblerIssuesLoader(final FileSystem fileSystem) {
-		super(fileSystem, Language.ASSEMBLER);
+public final class SasLanguage extends LanguageBridge {
+	public SasLanguage() {
+		super(Language.SAS.getKey(), Language.SAS.getName());
 	}
 }

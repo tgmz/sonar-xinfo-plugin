@@ -24,6 +24,7 @@ import de.tgmz.sonar.plugins.xinfo.languages.AbstractXinfoQualityProfileDefiniti
 import de.tgmz.sonar.plugins.xinfo.languages.AssemblerQualityProfileDefinition;
 import de.tgmz.sonar.plugins.xinfo.languages.CobolQualityProfileDefinition;
 import de.tgmz.sonar.plugins.xinfo.languages.PliQualityProfileDefinition;
+import de.tgmz.sonar.plugins.xinfo.languages.SasQualityProfileDefinition;
 
 /**
  * Simple testcases for QualityProfile.
@@ -45,7 +46,10 @@ public class QualityProfileTest {
 	@Parameters(name = "{index}: Check for language [{0}]")
 	public static Collection<Object[]> data() {
 		Object[][] data = new Object[][] {
-				{ PliQualityProfileDefinition.class }, { CobolQualityProfileDefinition.class }, { AssemblerQualityProfileDefinition.class } ,
+				{ PliQualityProfileDefinition.class },
+				{ CobolQualityProfileDefinition.class },
+				{ AssemblerQualityProfileDefinition.class } ,
+				{ SasQualityProfileDefinition.class } ,
 		};
 		return Arrays.asList(data);
 	}

@@ -17,9 +17,11 @@ import org.sonar.api.server.rule.RulesDefinition.NewRepository;
  * Defines the supported languages.
  */
 public enum Language {
-	PLI("pli", "PL/I", "pli,pl1,inc", "pli-rules.xml", "xinfo-pli", "Xinfo PL/I")
-	, COBOL("cbl", "Cobol", "cbl,cob,cpy", "cobol-rules.xml", "xinfo-cbl", "Xinfo COBOL")
-	, ASSEMBLER("asm", "Assembler", "asm,mac", "assembler-rules.xml", "xinfo-asm", "Xinfo Assembler"),
+	PLI("pli", "PL/I", "pli,pl1,inc", "pli-rules.xml", "xinfo-pli", "Xinfo PL/I"),
+	COBOL("cbl", "Cobol", "cbl,cob,cpy", "cobol-rules.xml", "xinfo-cbl", "Xinfo COBOL"),
+	ASSEMBLER("asm", "Assembler", "asm,mac", "assembler-rules.xml", "xinfo-asm", "Xinfo Assembler"),
+	SAS("sas", "SAS", "sas", "sas-rules.xml", "xinfo-sas", "Xinfo SAS"),
+	MACRO("mac", "Macro", "inc,mac,cpy", "mac-rules.xml", "xinfo-mac", "Xinfo Macro"),
 	;
 	
 	private String key;
@@ -48,16 +50,13 @@ public enum Language {
 	}
 
 	public static Language getByKey(String key) {
-		switch (key) {
-		case "pli":
-			return PLI;
-		case "cbl":
-			return COBOL;
-		case "asm":
-			return ASSEMBLER;
-		default:
-			throw new IllegalArgumentException("No language for key [" + key + "]");
+		for (Language l : values()) {
+			if (key.equals(l.key)) {
+				return l;
+			}
 		}
+
+		throw new IllegalArgumentException("No language for key [" + key + "]");
 	}
 
 	public String getKey() {

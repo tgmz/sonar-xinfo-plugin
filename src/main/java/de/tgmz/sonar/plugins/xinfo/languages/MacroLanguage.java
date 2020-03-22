@@ -1,5 +1,5 @@
 /*******************************************************************************
-  * Copyright (c) 13.11.2016 Thomas Zierer.
+  * Copyright (c) 21.03.2020 Thomas Zierer.
   * All rights reserved. This program and the accompanying materials
   * are made available under the terms of the Eclipse Public License v2.0
   * which accompanies this distribution, and is available at
@@ -8,18 +8,13 @@
   * Contributors:
   *    Thomas Zierer - initial API and implementation and/or initial documentation
   *******************************************************************************/
-package de.tgmz.sonar.plugins.xinfo.sensors;
-
-import org.sonar.api.batch.fs.FileSystem;
-
-import de.tgmz.sonar.plugins.xinfo.languages.Language;
+package de.tgmz.sonar.plugins.xinfo.languages;
 
 /**
- * Sensor for QA of HL Assembler programs.
+ * This class defines the language of all kinds of macros e.g PL/I includes, COBOL copybooks or Assembler macros for Sonar.
  */
-public class AssemblerIssuesLoader extends AbstractXinfoIssuesLoader {
-
-	public AssemblerIssuesLoader(final FileSystem fileSystem) {
-		super(fileSystem, Language.ASSEMBLER);
+public final class MacroLanguage extends LanguageBridge {
+	public MacroLanguage() {
+		super(Language.MACRO.getKey(), Language.MACRO.getName());
 	}
 }

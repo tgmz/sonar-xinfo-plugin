@@ -8,18 +8,11 @@
   * Contributors:
   *    Thomas Zierer - initial API and implementation and/or initial documentation
   *******************************************************************************/
-package de.tgmz.sonar.plugins.xinfo.sensors;
-
-import org.sonar.api.batch.fs.FileSystem;
-
-import de.tgmz.sonar.plugins.xinfo.languages.Language;
+package de.tgmz.sonar.plugins.xinfo.color.sas;
 
 /**
- * Sensor for QA of HL Assembler programs.
+ * SAS keywords.
  */
-public class AssemblerIssuesLoader extends AbstractXinfoIssuesLoader {
-
-	public AssemblerIssuesLoader(final FileSystem fileSystem) {
-		super(fileSystem, Language.ASSEMBLER);
-	}
+public enum ReservedWords {
+	options, libname;
 }

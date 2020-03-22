@@ -8,18 +8,13 @@
   * Contributors:
   *    Thomas Zierer - initial API and implementation and/or initial documentation
   *******************************************************************************/
-package de.tgmz.sonar.plugins.xinfo.sensors;
-
-import org.sonar.api.batch.fs.FileSystem;
-
-import de.tgmz.sonar.plugins.xinfo.languages.Language;
+package de.tgmz.sonar.plugins.xinfo.languages;
 
 /**
- * Sensor for QA of HL Assembler programs.
+ * Default Quality profile for the projects having files of language "sas"
  */
-public class AssemblerIssuesLoader extends AbstractXinfoIssuesLoader {
-
-	public AssemblerIssuesLoader(final FileSystem fileSystem) {
-		super(fileSystem, Language.ASSEMBLER);
+public final class SasQualityProfileDefinition extends AbstractXinfoQualityProfileDefinition {
+	public SasQualityProfileDefinition() {
+		super(Language.SAS);
 	}
 }

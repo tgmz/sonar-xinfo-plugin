@@ -8,7 +8,7 @@
   * Contributors:
   *    Thomas Zierer - initial API and implementation and/or initial documentation
   *******************************************************************************/
-package de.tgmz.sonar.plugins.xinfo.color.pli;
+package de.tgmz.sonar.plugins.xinfo.color.sas;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -28,31 +28,23 @@ import de.tgmz.sonar.plugins.xinfo.color.ColorizingData;
 /**
  * Syntax highlighting for PL/I files.
  */
-public class PliColorizing extends AbstractColorizing {
-	private static final List<String> PLI_KEYWORDS;
-	private static final List<String> PLI_BUILTIN;
-	private static final Pattern PLI_COMMENT_PATTERN = Pattern.compile("\\/\\*.*\\*\\/");
-	private static final Pattern PLI_PREPROCESS_PATTERN = Pattern.compile("%\\w+");
-	private static final Pattern PLI_STRING_PATTERN = Pattern.compile("[\"'].*[\"']");
-	private static final Pattern PLI_WORD_PATTERN = Pattern.compile("[\\w$§\\.]+");
+public class SasColorizing extends AbstractColorizing {
+	private static final List<String> SAS_KEYWORDS;
+	private static final Pattern SAS_COMMENT_PATTERN = Pattern.compile("\\/\\*.*\\*\\/");
+	private static final Pattern SAS_STRING_PATTERN = Pattern.compile("[\"'].*[\"']");
+	private static final Pattern SAS_PROCESS_PATTERN = Pattern.compile("%\\w+");
+	private static final Pattern SAS_WORD_PATTERN = Pattern.compile("[\\w$§\\.]+");
 
 	static {
 		// Keywords
-		PLI_KEYWORDS = new ArrayList<>(ReservedWords.values().length);
+		SAS_KEYWORDS = new ArrayList<>(ReservedWords.values().length);
 		
 		for (ReservedWords rw : ReservedWords.values()) {
-			PLI_KEYWORDS.add(rw.toString());
-		}
-		
-		// Builtin functions
-		PLI_BUILTIN = new ArrayList<>(Builtin.values().length);
-		
-		for (Builtin b : Builtin.values()) {
-			PLI_BUILTIN.add(b.toString());
+			SAS_KEYWORDS.add(rw.toString());
 		}
 	}
 	
-	public PliColorizing(InputFile file, Charset charset, int limit) throws IOException {
+	public SasColorizing(InputFile file, Charset charset, int limit) throws IOException {
 		super(file, charset, limit);
 	}
 
@@ -60,24 +52,18 @@ public class PliColorizing extends AbstractColorizing {
 	protected void createAreas() {
 		// Comments
 		//TODO: Multiline comments
-		colorizeAreaByPattern(PLI_COMMENT_PATTERN, TypeOfText.COMMENT);
+		colorizeAreaByPattern(SAS_COMMENT_PATTERN, TypeOfText.COMMENT);
 		
-		// Preprocessor directives (%INCLUDE, %DCL, etc.)
-		colorizeAreaByPattern(PLI_PREPROCESS_PATTERN, TypeOfText.PREPROCESS_DIRECTIVE);
-		
+		colorizeAreaByPattern(SAS_PROCESS_PATTERN, TypeOfText.PREPROCESS_DIRECTIVE);
 		// Strings
 		//TODO: Multiline strings
-		colorizeAreaByPattern(PLI_STRING_PATTERN, TypeOfText.STRING);
+		colorizeAreaByPattern(SAS_STRING_PATTERN, TypeOfText.STRING);
 
 		for (int i = 0; i < Math.min(getLimit(), getContent().length); ++i) {
-			Matcher m = PLI_WORD_PATTERN.matcher(getContent()[i]);
+			Matcher m = SAS_WORD_PATTERN.matcher(getContent()[i]);
 		
 			while (m.find()) {
 				String token = getContent()[i].substring(m.start(), m.end());
-			
-				if (m.start() > 71) {
-					continue;
-				}
 			
 				colorizeToken(i+1, m.start(), m.end(), token);
 			}
@@ -85,15 +71,11 @@ public class PliColorizing extends AbstractColorizing {
 	}
 	
 	private void colorizeToken(int lineNumber, int startOffset, int endOffset, String token) {
-		if (PLI_KEYWORDS.contains(token.toUpperCase(Locale.ROOT))) {			
+		if (SAS_KEYWORDS.contains(token.toUpperCase(Locale.ROOT))) {			
 			getAreas().add(new ColorizingData(lineNumber, startOffset, lineNumber, endOffset, token, TypeOfText.KEYWORD));
 		} else {
-			if (PLI_BUILTIN.contains(token.toUpperCase(Locale.ROOT))) {			
-				getAreas().add(new ColorizingData(lineNumber, startOffset, lineNumber, endOffset, token, TypeOfText.KEYWORD_LIGHT));
-			} else {
-				if (NumberUtils.isNumber(token)) {
-					getAreas().add(new ColorizingData(lineNumber, startOffset, lineNumber, endOffset, token, TypeOfText.CONSTANT));
-				}
+			if (NumberUtils.isNumber(token)) {
+				getAreas().add(new ColorizingData(lineNumber, startOffset, lineNumber, endOffset, token, TypeOfText.CONSTANT));
 			}
 		}
 	}
