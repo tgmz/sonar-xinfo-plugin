@@ -11,6 +11,7 @@
 package de.tgmz.sonar.plugins.xinfo.color.sas;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -43,8 +44,8 @@ public class SasColorizing extends AbstractColorizing {
 		}
 	}
 	
-	public SasColorizing(InputFile file, int limit) throws IOException {
-		super(file, limit);
+	public SasColorizing(InputFile file, Charset charset, int limit) throws IOException {
+		super(file, charset, limit);
 	}
 
 	@Override

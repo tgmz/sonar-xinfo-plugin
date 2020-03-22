@@ -11,6 +11,7 @@
 package de.tgmz.sonar.plugins.xinfo.color.assembler;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -55,8 +56,8 @@ public class AssemblerColorizing extends AbstractColorizing {
 		}
 	}
 	
-	public AssemblerColorizing(InputFile file, int limit) throws IOException {
-		super(file, limit);
+	public AssemblerColorizing(InputFile file, Charset charset, int limit) throws IOException {
+		super(file, charset, limit);
 	}
 
 	@Override

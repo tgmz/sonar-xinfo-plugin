@@ -11,7 +11,7 @@
 package de.tgmz.sonar.plugins.xinfo.languages;
 
 /**
- * This class defines the PL/I language for Sonar.
+ * This class defines the language of all kinds of macros e.g PL/I includes, COBOL copybooks or Assembler macros for Sonar.
  */
 public final class MacroLanguage extends LanguageBridge {
 	public MacroLanguage() {

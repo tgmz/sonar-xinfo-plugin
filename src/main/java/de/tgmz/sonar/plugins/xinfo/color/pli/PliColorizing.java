@@ -11,6 +11,7 @@
 package de.tgmz.sonar.plugins.xinfo.color.pli;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -51,8 +52,8 @@ public class PliColorizing extends AbstractColorizing {
 		}
 	}
 	
-	public PliColorizing(InputFile file, int limit) throws IOException {
-		super(file, limit);
+	public PliColorizing(InputFile file, Charset charset, int limit) throws IOException {
+		super(file, charset, limit);
 	}
 
 	@Override

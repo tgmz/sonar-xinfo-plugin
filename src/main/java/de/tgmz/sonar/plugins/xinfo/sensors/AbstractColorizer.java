@@ -11,6 +11,7 @@
 package de.tgmz.sonar.plugins.xinfo.sensors;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.Iterator;
 
 import org.sonar.api.batch.fs.FileSystem;
@@ -62,7 +63,10 @@ public abstract class AbstractColorizer<T extends IColorizing> implements Sensor
 			NewHighlighting newHighlighting = context.newHighlighting().onFile(inputFile);
 			
 			try {
-				IColorizing ph = getColorizing(inputFile, Math.max(DEFAULT_LIMIT, context.config().getInt(XinfoConfig.COLORIZING_LIMIT).orElse(Integer.valueOf(5000))));
+				int limit = Math.max(DEFAULT_LIMIT, context.config().getInt(XinfoConfig.COLORIZING_LIMIT).orElse(Integer.valueOf(5000)));
+				String charset = context.config().get(XinfoConfig.XINFO_ENCODING).orElse(System.getProperty("file.encoding"));
+				
+				IColorizing ph = getColorizing(inputFile, Charset.forName(charset), limit);
 	
 				for (Iterator<ColorizingData> iterator = ph.getAreas().getAreas().iterator(); iterator.hasNext();) {
 					ColorizingData hd = iterator.next();
@@ -98,5 +102,5 @@ public abstract class AbstractColorizer<T extends IColorizing> implements Sensor
 	 * @return the implementation of the {@link IColorizing}
 	 * @throws IOException if the file can't be read 
 	 */
-	protected abstract T getColorizing(InputFile f, int limit) throws IOException;
+	protected abstract T getColorizing(InputFile f, Charset charset,  int limit) throws IOException;
 }

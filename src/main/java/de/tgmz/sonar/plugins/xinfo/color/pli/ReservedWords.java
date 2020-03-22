@@ -11,8 +11,7 @@
 package de.tgmz.sonar.plugins.xinfo.color.pli;
 
 /**
- * PL/I "keywords". I am perfectly aware that PL/I does not know reservered words but this is the most effective
- * way to colorize a PL/I program.
+ * PL/I "keywords". PL/I does not know reserved words but this is the most effective way to colorize a PL/I program.
  */
 public enum ReservedWords {
 	XMLOMIT,
