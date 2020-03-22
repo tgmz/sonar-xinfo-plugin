@@ -217,8 +217,6 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 
 		NewIssue newIssue = context.newIssue().forRule(ruleKey);
 		
-		boolean found = false;
-		
 		Rule r = ruleMap.get(ruleKeyToSave);
 		
 		if (r != null) {
@@ -228,11 +226,9 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 				newIssue.overrideSeverity(severity);
 			}
 		} else {
-			if (!found) {
-				LOGGER.error("Xinfo message {} unknown", ruleKeyToSave);
+			LOGGER.error("Xinfo message {} unknown", ruleKeyToSave);
 			
-				return;
-			}
+			return;
 		}
 		
 		NewIssueLocation primaryLocation = newIssue.newLocation().on(inputFile).message(message);
