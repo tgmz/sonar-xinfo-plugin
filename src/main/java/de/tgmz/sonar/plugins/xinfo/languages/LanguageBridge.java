@@ -10,6 +10,8 @@
   *******************************************************************************/
 package de.tgmz.sonar.plugins.xinfo.languages;
 
+import java.util.List;
+
 import org.sonar.api.resources.AbstractLanguage;
 
 /**
@@ -22,6 +24,8 @@ public class LanguageBridge extends AbstractLanguage {
 
 	@Override
 	public String[] getFileSuffixes() {
-		return Language.getByKey(getKey()).getDefaultFileSuffixes();
+		List<String> defaultFileSuffixes = Language.getByKey(getKey()).getDefaultFileSuffixes();
+		
+		return defaultFileSuffixes.toArray(new String[defaultFileSuffixes.size()]);
 	}
 }
