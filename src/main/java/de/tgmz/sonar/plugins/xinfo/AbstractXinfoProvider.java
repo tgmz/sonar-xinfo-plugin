@@ -108,9 +108,10 @@ public abstract class AbstractXinfoProvider implements IXinfoProvider {
 				// Must do this, don't know why :-)
 				xml = xml.replace("<ÜDOCTYPE", "<!DOCTYPE").replace("<|DOCTYPE", "<!DOCTYPE");
 				
-				Reader isr = new StringReader(xml);
+				try (Reader isr = new StringReader(xml)) {
+					doc = documentBuilder.parse(new InputSource(isr));
+				}
 
-				doc = documentBuilder.parse(new InputSource(isr));
 			} catch (IOException | SAXException e0) {
 				String msg = "Error parsing XINFO";
 				
