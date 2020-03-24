@@ -17,9 +17,9 @@ import org.sonar.api.server.rule.RulesDefinition.NewRepository;
  * Defines the supported languages.
  */
 public enum Language {
-	PLI("pli", "PL/I", "pli,pl1,inc", "pli-rules.xml", "xinfo-pli", "Xinfo PL/I"),
-	COBOL("cbl", "Cobol", "cbl,cob,cpy", "cobol-rules.xml", "xinfo-cbl", "Xinfo COBOL"),
-	ASSEMBLER("asm", "Assembler", "asm,mac", "assembler-rules.xml", "xinfo-asm", "Xinfo Assembler"),
+	PLI("pli", "PL/I", "pli,pl1", "pli-rules.xml", "xinfo-pli", "Xinfo PL/I"),
+	COBOL("cbl", "Cobol", "cbl,cob", "cobol-rules.xml", "xinfo-cbl", "Xinfo COBOL"),
+	ASSEMBLER("asm", "Assembler", "asm", "assembler-rules.xml", "xinfo-asm", "Xinfo Assembler"),
 	SAS("sas", "SAS", "sas", "sas-rules.xml", "xinfo-sas", "Xinfo SAS"),
 	MACRO("mac", "Macro", "inc,mac,cpy", "mac-rules.xml", "xinfo-mac", "Xinfo Macro"),
 	;
