@@ -29,9 +29,9 @@ public class LanguageTest {
 
 	@Test
 	public void testExtensions() {
-		assertArrayEquals(new String[] {"pli", "pl1", "inc"}, new PliLanguage().getFileSuffixes());
-		assertArrayEquals(new String[] {"cbl", "cob", "cpy"}, new CobolLanguage().getFileSuffixes());
-		assertArrayEquals(new String[] {"asm", "mac"}, new AssemblerLanguage().getFileSuffixes());
+		assertArrayEquals(new String[] {"pli", "pl1"}, new PliLanguage().getFileSuffixes());
+		assertArrayEquals(new String[] {"cbl", "cob"}, new CobolLanguage().getFileSuffixes());
+		assertArrayEquals(new String[] {"asm"}, new AssemblerLanguage().getFileSuffixes());
 		assertArrayEquals(new String[] {"sas"}, new SasLanguage().getFileSuffixes());
 		assertArrayEquals(new String[] {"inc", "mac", "cpy"}, new MacroLanguage().getFileSuffixes());
 	}

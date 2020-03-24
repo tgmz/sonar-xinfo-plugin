@@ -16,6 +16,7 @@ import de.tgmz.sonar.plugins.xinfo.languages.AssemblerLanguage;
 import de.tgmz.sonar.plugins.xinfo.languages.AssemblerQualityProfileDefinition;
 import de.tgmz.sonar.plugins.xinfo.languages.CobolLanguage;
 import de.tgmz.sonar.plugins.xinfo.languages.CobolQualityProfileDefinition;
+import de.tgmz.sonar.plugins.xinfo.languages.MacQualityProfileDefinition;
 import de.tgmz.sonar.plugins.xinfo.languages.MacroLanguage;
 import de.tgmz.sonar.plugins.xinfo.languages.PliLanguage;
 import de.tgmz.sonar.plugins.xinfo.languages.PliQualityProfileDefinition;
@@ -48,7 +49,7 @@ public class XinfoPlugin implements Plugin {
     context.addExtensions(CobolLanguage.class, CobolQualityProfileDefinition.class);
     context.addExtensions(AssemblerLanguage.class, AssemblerQualityProfileDefinition.class);
     context.addExtensions(SasLanguage.class, SasQualityProfileDefinition.class);
-    context.addExtension(MacroLanguage.class);
+    context.addExtensions(MacroLanguage.class, MacQualityProfileDefinition.class);
 
     // tutorial on measures
 

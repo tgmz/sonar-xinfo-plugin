@@ -10,6 +10,9 @@
   *******************************************************************************/
 package de.tgmz.sonar.plugins.xinfo.languages;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.sonar.api.profiles.RulesProfile;
 import org.sonar.api.server.rule.RulesDefinition.NewRepository;
 
@@ -17,16 +20,16 @@ import org.sonar.api.server.rule.RulesDefinition.NewRepository;
  * Defines the supported languages.
  */
 public enum Language {
-	PLI("pli", "PL/I", "pli,pl1,inc", "pli-rules.xml", "xinfo-pli", "Xinfo PL/I"),
-	COBOL("cbl", "Cobol", "cbl,cob,cpy", "cobol-rules.xml", "xinfo-cbl", "Xinfo COBOL"),
-	ASSEMBLER("asm", "Assembler", "asm,mac", "assembler-rules.xml", "xinfo-asm", "Xinfo Assembler"),
+	PLI("pli", "PL/I", "pli,pl1", "pli-rules.xml", "xinfo-pli", "Xinfo PL/I"),
+	COBOL("cbl", "Cobol", "cbl,cob", "cobol-rules.xml", "xinfo-cbl", "Xinfo COBOL"),
+	ASSEMBLER("asm", "Assembler", "asm", "assembler-rules.xml", "xinfo-asm", "Xinfo Assembler"),
 	SAS("sas", "SAS", "sas", "sas-rules.xml", "xinfo-sas", "Xinfo SAS"),
 	MACRO("mac", "Macro", "inc,mac,cpy", "mac-rules.xml", "xinfo-mac", "Xinfo Macro"),
 	;
 	
 	private String key;
 	private String name;
-	private String[] defaultFileSuffixes;
+	private List<String> defaultFileSuffixes;
 	private String rulesDefinition;
 	private String repoKey;
 	private String repoName;
@@ -43,7 +46,7 @@ public enum Language {
 	private Language(String key, String name, String defaultFileSuffixes, String rulesDefinition, String repoKey, String repoName) {
 		this.key = key;
 		this.name = name;
-		this.defaultFileSuffixes = defaultFileSuffixes.split(",");
+		this.defaultFileSuffixes = Arrays.asList(defaultFileSuffixes.split(","));
 		this.rulesDefinition = rulesDefinition;
 		this.repoKey = repoKey;
 		this.repoName = repoName;
@@ -67,7 +70,7 @@ public enum Language {
 		return name;
 	}
 
-	public String[] getDefaultFileSuffixes() {
+	public List<String> getDefaultFileSuffixes() {
 		return defaultFileSuffixes;
 	}
 

@@ -10,22 +10,11 @@
   *******************************************************************************/
 package de.tgmz.sonar.plugins.xinfo.languages;
 
-import java.util.List;
-
-import org.sonar.api.resources.AbstractLanguage;
-
 /**
- * This class acts as a bridge between the {@link AbstractLanguage} used by Sonar and the {@link Language} enum.
+ * Default Quality profile for the projects having files of language "mac"
  */
-public class LanguageBridge extends AbstractLanguage {
-	public LanguageBridge(String key, String name) {
-		super(key, name);
-	}
-
-	@Override
-	public String[] getFileSuffixes() {
-		List<String> defaultFileSuffixes = Language.getByKey(getKey()).getDefaultFileSuffixes();
-		
-		return defaultFileSuffixes.toArray(new String[defaultFileSuffixes.size()]);
+public final class MacQualityProfileDefinition extends AbstractXinfoQualityProfileDefinition {
+	public MacQualityProfileDefinition() {
+		super(Language.MACRO);
 	}
 }
