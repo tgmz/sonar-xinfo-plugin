@@ -9,4 +9,4 @@
   *    Thomas Zierer - initial API and implementation and/or initial documentation
   *******************************************************************************/
 @javax.annotation.ParametersAreNonnullByDefault
-package de.tgmz.sonar.plugins.xinfo.color.pli;
+package de.tgmz.sonar.plugins.xinfo.sensors.matcher;
