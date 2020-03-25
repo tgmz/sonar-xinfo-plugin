@@ -10,6 +10,7 @@
   *******************************************************************************/
 package de.tgmz.sonar.plugins.xinfo.sensors;
 
+import java.nio.charset.Charset;
 import java.util.Iterator;
 
 import org.sonar.api.batch.fs.FileSystem;
@@ -18,6 +19,7 @@ import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 
+import de.tgmz.sonar.plugins.xinfo.config.XinfoConfig;
 import de.tgmz.sonar.plugins.xinfo.languages.Language;
 
 /**
@@ -36,6 +38,8 @@ public class MacroIssuesLoader extends AbstractXinfoIssuesLoader {
 
 		this.context = aContext;
 		
+		Charset charset = Charset.forName(context.config().get(XinfoConfig.XINFO_ENCODING).orElse(System.getProperty("file.encoding")));
+		
 		Iterator<InputFile> fileIterator = fileSystem.inputFiles(fileSystem.predicates().hasLanguage(Language.MACRO.getKey())).iterator();
 
 		int ctr = 0;
@@ -43,7 +47,7 @@ public class MacroIssuesLoader extends AbstractXinfoIssuesLoader {
 		while (fileIterator.hasNext()) {
 			InputFile inputFile = fileIterator.next();
 			
-			findMc(inputFile);
+			findMc(inputFile, charset);
 			
 			if (++ctr % 100 == 0) {
 				LOGGER.info("{} files processed, current is {}", ctr, inputFile.filename());

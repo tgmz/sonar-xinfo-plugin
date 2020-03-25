@@ -13,6 +13,7 @@ package de.tgmz.sonar.plugins.xinfo.sensors;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -124,6 +125,8 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 
 		this.context = aContext;
 		
+		Charset charset = Charset.forName(context.config().get(XinfoConfig.XINFO_ENCODING).orElse(System.getProperty("file.encoding")));
+		
 		Iterator<InputFile> fileIterator = fileSystem.inputFiles(fileSystem.predicates().hasLanguage(lang.getKey())).iterator();
 
 		int ctr = 0;
@@ -140,7 +143,7 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 				continue;
 			}
 				
-			createFindings(p, inputFile);
+			createFindings(p, inputFile, charset);
 			
 			if (++ctr % 100 == 0) {
 				LOGGER.info("{} files processed, current is {}", ctr, inputFile.filename());
@@ -148,7 +151,7 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 		}
 	}
 
-	private void createFindings(PACKAGE p, InputFile file) {
+	private void createFindings(PACKAGE p, InputFile file, Charset charset) {
 		for (MESSAGE m : p.getMESSAGE()) {
 			try {
 				int effectiveMessageLine = computeEffectiveMessageLine(p, m);
@@ -172,7 +175,7 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 			}
 		}
 		
-		findMc(file);
+		findMc(file, charset);
 	}
 
 	private Severity computeExtraSeverity(InputFile file, String ruleKey, String message) {
@@ -248,8 +251,8 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 		newIssue.at(primaryLocation).save();
 	}
 	
-	protected void findMc(InputFile file) {
-		try (BufferedReader br = new BufferedReader(new InputStreamReader(file.inputStream()))) {
+	protected void findMc(InputFile file, Charset charset) {
+		try (BufferedReader br = new BufferedReader(new InputStreamReader(file.inputStream(), charset))) {
 			String s;
 			int i = 0;
 			
