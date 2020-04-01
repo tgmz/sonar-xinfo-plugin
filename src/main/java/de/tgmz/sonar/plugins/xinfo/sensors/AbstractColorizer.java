@@ -98,6 +98,7 @@ public abstract class AbstractColorizer<T extends IColorizing> implements Sensor
 	/**
 	 * Subclasses must provide the {@link IColorizing} here.
 	 * @param f the file to colorize
+	 * @param charset the file's encoding
 	 * @param limit maximum number of lines to colorize
 	 * @return the implementation of the {@link IColorizing}
 	 * @throws IOException if the file can't be read 

@@ -67,6 +67,13 @@ public class XinfoProviderTest {
 	}
 	
 	@Test(expected=XinfoException.class)
+	public void testUnmarshalable() throws XinfoException, IOException {
+		String s = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><p></p>";
+		
+		assertNotNull(new DummyXinfoProvider().createXinfo(IOUtils.toInputStream(s, StandardCharsets.UTF_8)));
+	}
+	
+	@Test(expected=XinfoException.class)
 	public void testUnparseableWrongEncoding() throws XinfoException, IOException {
 		String s = "<?xml version=\"1.0\" encoding=\"foobar\"?><p>";
 		

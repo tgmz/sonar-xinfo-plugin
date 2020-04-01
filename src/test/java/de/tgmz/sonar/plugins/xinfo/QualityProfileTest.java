@@ -23,6 +23,7 @@ import org.sonar.api.server.profile.BuiltInQualityProfilesDefinition;
 import de.tgmz.sonar.plugins.xinfo.languages.AbstractXinfoQualityProfileDefinition;
 import de.tgmz.sonar.plugins.xinfo.languages.AssemblerQualityProfileDefinition;
 import de.tgmz.sonar.plugins.xinfo.languages.CobolQualityProfileDefinition;
+import de.tgmz.sonar.plugins.xinfo.languages.MacQualityProfileDefinition;
 import de.tgmz.sonar.plugins.xinfo.languages.PliQualityProfileDefinition;
 import de.tgmz.sonar.plugins.xinfo.languages.SasQualityProfileDefinition;
 
@@ -50,6 +51,7 @@ public class QualityProfileTest {
 				{ CobolQualityProfileDefinition.class },
 				{ AssemblerQualityProfileDefinition.class } ,
 				{ SasQualityProfileDefinition.class } ,
+				{ MacQualityProfileDefinition.class } ,
 		};
 		return Arrays.asList(data);
 	}
