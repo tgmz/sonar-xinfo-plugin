@@ -1,7 +1,7 @@
 <xinfo-rules>
 <rule>
     <cardinality>SINGLE</cardinality>
-    <description>Hardcoded external commands may be used to disrupt the operating system or hide functionality</description>
+    <description>The hardcoded external command {0} may be used to disrupt the operating system or hide functionality</description>
     <internalKey>MC00001</internalKey>
     <key>MC00001</key>
     <name>HardcodedExternalCommand</name>
@@ -14,7 +14,7 @@
 </rule>
 <rule>
     <cardinality>SINGLE</cardinality>
-    <description>A hard coded network endpoint my be used transfer confidential data</description>
+    <description>The hard coded network {0} endpoint my be used transfer confidential data</description>
     <internalKey>MC00002</internalKey>
     <key>MC00002</key>
     <name>HardcodedNetworkEndpoint</name>
@@ -27,7 +27,7 @@
 </rule>
 <rule>
     <cardinality>SINGLE</cardinality>
-    <description>Listening to this network port seems suspicious</description>
+    <description>Listening to network port {0} seems suspicious</description>
     <internalKey>MC00003</internalKey>
     <key>MC00003</key>
     <name>NetworkPortListening</name>
@@ -40,10 +40,10 @@
 </rule>
 <rule>
     <cardinality>SINGLE</cardinality>
-    <description>A leaked secret my indicate that confidential data is transfered to a non-confidential location</description>
+    <description>The hard coded ID {0} may bypass authorization</description>
     <internalKey>MC00004</internalKey>
     <key>MC00004</key>
-    <name>LeakedSecret</name>
+    <name>AuthorizationBypass</name>
     <remediationFunction>CONSTANT_ISSUE</remediationFunction>
     <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
     <severity>INFO</severity>
@@ -53,7 +53,7 @@
 </rule>
 <rule>
     <cardinality>SINGLE</cardinality>
-    <description>This statement seems to hide some functionality</description>
+    <description>The statement {0} seems to hide some functionality</description>
     <internalKey>MC00005</internalKey>
     <key>MC00005</key>
     <name>HiddenFunctionality</name>
@@ -66,7 +66,7 @@
 </rule>
 <rule>
     <cardinality>SINGLE</cardinality>
-    <description>Any use of password-related data should be investigated</description>
+    <description>Any use of password-related like {0} data should be investigated</description>
     <internalKey>MC00006</internalKey>
     <key>MC00006</key>
     <name>PasswordBypass</name>
@@ -79,7 +79,7 @@
 </rule>
 <rule>
     <cardinality>SINGLE</cardinality>
-    <description>Scrambling a string may hide functionality</description>
+    <description>The scrambled string {0} may hide functionality</description>
     <internalKey>MC00007</internalKey>
     <key>MC00007</key>
     <name>ScramblingStaticString</name>
@@ -92,7 +92,7 @@
 </rule>
 <rule>
     <cardinality>SINGLE</cardinality>
-    <description>An application must not use data definition queries</description>
+    <description>An application must not use data definition queries like {0}</description>
     <internalKey>MC00008</internalKey>
     <key>MC00008</key>
     <name>SuspiciousSQLQuery</name>
@@ -105,7 +105,7 @@
 </rule>
 <rule>
     <cardinality>SINGLE</cardinality>
-    <description>Hardcoded dates may by time bombs</description>
+    <description>The hardcoded date {0} may by a time bomb</description>
     <internalKey>MC00009</internalKey>
     <key>MC00009</key>
     <name>TimeBomb</name>
@@ -118,7 +118,7 @@
 </rule>
 <rule>
     <cardinality>SINGLE</cardinality>
-    <description>Rolling back a transaction should be left to the transaction monitor</description>
+    <description>Rolling back a transaction with {0} should be left to the transaction monitor</description>
     <internalKey>MC00010</internalKey>
     <key>MC00010</key>
     <name>TransactionDisruption</name>
@@ -131,7 +131,7 @@
 </rule>
 <rule>
     <cardinality>SINGLE</cardinality>
-    <description>Storing confidential data to a non-confidential location is always a bad idea</description>
+    <description>{0} stores confidential data to a non-confidential location</description>
     <internalKey>MC00011</internalKey>
     <key>MC00011</key>
     <name>PrivacyViolation</name>
@@ -144,7 +144,7 @@
 </rule>
 <rule>
     <cardinality>SINGLE</cardinality>
-    <description>Hard coded IP adresses should be avoided</description>
+    <description>The hard coded IP {0} adress should be avoided</description>
     <internalKey>MC00012</internalKey>
     <key>MC00012</key>
     <name>HardcodedIP</name>
@@ -157,7 +157,7 @@
 </rule>
 <rule>
     <cardinality>SINGLE</cardinality>
-    <description>Storing data to a public location is forbidden</description>
+    <description>Storing data to the public location {0} is forbidden</description>
     <internalKey>MC00013</internalKey>
     <key>MC00013</key>
     <name>InvalidUseOfTmp</name>
@@ -170,7 +170,7 @@
 </rule>
 <rule>
     <cardinality>SINGLE</cardinality>
-    <description>Sending data to a specific e-mail address is forbidden</description>
+    <description>Application sends data to {0}</description>
     <internalKey>MC00016</internalKey>
     <key>MC00016</key>
     <name>EmailSpying</name>
@@ -183,7 +183,7 @@
 </rule>
 <rule>
     <cardinality>SINGLE</cardinality>
-    <description>Dynamic queries may result in SQL injection</description>
+    <description>The dynamic query {0} may result in SQL injection</description>
     <internalKey>MC00042</internalKey>
     <key>MC00042</key>
     <name>DynamicQuery</name>
