@@ -15,4 +15,14 @@ package de.tgmz.sonar.plugins.xinfo.sensors.matcher;
  */
 public enum MatcherResult {
 	MATCH, MISMATCH, ERROR;
+	
+	private String match;
+
+	public String getMatch() {
+		return match;
+	}
+
+	public void setMatch(String match) {
+		this.match = match;
+	}
 }

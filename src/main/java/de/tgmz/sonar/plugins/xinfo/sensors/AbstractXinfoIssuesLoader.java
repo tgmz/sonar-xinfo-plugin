@@ -14,6 +14,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
+import java.text.MessageFormat;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -272,8 +273,12 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 					
 					if (pl != null) {
 						for (Pattern p : pl) {
-							if (match(p, s) == MatcherResult.MATCH) {
-								saveIssue(file, i, mc.getKey(), ruleMap.get(mc.getKey()).getDescription(), null);
+							MatcherResult mr = match(p, s);
+							
+							if (mr == MatcherResult.MATCH) {
+								String desc = MessageFormat.format(ruleMap.get(mc.getKey()).getDescription(), mr.getMatch());
+								
+								saveIssue(file, i, mc.getKey(), desc, null);
 							}
 						}
 					}
@@ -309,13 +314,18 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 		}
 	}
 	private MatcherResult match(Pattern p, String s) {
-		Future<Boolean> fb = executor.submit(new CallableMatcher(p, s));
+		Future<String> fb = executor.submit(new CallableMatcher(p, s));
 		
 		try {
-			if (fb.get(TIMEOUT, TimeUnit.MILLISECONDS)) {
+			String ms = fb.get(TIMEOUT, TimeUnit.MILLISECONDS);
+			
+			if (ms != null) {
 				LOGGER.debug("String {} matched pattern [{}]", s, p);
 
-				return MatcherResult.MATCH;
+				MatcherResult mr = MatcherResult.MATCH;
+				mr.setMatch(ms.trim());
+				
+				return mr;
 			}
 		} catch (TimeoutException e) {
 			LOGGER.error("Error matching {} against {} in less than {} millseconds, possible redos attack", s, p, TIMEOUT);

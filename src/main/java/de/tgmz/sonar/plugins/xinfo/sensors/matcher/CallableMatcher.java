@@ -11,12 +11,15 @@
 package de.tgmz.sonar.plugins.xinfo.sensors.matcher;
 
 import java.util.concurrent.Callable;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.annotation.Nullable;
 
 /**
  * Patternmatcher as CallableService to prevent timeouts.
  */
-public class CallableMatcher implements Callable<Boolean>{
+public class CallableMatcher implements Callable<String>{
 	private Pattern p;
 	private String s;
 
@@ -27,7 +30,13 @@ public class CallableMatcher implements Callable<Boolean>{
 	}
 
 	@Override
-	public Boolean call() {
-		return p.matcher(s).matches();
+	public @Nullable String call() {
+		Matcher m = p.matcher(s);
+		
+		if (m.matches()) {
+			return m.group(0);
+		}
+		
+		return null;
 	}
 }
