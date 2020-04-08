@@ -34,7 +34,7 @@ public class PliColorizing extends AbstractColorizing {
 	private static final Pattern PLI_COMMENT_PATTERN = Pattern.compile("\\/\\*.*\\*\\/");
 	private static final Pattern PLI_PREPROCESS_PATTERN = Pattern.compile("%\\w+");
 	private static final Pattern PLI_STRING_PATTERN = Pattern.compile("[\"'].*[\"']");
-	private static final Pattern PLI_WORD_PATTERN = Pattern.compile("[\\w$§\\.]+");
+	private static final Pattern PLI_WORD_PATTERN = Pattern.compile("[\\w$§\\.]+");		//Underscore IS a word character
 
 	static {
 		// Keywords
