@@ -7,7 +7,7 @@
 	<groupId>de.tgmz.sonar.plugins.xinfo</groupId>
 	<artifactId>sonar-xinfo-plugin</artifactId>
 	<packaging>sonar-plugin</packaging>
-	<version>1.2.1</version>
+	<version>1.2.2</version>
 
 	<name>Xinfo Plugin for SonarQube</name>
 	<description>Xinfo plugin for SonarQube</description>
