@@ -37,8 +37,8 @@ public class SasIssuesLoader extends AbstractXinfoIssuesLoader {
 		LOGGER.debug("execute");
 
 		this.context = aContext;
-		
-		Charset charset = Charset.forName(context.config().get(XinfoConfig.XINFO_ENCODING).orElse(System.getProperty("file.encoding")));
+
+		Charset charset = Charset.forName(context.config().get(XinfoConfig.XINFO_ENCODING).orElse(Charset.defaultCharset().name()));
 		
 		Iterator<InputFile> fileIterator = fileSystem.inputFiles(fileSystem.predicates().hasLanguage(Language.SAS.getKey())).iterator();
 
