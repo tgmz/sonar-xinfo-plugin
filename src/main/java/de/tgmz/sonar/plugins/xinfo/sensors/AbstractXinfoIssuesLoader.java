@@ -264,7 +264,7 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 					s = s.substring(0,  72);
 				}
 				
-				if (COMMENT.matcher(s).matches()) {
+				if (isComment(s, lang)) {
 					continue; 	// Therefore we must increment i first!!!
 				}
 				
@@ -335,5 +335,20 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 		}
 		
 		return new MatcherResult(MatcherResult.MatcherResultState.MISMATCH);
+	}
+	private static boolean isComment(String line, Language lang) {
+		if (COMMENT.matcher(line).matches()) {
+			return true;
+		}
+		
+		if (lang == Language.ASSEMBLER && line.length() > 0 && "*".equals(line.substring(0, 1))) {
+			return true;
+		}
+		
+		if (lang == Language.COBOL && line.length() > 6 && "*".equals(line.substring(6, 7))) {
+			return true;
+		}
+		
+		return false;
 	}
 }
