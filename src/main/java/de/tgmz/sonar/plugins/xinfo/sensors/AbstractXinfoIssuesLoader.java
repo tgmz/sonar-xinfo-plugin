@@ -167,6 +167,12 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 						severity = computeExtraSeverity(file, ruleKey, message);
 					}
 					
+					if (lang == Language.COBOL) {
+						// Chars at 3 and 4 indicate the compile phase which issued the message
+						// In ErrMsg these chars are replaced by "XX"
+						ruleKey = ruleKey.substring(0,  3) + "XX" + ruleKey.substring(5);
+					}
+					
 					saveIssue(file, effectiveMessageLine, ruleKey, message, severity);
 				}
 			} catch (XinfoException e) {
@@ -204,24 +210,14 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 		return null;
 	}
 
-	private void saveIssue(final InputFile inputFile, int line, String externalRuleKey, final String message, @Nullable Severity severity) {
-		LOGGER.debug("Save issue {} for file {} on line {}", externalRuleKey, inputFile.filename(), line);
+	private void saveIssue(final InputFile inputFile, int line, String ruleKeyString, final String message, @Nullable Severity severity) {
+		LOGGER.debug("Save issue {} for file {} on line {}", ruleKeyString, inputFile.filename(), line);
 		
-		String ruleKeyToSave;
-		
-		if (lang == Language.COBOL) {
-			// Chars at 3 and 4 indicate the compile phase which issued the message
-			// In ErrMsg these chars are replaced by "XX"
-			ruleKeyToSave = externalRuleKey.substring(0,  3) + "XX" + externalRuleKey.substring(5);
-		} else {
-			ruleKeyToSave = externalRuleKey;
-		}
-		
-		RuleKey ruleKey = RuleKey.of(lang.getRepoKey(), ruleKeyToSave);
+		RuleKey ruleKey = RuleKey.of(lang.getRepoKey(), ruleKeyString);
 
 		NewIssue newIssue = context.newIssue().forRule(ruleKey);
 		
-		Rule r = ruleMap.get(ruleKeyToSave);
+		Rule r = ruleMap.get(ruleKeyString);
 		
 		if (r != null) {
 			if (severity == null) {
@@ -230,7 +226,7 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 				newIssue.overrideSeverity(severity);
 			}
 		} else {
-			LOGGER.error("Xinfo message {} unknown", ruleKeyToSave);
+			LOGGER.error("Xinfo message {} unknown", ruleKeyString);
 			
 			return;
 		}
@@ -264,7 +260,7 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 					s = s.substring(0,  72);
 				}
 				
-				if (isComment(s, lang)) {
+				if (isComment(s, lang, file.filename())) {
 					continue; 	// Therefore we must increment i first!!!
 				}
 				
@@ -336,7 +332,8 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 		
 		return new MatcherResult(MatcherResult.MatcherResultState.MISMATCH);
 	}
-	private static boolean isComment(String line, Language lang) {
+	
+	private static boolean isComment(String line, Language lang, String fileName) {
 		if (COMMENT.matcher(line).matches()) {
 			return true;
 		}
@@ -346,6 +343,14 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 		}
 		
 		if (lang == Language.COBOL && line.length() > 6 && "*".equals(line.substring(6, 7))) {
+			return true;
+		}
+		
+		if (lang == Language.MACRO && fileName.endsWith(".mac") && line.length() > 0 && "*".equals(line.substring(0, 1))) {
+			return true;
+		}
+		
+		if (lang == Language.MACRO && fileName.endsWith(".cpy") && line.length() > 6 && "*".equals(line.substring(6, 7))) {
 			return true;
 		}
 		
