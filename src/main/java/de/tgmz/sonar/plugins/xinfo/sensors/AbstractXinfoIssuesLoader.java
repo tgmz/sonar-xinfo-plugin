@@ -275,7 +275,7 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 						for (Pattern p : pl) {
 							MatcherResult mr = match(p, s);
 							
-							if (mr == MatcherResult.MATCH) {
+							if (mr.getState() == MatcherResult.MatcherResultState.MATCH) {
 								String desc = MessageFormat.format(ruleMap.get(mc.getKey()).getDescription(), mr.getMatch());
 								
 								saveIssue(file, i, mc.getKey(), desc, null);
@@ -322,21 +322,18 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 			if (ms != null) {
 				LOGGER.debug("String {} matched pattern [{}]", s, p);
 
-				MatcherResult mr = MatcherResult.MATCH;
-				mr.setMatch(ms.trim());
-				
-				return mr;
+				return new MatcherResult(MatcherResult.MatcherResultState.MATCH, ms.trim());
 			}
 		} catch (TimeoutException e) {
 			LOGGER.error("Error matching {} against {} in less than {} millseconds, possible redos attack", s, p, TIMEOUT);
 			
-			return MatcherResult.ERROR;
+			return new MatcherResult(MatcherResult.MatcherResultState.ERROR);
 		} catch (InterruptedException | ExecutionException e) {
 			LOGGER.error("Error matching {} against {}", s, p, e);
 			
-			return MatcherResult.ERROR;
+			return new MatcherResult(MatcherResult.MatcherResultState.ERROR);
 		}
 		
-		return MatcherResult.MISMATCH;
+		return new MatcherResult(MatcherResult.MatcherResultState.MISMATCH);
 	}
 }

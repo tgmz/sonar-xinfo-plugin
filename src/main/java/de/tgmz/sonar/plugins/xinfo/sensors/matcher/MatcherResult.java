@@ -10,19 +10,34 @@
   *******************************************************************************/
 package de.tgmz.sonar.plugins.xinfo.sensors.matcher;
 
+import javax.annotation.Nullable;
+
 /**
  * Possible results for matching a pattern
  */
-public enum MatcherResult {
-	MATCH, MISMATCH, ERROR;
+public class MatcherResult {
+	public enum MatcherResultState {
+		MATCH, MISMATCH, ERROR;
+	}
 	
 	private String match;
+	private MatcherResultState state;
+	
+	public MatcherResult(MatcherResultState state, @Nullable String match) {
+		super();
+		this.state = state;
+		this.match = match;
+	}
+
+	public MatcherResult(MatcherResultState state) {
+		this(state, null);
+	}
 
 	public String getMatch() {
 		return match;
 	}
 
-	public void setMatch(String match) {
-		this.match = match;
+	public MatcherResultState getState() {
+		return state;
 	}
 }
