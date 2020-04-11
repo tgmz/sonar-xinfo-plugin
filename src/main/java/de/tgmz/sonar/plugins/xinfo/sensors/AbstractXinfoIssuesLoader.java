@@ -71,8 +71,6 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 	protected SensorContext context;
 	private Language lang;
 	private Map<String, Rule> ruleMap;
-	private Map<String, List<Pattern>> mcPatternListMap;
-//	private McPattern mcPatterns;
 
 	public AbstractXinfoIssuesLoader(final FileSystem fileSystem, Language lang) {
 		this.fileSystem = fileSystem;
@@ -83,8 +81,6 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 		for (Rule r: RuleFactory.getInstance().getRules(lang).getRule()) {
 			ruleMap.put(r.getKey(), r);
 		}
-		
-		mcPatternListMap = PatternFactory.getInstance().getMcPatterns(lang);
 	}
 
 	@Override
@@ -237,7 +233,7 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 					continue; 	// Therefore we must increment i first!!!
 				}
 				
-				for (Entry<String, List<Pattern>> entry : mcPatternListMap.entrySet()) {
+				for (Entry<String, List<Pattern>> entry : PatternFactory.getInstance().getMcPatterns(lang).entrySet()) {
 					for (Pattern p : entry.getValue()) {
 						MatcherResult mr = match(p, s);
 							

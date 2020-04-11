@@ -41,14 +41,30 @@ import de.tgmz.sonar.plugins.xinfo.mc.Regex;
 public final class PatternFactory {
 	private static final Logger LOGGER = Loggers.get(PatternFactory.class);
 	private static volatile PatternFactory instance;
-	private DocumentBuilder db;
-	private Unmarshaller mcum;
+	private Map<Language, Map<String, List<Pattern>>> mcPatternListMap = new TreeMap<>();
 
 	private PatternFactory() throws ParserConfigurationException, JAXBException {
-		db = SecureDocumentBuilderFactory.getInstance().getDocumentBuilder();
+		DocumentBuilder db = SecureDocumentBuilderFactory.getInstance().getDocumentBuilder();
 
 		JAXBContext jaxbContext = JAXBContext.newInstance(McPattern.class);
-		mcum = jaxbContext.createUnmarshaller();
+		Unmarshaller mcum = jaxbContext.createUnmarshaller();
+		
+		McPattern mcPatterns; 
+		
+		try (InputStream is = this.getClass().getClassLoader().getResourceAsStream("mc-pattern.xml")) {
+
+			Document doc = db.parse(new InputSource(is));
+
+			mcPatterns = (McPattern) mcum.unmarshal(doc);
+		} catch (IOException | SAXException | JAXBException e) {
+			String s = "Error parsing rules";
+			
+			throw new XinfoRuntimeException(s, e);
+		}
+		
+		for(Language l : Language.values()) {
+			mcPatternListMap.put(l, compileMcPatterns(l, mcPatterns));
+		}
 	}
 
 	public static PatternFactory getInstance() {
@@ -68,19 +84,11 @@ public final class PatternFactory {
 	}
 
 	public Map<String, List<Pattern>> getMcPatterns(Language lang) {
-		Map<String, List<Pattern>>mcPatternListMap = new TreeMap<>();
-		McPattern mcPatterns;
-		
-		try (InputStream is = this.getClass().getClassLoader().getResourceAsStream("mc-pattern.xml")) {
-
-			Document doc = db.parse(new InputSource(is));
-
-			mcPatterns = (McPattern) mcum.unmarshal(doc);
-		} catch (IOException | SAXException | JAXBException e) {
-			String s = "Error parsing rules";
-			
-			throw new XinfoRuntimeException(s, e);
-		}
+		return mcPatternListMap.get(lang);
+	}
+	
+	private Map<String, List<Pattern>> compileMcPatterns(Language lang, McPattern mcPatterns) {
+		Map<String, List<Pattern>> result = new TreeMap<>();
 		
 		for (Mc mc: mcPatterns.getMc()) {
 			for (Regex r : mc.getRegex()) {
@@ -90,12 +98,12 @@ public final class PatternFactory {
 					if (lang.getKey().equals(languageForPattern) || "all".equals(r.getLang())) {
 						Pattern p = "true".equals(r.getCasesensitive()) ? Pattern.compile(r.getvalue()) : Pattern.compile(r.getvalue(), Pattern.CASE_INSENSITIVE); 
 
-						List<Pattern> list = mcPatternListMap.get(mc.getKey());
+						List<Pattern> list = result.get(mc.getKey());
 						
 						if (list == null) { 
 							list = new LinkedList<>();
 							
-							mcPatternListMap.put(mc.getKey(), list);
+							result.put(mc.getKey(), list);
 						}
 						
 						list.add(p);
@@ -104,6 +112,6 @@ public final class PatternFactory {
 			}
 		}
 
-		return mcPatternListMap;
+		return result;
 	}
 }
