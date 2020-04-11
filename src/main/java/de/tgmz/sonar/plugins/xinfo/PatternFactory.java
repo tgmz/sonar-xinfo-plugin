@@ -12,6 +12,11 @@ package de.tgmz.sonar.plugins.xinfo;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.regex.Pattern;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -26,7 +31,9 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import de.tgmz.sonar.plugins.xinfo.languages.Language;
+import de.tgmz.sonar.plugins.xinfo.mc.Mc;
 import de.tgmz.sonar.plugins.xinfo.mc.McPattern;
+import de.tgmz.sonar.plugins.xinfo.mc.Regex;
 
 /**
  * Factory for creating the sonar rules for a {@link Language}
@@ -60,16 +67,43 @@ public final class PatternFactory {
 		return instance;
 	}
 
-	public McPattern getMcPatterns() {
+	public Map<String, List<Pattern>> getMcPatterns(Language lang) {
+		Map<String, List<Pattern>>mcPatternListMap = new TreeMap<>();
+		McPattern mcPatterns;
+		
 		try (InputStream is = this.getClass().getClassLoader().getResourceAsStream("mc-pattern.xml")) {
 
 			Document doc = db.parse(new InputSource(is));
 
-			return (McPattern) mcum.unmarshal(doc);
+			mcPatterns = (McPattern) mcum.unmarshal(doc);
 		} catch (IOException | SAXException | JAXBException e) {
 			String s = "Error parsing rules";
 			
 			throw new XinfoRuntimeException(s, e);
 		}
+		
+		for (Mc mc: mcPatterns.getMc()) {
+			for (Regex r : mc.getRegex()) {
+				String[] languagesForPattern = r.getLang().split("\\,");
+				
+				for (String languageForPattern : languagesForPattern) {
+					if (lang.getKey().equals(languageForPattern) || "all".equals(r.getLang())) {
+						Pattern p = "true".equals(r.getCasesensitive()) ? Pattern.compile(r.getvalue()) : Pattern.compile(r.getvalue(), Pattern.CASE_INSENSITIVE); 
+
+						List<Pattern> list = mcPatternListMap.get(mc.getKey());
+						
+						if (list == null) { 
+							list = new LinkedList<>();
+							
+							mcPatternListMap.put(mc.getKey(), list);
+						}
+						
+						list.add(p);
+					}
+				}
+			}
+		}
+
+		return mcPatternListMap;
 	}
 }
