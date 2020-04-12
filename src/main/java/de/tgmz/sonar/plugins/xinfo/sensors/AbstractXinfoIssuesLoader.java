@@ -16,9 +16,9 @@ import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.text.MessageFormat;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.TreeMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -51,9 +51,6 @@ import de.tgmz.sonar.plugins.xinfo.XinfoFileAnalyzable;
 import de.tgmz.sonar.plugins.xinfo.XinfoProviderFactory;
 import de.tgmz.sonar.plugins.xinfo.config.XinfoConfig;
 import de.tgmz.sonar.plugins.xinfo.languages.Language;
-import de.tgmz.sonar.plugins.xinfo.mc.Mc;
-import de.tgmz.sonar.plugins.xinfo.mc.McPattern;
-import de.tgmz.sonar.plugins.xinfo.mc.Regex;
 import de.tgmz.sonar.plugins.xinfo.plicomp.FILE;
 import de.tgmz.sonar.plugins.xinfo.plicomp.MESSAGE;
 import de.tgmz.sonar.plugins.xinfo.plicomp.PACKAGE;
@@ -74,8 +71,6 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 	protected SensorContext context;
 	private Language lang;
 	private Map<String, Rule> ruleMap;
-	private Map<String, List<Pattern>> mcPatternListMap;
-	private McPattern mcPatterns;
 
 	public AbstractXinfoIssuesLoader(final FileSystem fileSystem, Language lang) {
 		this.fileSystem = fileSystem;
@@ -85,32 +80,6 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 		
 		for (Rule r: RuleFactory.getInstance().getRules(lang).getRule()) {
 			ruleMap.put(r.getKey(), r);
-		}
-		
-		mcPatterns = PatternFactory.getInstance().getMcPatterns();
-		
-		mcPatternListMap = new TreeMap<>();
-		
-		for (Mc mc: mcPatterns.getMc()) {
-			for (Regex r : mc.getRegex()) {
-				String[] languagesForPattern = r.getLang().split("\\,");
-				
-				for (String languageForPattern : languagesForPattern) {
-					if (lang.getKey().equals(languageForPattern) || "all".equals(r.getLang())) {
-						Pattern p = "true".equals(r.getCasesensitive()) ? Pattern.compile(r.getvalue()) : Pattern.compile(r.getvalue(), Pattern.CASE_INSENSITIVE); 
-
-						List<Pattern> list = mcPatternListMap.get(mc.getKey());
-						
-						if (list == null) { 
-							list = new LinkedList<>();
-							
-							mcPatternListMap.put(mc.getKey(), list);
-						}
-						
-						list.add(p);
-					}
-				}
-			}
 		}
 	}
 
@@ -264,18 +233,14 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 					continue; 	// Therefore we must increment i first!!!
 				}
 				
-				for (Mc mc : mcPatterns.getMc()) {
-					List<Pattern> pl = mcPatternListMap.get(mc.getKey());
-					
-					if (pl != null) {
-						for (Pattern p : pl) {
-							MatcherResult mr = match(p, s);
+				for (Entry<String, List<Pattern>> entry : PatternFactory.getInstance().getMcPatterns(lang).entrySet()) {
+					for (Pattern p : entry.getValue()) {
+						MatcherResult mr = match(p, s);
 							
-							if (mr.getState() == MatcherResult.MatcherResultState.MATCH) {
-								String desc = MessageFormat.format(ruleMap.get(mc.getKey()).getDescription(), mr.getMatch());
+						if (mr.getState() == MatcherResult.MatcherResultState.MATCH) {
+							String desc = MessageFormat.format(ruleMap.get(entry.getKey()).getDescription(), mr.getMatch());
 								
-								saveIssue(file, i, mc.getKey(), desc, null);
-							}
+							saveIssue(file, i, entry.getKey(), desc, null);
 						}
 					}
 				}	
@@ -309,7 +274,16 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 			}
 		}
 	}
-	private MatcherResult match(Pattern p, String s) {
+	
+	
+	/**
+	 * Matches a string against a pattern. Public for test purposes
+	 * 
+	 * @param p pattern
+	 * @param s string
+	 * @return result
+	 */
+	public static MatcherResult match(Pattern p, String s) {
 		Future<String> fb = executor.submit(new CallableMatcher(p, s));
 		
 		try {

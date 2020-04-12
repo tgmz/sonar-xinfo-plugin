@@ -19,7 +19,7 @@
 	</mc>
 	<mc>
 		<key>MC00005</key>
-		<regex lang="pli,mac" casesensitive="false">^.*\b%if\b.*$</regex>
+		<regex lang="pli,mac" casesensitive="false">^.*\s+%if\s+.*$</regex>
 	</mc>
 	<mc>
 		<key>MC00006</key>
@@ -36,8 +36,11 @@
 	</mc>
 	<mc>
 		<key>MC00009</key>
-		<regex lang="all" casesensitive="false">^.*\b((0?[1-9]|[12]\d|30|31)[^\w\d\r\n:](0?[1-9]|1[0-2])[^\w\d\r\n:](\d{4}|\d{2})\b)|(\b(0?[1-9]|1[0-2])[^\w\d\r\n:](0?[1-9]|[12]\d|30|31)[^\w\d\r\n:](\d{4}|\d{2})\b)|\b(\d{4})(0[1-9]|1[0-2])(0[1-9]|[12]\d|30|31)\b.*$</regex>
-	</mc>
+		<regex lang="all" casesensitive="false">^.*(\b(0?[1-9]|[12]\d|30|31)[^\w\d\r\n:](0?[1-9]|1[0-2])[^\w\d\r\n:](\d{4}|\d{2})\b)|(\b(0?[1-9]|1[0-2])[^\w\d\r\n:](0?[1-9]|[12]\d|30|31)[^\w\d\r\n:](\d{4}|\d{2})\b).*$</regex>
+		<regex lang="all" casesensitive="false">^.*\b(20[1-3]\d{1})(0[1-9]|1[0-2])(0[1-9]|[12]\d|30|31)\b.*$</regex>
+		<regex lang="all" casesensitive="false">^.*\b([0-3]\d{1})\.(0[1-9]|1[0-2])\.([1|2]\d{3})\b.*$</regex>
+		<regex lang="all" casesensitive="false">^.*\b(\d{4})\-(0[1-9]|1[0-2])\-(0[1-9]|[12]\d|30|31)\b.*$</regex>
+	</mc>                                        
 	<mc>
 		<key>MC00010</key>
 		<regex lang="all" casesensitive="false">^.*\brollb.*$</regex>
@@ -51,6 +54,10 @@
 		<regex lang="cbl,mac" casesensitive="false">^.*\bwrite.*\-rating\b.*$</regex>
 		<regex lang="cbl,mac" casesensitive="false">^.*\bwrite.*\-betr\b.*$</regex>
 		<regex lang="cbl,mac" casesensitive="false">^.*\bwrite.*\-proz\b.*$</regex>
+		<regex lang="cbl,mac" casesensitive="false">^.*\bwrite.*\-add?r\b.*$</regex>
+		<regex lang="cbl,mac" casesensitive="false">^.*\bprint.*\-rating\b.*$</regex>
+		<regex lang="cbl,mac" casesensitive="false">^.*\bprint.*\-betr\b.*$</regex>
+		<regex lang="cbl,mac" casesensitive="false">^.*\bprint.*\-proz\b.*$</regex>
 		<regex lang="cbl,mac" casesensitive="false">^.*\bwrite.*\-add?r\b.*$</regex>
 		<regex lang="sas" casesensitive="false">^.*\bput.*rating\b*$</regex>
 		<regex lang="sas" casesensitive="false">^.*\bput.*betr\b*$</regex>
