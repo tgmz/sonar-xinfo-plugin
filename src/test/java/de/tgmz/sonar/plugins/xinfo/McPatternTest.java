@@ -44,7 +44,9 @@ public class McPatternTest {
 		assertTrue(match("DCL X CHAR(10) INIT ('20200420');"));
 		assertTrue(match("IF X > 20200420"));
 		assertTrue(match("IF X > '20200420'"));
-//		assertTrue(match("IF X = '20.04.2020'"));
+		assertTrue(match("IF X = '20.04.2020'"));
+		assertTrue(match("IF X = \"20.04.2020\""));
+		assertTrue(match("IF X > '2007-09-24-15.53.37.2162474'"));
 		assertTrue(match("04-20-2020"));
 		assertTrue(match("04/20/2020"));
 		assertTrue(match("04-20-20"));
