@@ -10,6 +10,7 @@
   *******************************************************************************/
 
 package de.tgmz.sonar.plugins.xinfo;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.List;
@@ -51,6 +52,23 @@ public class McPatternTest {
 		assertTrue(match("04/20/2020"));
 		assertTrue(match("04-20-20"));
 		assertTrue(match("04/20/20"));
+		assertFalse(match("	ZEILE9.CTL360   =  '00001001'B;"));
+		assertFalse(match("	DCL M1     INIT ('00001001'B),        /* 1 - ZEILIGER VORSCHUB      */"));
+		assertFalse(match("	DCL M3     INIT ('00011001'B),        /* 3 - ZEILIGER VORSCHUB      */ "));
+		assertFalse(match("	DCL MK1    INIT ('10001001'B),        /* VORSCHUB NACH KANAL 1      */ "));
+		assertFalse(match("	DCL MK2    INIT ('10010001'B),        /* VORSCHUB NACH KANAL 2      */ "));
+		assertFalse(match("	DCL MK3    INIT ('10011001'B),        /* VORSCHUB NACH KANAL 3      */ "));
+		assertFalse(match("	DCL MK4    INIT ('10100001'B),        /* VORSCHUB NACH KANAL 4      */ "));
+		assertFalse(match("	DCL MK5    INIT ('10101001'B),        /* VORSCHUB NACH KANAL 5      */ "));
+		assertFalse(match("	DCL MK6    INIT ('10110001'B),        /* VORSCHUB NACH KANAL 6      */ "));
+		assertFalse(match("	DCL MFF    INIT ('11111111'B)         /* 'FF' - SATZ                */ "));
+		assertFalse(match("	  TAB_LZS_E.GUELT_BIS (ANZ_LZS_E) = 99991231; "));
+		assertFalse(match("	    SD1_MINUS  = SD1_NTAGE_BAS.SD1_MINUS & '11011111'B; "));
+		assertFalse(match("	    IF VON_E    = 21000228 "));
+		assertFalse(match("	      NEU_DATUM       = 19860218; "));
+		assertFalse(match("	    TAB_RLZ.DATUM_BIS (11) = '20011231';    "));
+		assertFalse(match("	       DC    PL5'19990101'           BEITRITTSDATUM   "));
+		assertFalse(match("	             MOVE 20011231    TO PS-SB-BUCH-DATUM                   00000173 "));
 		assertTrue(match(" %IF X=Y"));
 		assertTrue(match(" IF (x = \"Y08577\")"));
 		assertTrue(match(" IF (x = \"Y\") /* secret backdoor */"));
