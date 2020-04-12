@@ -19,7 +19,7 @@
 	</mc>
 	<mc>
 		<key>MC00005</key>
-		<regex lang="pli,mac" casesensitive="false">^.*\s+%if\s+.*$</regex>
+		<regex lang="pli,mac" casesensitive="false">^.*\s+%noprint.*$</regex>
 	</mc>
 	<mc>
 		<key>MC00006</key>

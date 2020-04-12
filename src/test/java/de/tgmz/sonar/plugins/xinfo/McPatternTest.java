@@ -69,7 +69,7 @@ public class McPatternTest {
 		assertFalse(match("	    TAB_RLZ.DATUM_BIS (11) = '20011231';    "));
 		assertFalse(match("	       DC    PL5'19990101'           BEITRITTSDATUM   "));
 		assertFalse(match("	             MOVE 20011231    TO PS-SB-BUCH-DATUM                   00000173 "));
-		assertTrue(match(" %IF X=Y"));
+		assertTrue(match(" %NOPRINT;"));
 		assertTrue(match(" IF (x = \"Y08577\")"));
 		assertTrue(match(" IF (x = \"Y\") /* secret backdoor */"));
 		assertTrue(match(" EXEC SQL DROP TABLE DBZILK01.TBZI0019KURS_TGL; "));
