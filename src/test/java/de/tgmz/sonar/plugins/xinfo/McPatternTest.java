@@ -47,11 +47,12 @@ public class McPatternTest {
 		assertTrue(match("IF X > '20200420'"));
 		assertTrue(match("IF X = '20.04.2020'"));
 		assertTrue(match("IF X = \"20.04.2020\""));
-		assertTrue(match("IF X > '2007-09-24-15.53.37.2162474'"));
+		assertTrue(match("IF X > '2025-09-24-15.53.37.2162474'"));
 		assertTrue(match("04-20-2020"));
 		assertTrue(match("04/20/2020"));
 		assertTrue(match("04-20-20"));
 		assertTrue(match("04/20/20"));
+		assertFalse(match("IF X > '2015-09-24-15.53.37.2162474'"));
 		assertFalse(match("	ZEILE9.CTL360   =  '00001001'B;"));
 		assertFalse(match("	DCL M1     INIT ('00001001'B),        /* 1 - ZEILIGER VORSCHUB      */"));
 		assertFalse(match("	DCL M3     INIT ('00011001'B),        /* 3 - ZEILIGER VORSCHUB      */ "));
@@ -69,6 +70,7 @@ public class McPatternTest {
 		assertFalse(match("	    TAB_RLZ.DATUM_BIS (11) = '20011231';    "));
 		assertFalse(match("	       DC    PL5'19990101'           BEITRITTSDATUM   "));
 		assertFalse(match("	             MOVE 20011231    TO PS-SB-BUCH-DATUM                   00000173 "));
+		assertFalse(match("	@date:       23.02.1999"));
 		assertTrue(match(" %NOPRINT;"));
 		assertTrue(match(" IF (x = \"Y08577\")"));
 		assertTrue(match(" IF (x = \"Y\") /* secret backdoor */"));

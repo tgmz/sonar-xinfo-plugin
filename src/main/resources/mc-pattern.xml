@@ -36,10 +36,10 @@
 	</mc>
 	<mc>
 		<key>MC00009</key>
-		<regex lang="all" casesensitive="false">^.*(\b(0?[1-9]|[12]\d|30|31)[^\w\d\r\n:](0?[1-9]|1[0-2])[^\w\d\r\n:](\d{4}|\d{2})\b)|(\b(0?[1-9]|1[0-2])[^\w\d\r\n:](0?[1-9]|[12]\d|30|31)[^\w\d\r\n:](\d{4}|\d{2})\b).*$</regex>
-		<regex lang="all" casesensitive="false">^.*\b(20[1-3]\d{1})(0[1-9]|1[0-2])(0[1-9]|[12]\d|30|31)\b.*$</regex>
-		<regex lang="all" casesensitive="false">^.*\b([0-3]\d{1})\.(0[1-9]|1[0-2])\.([1|2]\d{3})\b.*$</regex>
-		<regex lang="all" casesensitive="false">^.*\b(\d{4})\-(0[1-9]|1[0-2])\-(0[1-9]|[12]\d|30|31)\b.*$</regex>
+		<regex lang="all" casesensitive="false">^.*(\b(0?[1-9]|[12]\d|30|31)[^\w\d\r\n:](0?[1-9]|1[0-2])[^\w\d\r\n:](20[2-4]\d{1}|\d{2})\b)|(\b(0?[1-9]|1[0-2])[^\w\d\r\n:](0?[1-9]|[12]\d|30|31)[^\w\d\r\n:](20[2-4]\d{1}|\d{2})\b).*$</regex>
+		<regex lang="all" casesensitive="false">^.*\b(20[2-4]\d{1})(0[1-9]|1[0-2])(0[1-9]|[12]\d|30|31)\b.*$</regex>
+		<regex lang="all" casesensitive="false">^.*\b([0-3]\d{1})\.(0[1-9]|1[0-2])\.(20[2-4]\d{1})\b.*$</regex>
+		<regex lang="all" casesensitive="false">^.*\b(20[2-4]\d{1})\-(0[1-9]|1[0-2])\-(0[1-9]|[12]\d|30|31)\b.*$</regex>
 	</mc>                                        
 	<mc>
 		<key>MC00010</key>
