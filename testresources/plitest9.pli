@@ -1,0 +1,6 @@
+ Hallo: proc options(main);
+ 	  IF linkstat = 'X'
+ 	  THEN DO;
+         put list ('Hallo Welt!');
+      END;
+ end Hall;
