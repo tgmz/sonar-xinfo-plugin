@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -219,31 +220,33 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 	
 	protected void findMc(InputFile file, Charset charset) {
 		try (BufferedReader br = new BufferedReader(new InputStreamReader(file.inputStream(), charset))) {
-			String s;
+			String line;
+			List<String> previousLines = new ArrayList<>();
+			
 			int i = 0;
 			
-			while ((s = br.readLine()) != null) {
+			while ((line = br.readLine()) != null) {
 				++i; 
 				
-				if (lang != Language.SAS && s.length() > 72) {
-					s = s.substring(0,  72);
+				if (lang != Language.SAS && line.length() > 72) {
+					line = line.substring(0,  72);
 				}
 				
-				if (isComment(s, lang, file.filename())) {
-					continue; 	// Therefore we must increment i first!!!
-				}
-				
-				for (Entry<String, List<Pattern>> entry : PatternFactory.getInstance().getMcPatterns(lang).entrySet()) {
-					for (Pattern p : entry.getValue()) {
-						MatcherResult mr = match(p, s);
+				if (!isComment(line, lang, file.filename()) && !isProbablyTest(previousLines, lang) && !isProbablyInComment(previousLines, lang)) {
+					for (Entry<String, List<Pattern>> entry : PatternFactory.getInstance().getMcPatterns(lang).entrySet()) {
+						for (Pattern p : entry.getValue()) {
+							MatcherResult mr = match(p, line);
 							
-						if (mr.getState() == MatcherResult.MatcherResultState.MATCH) {
-							String desc = MessageFormat.format(ruleMap.get(entry.getKey()).getDescription(), mr.getMatch());
+							if (mr.getState() == MatcherResult.MatcherResultState.MATCH) {
+								String desc = MessageFormat.format(ruleMap.get(entry.getKey()).getDescription(), mr.getMatch());
 								
-							saveIssue(file, i, entry.getKey(), desc, null);
+								saveIssue(file, i, entry.getKey(), desc, null);
+							}
 						}
 					}
-				}	
+				}
+				
+				previousLines.add(line.toUpperCase().replaceAll("\\s+"," ")); //Replace all spaces with a single blank
 			}
 		} catch (IOException e) {
 			LOGGER.error("Error reading {}", file, e);
@@ -312,6 +315,10 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 			return true;
 		}
 		
+		if (lang == Language.SAS && line.trim().startsWith("*")) {
+			return true;
+		}
+		
 		if (lang == Language.ASSEMBLER && line.length() > 0 && "*".equals(line.substring(0, 1))) {
 			return true;
 		}
@@ -326,6 +333,47 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 		
 		if (lang == Language.MACRO && fileName.endsWith(".cpy") && line.length() > 6 && "*".equals(line.substring(6, 7))) {
 			return true;
+		}
+		
+		return false;
+	}
+	
+	private static boolean isProbablyTest(List<String> lines, Language lang) {
+		if (lang == Language.PLI) {
+			if (lines.size() > 0 && (lines.get(lines.size() - 1).contains(" IF LINKSTAT = 'X'")
+									|| lines.get(lines.size() - 1).contains(" IF $CVT_LINKSTAT = 'X'"))) {
+				return true;
+			}
+			
+			if (lines.size() > 1) {
+				for (int i = lines.size() - 1; i > 0; i--) {
+					if (lines.get(i).contains(" END")) {
+						return false;
+					}
+					
+					if ((lines.get(i-1).contains(" IF LINKSTAT = 'X'") || lines.get(i-1).contains(" IF $CVT_LINKSTAT = 'X'"))
+						&& lines.get(i).contains(" THEN DO;")) {
+						return true;
+					}
+				}
+			}
+		}
+		
+		return false;
+	}
+	private static boolean isProbablyInComment(List<String> lines, Language lang) {
+		if (lang == Language.PLI || lang == Language.SAS || lang == Language.MACRO) {
+			if (lines.size() > 0) {
+				for (int i = lines.size() - 1; i >= 0; i--) {
+					if (lines.get(i).contains("*/")) {
+						return false;
+					}
+					
+					if (lines.get(i).contains("/*") && !lines.get(i).contains("*/")) {
+						return true;
+					}
+				}
+			}
 		}
 		
 		return false;
