@@ -13,16 +13,12 @@ package de.tgmz.sonar.plugins.xinfo;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.TreeMap;
 import java.util.regex.Pattern;
 
-import org.junit.BeforeClass;
 import org.junit.Test;
 
-import de.tgmz.sonar.plugins.xinfo.languages.Language;
+import de.tgmz.sonar.plugins.xinfo.mc.McRegex;
+import de.tgmz.sonar.plugins.xinfo.mc.McTemplate;
 import de.tgmz.sonar.plugins.xinfo.sensors.AbstractXinfoIssuesLoader;
 import de.tgmz.sonar.plugins.xinfo.sensors.matcher.MatcherResult.MatcherResultState;
 
@@ -30,14 +26,6 @@ import de.tgmz.sonar.plugins.xinfo.sensors.matcher.MatcherResult.MatcherResultSt
  * Testcase for XinfoSettings.
  */
 public class McPatternTest {
-	private static Map<String, List<Pattern>> mcPatternListMap = new TreeMap<>();
-	@BeforeClass
-	public static void setupOnce() {
-		for (Language l : Language.values()) {
-			mcPatternListMap.putAll(PatternFactory.getInstance().getMcPatterns(l));
-		}
-	}
-	
 	@Test
 	public void test() {
 		assertTrue(match("20.04.2020"));
@@ -78,11 +66,14 @@ public class McPatternTest {
 		assertTrue(match(" EXEC SQL DROP TABLE DBZILK01.TBZI0019KURS_TGL; "));
 		assertTrue(match(" EXEC SQL EXECUTE IMMEDIATE :S; "));
 		assertTrue(match("DCL X CHAR(25) INIT ('hans.meier@google.com');"));
+		assertTrue(match("/* Meine Bombe */"));
 	}
 	
 	private boolean match(String s) {
-		for (Entry<String, List<Pattern>> entry : mcPatternListMap.entrySet()) {
-			for (Pattern p : entry.getValue()) {
+		for (McTemplate entry : PatternFactory.getInstance().getMcTemplates().getMcTemplate()) {
+			for (McRegex r : entry.getMcRegex()) {
+				Pattern p = "false".equals(r.getCasesensitive()) ? Pattern.compile(r.getvalue(), Pattern.CASE_INSENSITIVE) :  Pattern.compile(r.getvalue());  
+				
 				if (AbstractXinfoIssuesLoader.match(p, s).getState() == MatcherResultState.MATCH) {
 						return true;
 				}

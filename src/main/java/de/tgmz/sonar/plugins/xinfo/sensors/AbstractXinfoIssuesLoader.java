@@ -16,10 +16,11 @@ import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.TreeMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -52,6 +53,8 @@ import de.tgmz.sonar.plugins.xinfo.XinfoFileAnalyzable;
 import de.tgmz.sonar.plugins.xinfo.XinfoProviderFactory;
 import de.tgmz.sonar.plugins.xinfo.config.XinfoConfig;
 import de.tgmz.sonar.plugins.xinfo.languages.Language;
+import de.tgmz.sonar.plugins.xinfo.mc.McRegex;
+import de.tgmz.sonar.plugins.xinfo.mc.McTemplate;
 import de.tgmz.sonar.plugins.xinfo.plicomp.FILE;
 import de.tgmz.sonar.plugins.xinfo.plicomp.MESSAGE;
 import de.tgmz.sonar.plugins.xinfo.plicomp.PACKAGE;
@@ -72,12 +75,14 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 	protected SensorContext context;
 	private Language lang;
 	private Map<String, Rule> ruleMap;
+	private Map<String, Pattern> patternCache;
 
 	public AbstractXinfoIssuesLoader(final FileSystem fileSystem, Language lang) {
 		this.fileSystem = fileSystem;
 		this.lang = lang;
 		
 		ruleMap = new TreeMap<>();
+		patternCache = new TreeMap<>();
 		
 		for (Rule r: RuleFactory.getInstance().getRules(lang).getRule()) {
 			ruleMap.put(r.getKey(), r);
@@ -232,21 +237,39 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 					line = line.substring(0,  72);
 				}
 				
-				if (!isComment(line, lang, file.filename()) && !isProbablyTest(previousLines, lang) && !isProbablyInComment(previousLines, lang)) {
-					for (Entry<String, List<Pattern>> entry : PatternFactory.getInstance().getMcPatterns(lang).entrySet()) {
-						for (Pattern p : entry.getValue()) {
-							MatcherResult mr = match(p, line);
+				boolean ignoreable = isComment(line, lang, file.filename())
+									|| isProbablyTest(previousLines, lang) 
+									|| isProbablyInComment(previousLines, lang);
+				
+				for (McTemplate entry : PatternFactory.getInstance().getMcTemplates().getMcTemplate()) {
+					if ("true".equals(entry.getIgnoreincomment()) && ignoreable) {
+						LOGGER.debug("Ignoring {}", entry.getKey());
+					} else {	
+						for (McRegex r : entry.getMcRegex()) {
+							Pattern p = patternCache.get(r.getvalue());
 							
-							if (mr.getState() == MatcherResult.MatcherResultState.MATCH) {
-								String desc = MessageFormat.format(ruleMap.get(entry.getKey()).getDescription(), mr.getMatch());
+							if (p == null) {
+								p = "false".equals(r.getCasesensitive()) ? Pattern.compile(r.getvalue(), Pattern.CASE_INSENSITIVE) :  Pattern.compile(r.getvalue());  
 								
-								saveIssue(file, i, entry.getKey(), desc, null);
+								patternCache.put(r.getvalue(), p);
+							}
+							
+							List<String> split = Arrays.asList(r.getLang().split("\\,"));
+							
+							if (split.contains(lang.getKey()) || split.contains("all")) {
+								MatcherResult mr = match(p, line);
+							
+								if (mr.getState() == MatcherResult.MatcherResultState.MATCH) {
+									String desc = MessageFormat.format(ruleMap.get(entry.getKey()).getDescription(), mr.getMatch());
+								
+									saveIssue(file, i, entry.getKey(), desc, null);
+								}
 							}
 						}
 					}
 				}
 				
-				previousLines.add(line.toUpperCase().replaceAll("\\s+"," ")); //Replace all spaces with a single blank
+				previousLines.add(line.toUpperCase(Locale.ROOT).replaceAll("\\s+"," ")); //Replace all spaces with a single blank
 			}
 		} catch (IOException e) {
 			LOGGER.error("Error reading {}", file, e);

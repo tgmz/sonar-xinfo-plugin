@@ -1,7 +1,8 @@
 <?xml encoding="UTF-8"?>
-<!ELEMENT mc-pattern (mc*)>
-<!ELEMENT mc (key,regex*)>
-<!ELEMENT key (#PCDATA)>
-<!ELEMENT regex (#PCDATA)>
-<!ATTLIST regex lang CDATA "all">
-<!ATTLIST regex casesensitive CDATA "true">
+<!ELEMENT mc-templates (mc-template*)>
+<!ELEMENT mc-template (mc-regex*)>
+<!ATTLIST mc-template key CDATA "">
+<!ATTLIST mc-template ignoreincomment CDATA "true">
+<!ELEMENT mc-regex (#PCDATA)>
+<!ATTLIST mc-regex lang CDATA "all">
+<!ATTLIST mc-regex casesensitive CDATA "true">

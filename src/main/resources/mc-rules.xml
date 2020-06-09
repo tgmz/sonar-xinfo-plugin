@@ -170,6 +170,19 @@
 </rule>
 <rule>
     <cardinality>SINGLE</cardinality>
+    <description>The string {0} looks suspicious</description>
+    <internalKey>MC00014</internalKey>
+    <key>MC00014</key>
+    <name>SuspiciousString</name>
+    <remediationFunction>CONSTANT_ISSUE</remediationFunction>
+    <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
+    <severity>INFO</severity>
+    <status>READY</status>
+    <tag>mc</tag>
+    <type>VULNERABILITY</type>
+</rule>
+<rule>
+    <cardinality>SINGLE</cardinality>
     <description>Application sends data to {0}</description>
     <internalKey>MC00016</internalKey>
     <key>MC00016</key>
