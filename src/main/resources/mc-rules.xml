@@ -66,7 +66,7 @@
 </rule>
 <rule>
     <cardinality>SINGLE</cardinality>
-    <description>Any use of password-related like {0} data should be investigated</description>
+    <description>Any use of password-related like data {0} should be investigated</description>
     <internalKey>MC00006</internalKey>
     <key>MC00006</key>
     <name>PasswordBypass</name>
