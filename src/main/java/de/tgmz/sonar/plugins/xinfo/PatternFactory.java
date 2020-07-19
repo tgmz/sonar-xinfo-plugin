@@ -26,7 +26,7 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import de.tgmz.sonar.plugins.xinfo.languages.Language;
-import de.tgmz.sonar.plugins.xinfo.mc.McPattern;
+import de.tgmz.sonar.plugins.xinfo.mc.McTemplates;
 
 /**
  * Factory for creating the sonar rules for a {@link Language}
@@ -34,14 +34,24 @@ import de.tgmz.sonar.plugins.xinfo.mc.McPattern;
 public final class PatternFactory {
 	private static final Logger LOGGER = Loggers.get(PatternFactory.class);
 	private static volatile PatternFactory instance;
-	private DocumentBuilder db;
-	private Unmarshaller mcum;
+	private McTemplates mcTemplates; 
 
 	private PatternFactory() throws ParserConfigurationException, JAXBException {
-		db = SecureDocumentBuilderFactory.getInstance().getDocumentBuilder();
+		DocumentBuilder db = SecureDocumentBuilderFactory.getInstance().getDocumentBuilder();
 
-		JAXBContext jaxbContext = JAXBContext.newInstance(McPattern.class);
-		mcum = jaxbContext.createUnmarshaller();
+		JAXBContext jaxbContext = JAXBContext.newInstance(McTemplates.class);
+		Unmarshaller mcum = jaxbContext.createUnmarshaller();
+		
+		try (InputStream is = this.getClass().getClassLoader().getResourceAsStream("mc-templates.xml")) {
+
+			Document doc = db.parse(new InputSource(is));
+
+			mcTemplates = (McTemplates) mcum.unmarshal(doc);
+		} catch (IOException | SAXException | JAXBException e) {
+			String s = "Error parsing rules";
+			
+			throw new XinfoRuntimeException(s, e);
+		}
 	}
 
 	public static PatternFactory getInstance() {
@@ -60,16 +70,7 @@ public final class PatternFactory {
 		return instance;
 	}
 
-	public McPattern getMcPatterns() {
-		try (InputStream is = this.getClass().getClassLoader().getResourceAsStream("mc-pattern.xml")) {
-
-			Document doc = db.parse(new InputSource(is));
-
-			return (McPattern) mcum.unmarshal(doc);
-		} catch (IOException | SAXException | JAXBException e) {
-			String s = "Error parsing rules";
-			
-			throw new XinfoRuntimeException(s, e);
-		}
+	public McTemplates getMcTemplates() {
+		return mcTemplates;
 	}
 }

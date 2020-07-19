@@ -15,9 +15,11 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.ExecutionException;
@@ -51,9 +53,8 @@ import de.tgmz.sonar.plugins.xinfo.XinfoFileAnalyzable;
 import de.tgmz.sonar.plugins.xinfo.XinfoProviderFactory;
 import de.tgmz.sonar.plugins.xinfo.config.XinfoConfig;
 import de.tgmz.sonar.plugins.xinfo.languages.Language;
-import de.tgmz.sonar.plugins.xinfo.mc.Mc;
-import de.tgmz.sonar.plugins.xinfo.mc.McPattern;
-import de.tgmz.sonar.plugins.xinfo.mc.Regex;
+import de.tgmz.sonar.plugins.xinfo.mc.McRegex;
+import de.tgmz.sonar.plugins.xinfo.mc.McTemplate;
 import de.tgmz.sonar.plugins.xinfo.plicomp.FILE;
 import de.tgmz.sonar.plugins.xinfo.plicomp.MESSAGE;
 import de.tgmz.sonar.plugins.xinfo.plicomp.PACKAGE;
@@ -74,43 +75,17 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 	protected SensorContext context;
 	private Language lang;
 	private Map<String, Rule> ruleMap;
-	private Map<String, List<Pattern>> mcPatternListMap;
-	private McPattern mcPatterns;
+	private Map<String, Pattern> patternCache;
 
 	public AbstractXinfoIssuesLoader(final FileSystem fileSystem, Language lang) {
 		this.fileSystem = fileSystem;
 		this.lang = lang;
 		
 		ruleMap = new TreeMap<>();
+		patternCache = new TreeMap<>();
 		
 		for (Rule r: RuleFactory.getInstance().getRules(lang).getRule()) {
 			ruleMap.put(r.getKey(), r);
-		}
-		
-		mcPatterns = PatternFactory.getInstance().getMcPatterns();
-		
-		mcPatternListMap = new TreeMap<>();
-		
-		for (Mc mc: mcPatterns.getMc()) {
-			for (Regex r : mc.getRegex()) {
-				String[] languagesForPattern = r.getLang().split("\\,");
-				
-				for (String languageForPattern : languagesForPattern) {
-					if (lang.getKey().equals(languageForPattern) || "all".equals(r.getLang())) {
-						Pattern p = "true".equals(r.getCasesensitive()) ? Pattern.compile(r.getvalue()) : Pattern.compile(r.getvalue(), Pattern.CASE_INSENSITIVE); 
-
-						List<Pattern> list = mcPatternListMap.get(mc.getKey());
-						
-						if (list == null) { 
-							list = new LinkedList<>();
-							
-							mcPatternListMap.put(mc.getKey(), list);
-						}
-						
-						list.add(p);
-					}
-				}
-			}
 		}
 	}
 
@@ -126,7 +101,7 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 
 		this.context = aContext;
 		
-		Charset charset = Charset.forName(context.config().get(XinfoConfig.XINFO_ENCODING).orElse(System.getProperty("file.encoding")));
+		Charset charset = Charset.forName(context.config().get(XinfoConfig.XINFO_ENCODING).orElse(Charset.defaultCharset().name()));
 		
 		Iterator<InputFile> fileIterator = fileSystem.inputFiles(fileSystem.predicates().hasLanguage(lang.getKey())).iterator();
 
@@ -167,6 +142,12 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 						severity = computeExtraSeverity(file, ruleKey, message);
 					}
 					
+					if (lang == Language.COBOL) {
+						// Chars at 3 and 4 indicate the compile phase which issued the message
+						// In ErrMsg these chars are replaced by "XX"
+						ruleKey = ruleKey.substring(0,  3) + "XX" + ruleKey.substring(5);
+					}
+					
 					saveIssue(file, effectiveMessageLine, ruleKey, message, severity);
 				}
 			} catch (XinfoException e) {
@@ -204,24 +185,14 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 		return null;
 	}
 
-	private void saveIssue(final InputFile inputFile, int line, String externalRuleKey, final String message, @Nullable Severity severity) {
-		LOGGER.debug("Save issue {} for file {} on line {}", externalRuleKey, inputFile.filename(), line);
+	private void saveIssue(final InputFile inputFile, int line, String ruleKeyString, final String message, @Nullable Severity severity) {
+		LOGGER.debug("Save issue {} for file {} on line {}", ruleKeyString, inputFile.filename(), line);
 		
-		String ruleKeyToSave;
-		
-		if (lang == Language.COBOL) {
-			// Chars at 3 and 4 indicate the compile phase which issued the message
-			// In ErrMsg these chars are replaced by "XX"
-			ruleKeyToSave = externalRuleKey.substring(0,  3) + "XX" + externalRuleKey.substring(5);
-		} else {
-			ruleKeyToSave = externalRuleKey;
-		}
-		
-		RuleKey ruleKey = RuleKey.of(lang.getRepoKey(), ruleKeyToSave);
+		RuleKey ruleKey = RuleKey.of(lang.getRepoKey(), ruleKeyString);
 
 		NewIssue newIssue = context.newIssue().forRule(ruleKey);
 		
-		Rule r = ruleMap.get(ruleKeyToSave);
+		Rule r = ruleMap.get(ruleKeyString);
 		
 		if (r != null) {
 			if (severity == null) {
@@ -230,7 +201,7 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 				newIssue.overrideSeverity(severity);
 			}
 		} else {
-			LOGGER.error("Xinfo message {} unknown", ruleKeyToSave);
+			LOGGER.error("Xinfo message {} unknown", ruleKeyString);
 			
 			return;
 		}
@@ -254,35 +225,51 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 	
 	protected void findMc(InputFile file, Charset charset) {
 		try (BufferedReader br = new BufferedReader(new InputStreamReader(file.inputStream(), charset))) {
-			String s;
+			String line;
+			List<String> previousLines = new ArrayList<>();
+			
 			int i = 0;
 			
-			while ((s = br.readLine()) != null) {
+			while ((line = br.readLine()) != null) {
 				++i; 
 				
-				if (lang != Language.SAS && s.length() > 72) {
-					s = s.substring(0,  72);
+				if (lang != Language.SAS && line.length() > 72) {
+					line = line.substring(0,  72);
 				}
 				
-				if (COMMENT.matcher(s).matches()) {
-					continue; 	// Therefore we must increment i first!!!
-				}
+				boolean ignoreable = isComment(line, lang, file.filename())
+									|| isProbablyTest(previousLines, lang) 
+									|| isProbablyInComment(previousLines, lang);
 				
-				for (Mc mc : mcPatterns.getMc()) {
-					List<Pattern> pl = mcPatternListMap.get(mc.getKey());
-					
-					if (pl != null) {
-						for (Pattern p : pl) {
-							MatcherResult mr = match(p, s);
+				for (McTemplate entry : PatternFactory.getInstance().getMcTemplates().getMcTemplate()) {
+					if ("true".equals(entry.getIgnoreincomment()) && ignoreable) {
+						LOGGER.debug("Ignoring {}", entry.getKey());
+					} else {	
+						for (McRegex r : entry.getMcRegex()) {
+							Pattern p = patternCache.get(r.getvalue());
 							
-							if (mr.getState() == MatcherResult.MatcherResultState.MATCH) {
-								String desc = MessageFormat.format(ruleMap.get(mc.getKey()).getDescription(), mr.getMatch());
+							if (p == null) {
+								p = "false".equals(r.getCasesensitive()) ? Pattern.compile(r.getvalue(), Pattern.CASE_INSENSITIVE) :  Pattern.compile(r.getvalue());  
 								
-								saveIssue(file, i, mc.getKey(), desc, null);
+								patternCache.put(r.getvalue(), p);
+							}
+							
+							List<String> split = Arrays.asList(r.getLang().split("\\,"));
+							
+							if (split.contains(lang.getKey()) || split.contains("all")) {
+								MatcherResult mr = match(p, line);
+							
+								if (mr.getState() == MatcherResult.MatcherResultState.MATCH) {
+									String desc = MessageFormat.format(ruleMap.get(entry.getKey()).getDescription(), mr.getMatch());
+								
+									saveIssue(file, i, entry.getKey(), desc, null);
+								}
 							}
 						}
 					}
-				}	
+				}
+				
+				previousLines.add(line.toUpperCase(Locale.ROOT).replaceAll("\\s+"," ")); //Replace all spaces with a single blank
 			}
 		} catch (IOException e) {
 			LOGGER.error("Error reading {}", file, e);
@@ -313,7 +300,16 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 			}
 		}
 	}
-	private MatcherResult match(Pattern p, String s) {
+	
+	
+	/**
+	 * Matches a string against a pattern. Public for test purposes
+	 * 
+	 * @param p pattern
+	 * @param s string
+	 * @return result
+	 */
+	public static MatcherResult match(Pattern p, String s) {
 		Future<String> fb = executor.submit(new CallableMatcher(p, s));
 		
 		try {
@@ -335,5 +331,74 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 		}
 		
 		return new MatcherResult(MatcherResult.MatcherResultState.MISMATCH);
+	}
+	
+	private static boolean isComment(String line, Language lang, String fileName) {
+		if (COMMENT.matcher(line).matches()) {
+			return true;
+		}
+		
+		if (lang == Language.SAS && line.trim().startsWith("*")) {
+			return true;
+		}
+		
+		if (lang == Language.ASSEMBLER && line.length() > 0 && "*".equals(line.substring(0, 1))) {
+			return true;
+		}
+		
+		if (lang == Language.COBOL && line.length() > 6 && "*".equals(line.substring(6, 7))) {
+			return true;
+		}
+		
+		if (lang == Language.MACRO && fileName.endsWith(".mac") && line.length() > 0 && "*".equals(line.substring(0, 1))) {
+			return true;
+		}
+		
+		if (lang == Language.MACRO && fileName.endsWith(".cpy") && line.length() > 6 && "*".equals(line.substring(6, 7))) {
+			return true;
+		}
+		
+		return false;
+	}
+	
+	private static boolean isProbablyTest(List<String> lines, Language lang) {
+		if (lang == Language.PLI) {
+			if (lines.size() > 0 && (lines.get(lines.size() - 1).contains(" IF LINKSTAT = 'X'")
+									|| lines.get(lines.size() - 1).contains(" IF $CVT_LINKSTAT = 'X'"))) {
+				return true;
+			}
+			
+			if (lines.size() > 1) {
+				for (int i = lines.size() - 1; i > 0; i--) {
+					if (lines.get(i).contains(" END")) {
+						return false;
+					}
+					
+					if ((lines.get(i-1).contains(" IF LINKSTAT = 'X'") || lines.get(i-1).contains(" IF $CVT_LINKSTAT = 'X'"))
+						&& lines.get(i).contains(" THEN DO;")) {
+						return true;
+					}
+				}
+			}
+		}
+		
+		return false;
+	}
+	private static boolean isProbablyInComment(List<String> lines, Language lang) {
+		if (lang == Language.PLI || lang == Language.SAS || lang == Language.MACRO) {
+			if (lines.size() > 0) {
+				for (int i = lines.size() - 1; i >= 0; i--) {
+					if (lines.get(i).contains("*/")) {
+						return false;
+					}
+					
+					if (lines.get(i).contains("/*") && !lines.get(i).contains("*/")) {
+						return true;
+					}
+				}
+			}
+		}
+		
+		return false;
 	}
 }

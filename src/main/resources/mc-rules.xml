@@ -66,7 +66,7 @@
 </rule>
 <rule>
     <cardinality>SINGLE</cardinality>
-    <description>Any use of password-related like {0} data should be investigated</description>
+    <description>Any use of password-related like data {0} should be investigated</description>
     <internalKey>MC00006</internalKey>
     <key>MC00006</key>
     <name>PasswordBypass</name>
@@ -161,6 +161,19 @@
     <internalKey>MC00013</internalKey>
     <key>MC00013</key>
     <name>InvalidUseOfTmp</name>
+    <remediationFunction>CONSTANT_ISSUE</remediationFunction>
+    <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
+    <severity>INFO</severity>
+    <status>READY</status>
+    <tag>mc</tag>
+    <type>VULNERABILITY</type>
+</rule>
+<rule>
+    <cardinality>SINGLE</cardinality>
+    <description>The string {0} looks suspicious</description>
+    <internalKey>MC00014</internalKey>
+    <key>MC00014</key>
+    <name>SuspiciousString</name>
     <remediationFunction>CONSTANT_ISSUE</remediationFunction>
     <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
     <severity>INFO</severity>

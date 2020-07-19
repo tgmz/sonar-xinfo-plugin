@@ -28,6 +28,7 @@ import de.tgmz.sonar.plugins.xinfo.sensors.AssemblerIssuesLoader;
 import de.tgmz.sonar.plugins.xinfo.sensors.CobolColorizer;
 import de.tgmz.sonar.plugins.xinfo.sensors.CobolIssuesLoader;
 import de.tgmz.sonar.plugins.xinfo.sensors.CpdTokenizerSensor;
+import de.tgmz.sonar.plugins.xinfo.sensors.MacroColorizer;
 import de.tgmz.sonar.plugins.xinfo.sensors.MacroIssuesLoader;
 import de.tgmz.sonar.plugins.xinfo.sensors.PliColorizer;
 import de.tgmz.sonar.plugins.xinfo.sensors.PliIssuesLoader;
@@ -57,7 +58,8 @@ public class XinfoPlugin implements Plugin {
     context.addExtension(XinfoRulesDefinition.class);
 
     context.addExtensions(PliIssuesLoader.class, CobolIssuesLoader.class, AssemblerIssuesLoader.class, SasIssuesLoader.class, MacroIssuesLoader.class);
-    context.addExtensions(PliColorizer.class, CobolColorizer.class, AssemblerColorizer.class, SasColorizer.class);
+
+    context.addExtensions(PliColorizer.class, CobolColorizer.class, AssemblerColorizer.class, SasColorizer.class, MacroColorizer.class);
 
     context.addExtension(CpdTokenizerSensor.class);
     // tutorial on settings
