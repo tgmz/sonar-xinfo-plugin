@@ -17,7 +17,6 @@ import java.util.Iterator;
 import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.TextRange;
-import org.sonar.api.batch.fs.internal.DefaultInputFile;
 import org.sonar.api.batch.sensor.Sensor;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.SensorDescriptor;
@@ -74,7 +73,7 @@ public abstract class AbstractColorizer<T extends IColorizing> implements Sensor
 					TextRange newRange;
 					try {
 						//CHECKSTYLE DISABLE LineLength for 1 line
-						newRange = ((DefaultInputFile) inputFile).newRange(hd.getStartLineNumber(), hd.getStartOffset(), hd.getEndLineNumber(), hd.getEndOffset());
+						newRange = inputFile.newRange(hd.getStartLineNumber(), hd.getStartOffset(), hd.getEndLineNumber(), hd.getEndOffset());
 					} catch (IllegalArgumentException e) {
 						LOGGER.error("Invalid text range: Line start: {}. Line end: {}, Offset start: {}. Offset end: {} on content {}", hd.getStartLineNumber(), hd.getEndLineNumber(), hd.getStartOffset(), hd.getEndOffset(), hd.getContent());
 						
