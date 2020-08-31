@@ -33,7 +33,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  */
 public final class RuleFactory {
 	private static final Logger LOGGER = Loggers.get(RuleFactory.class);
-	private static volatile RuleFactory instance;
+	private static RuleFactory instance;
 	private DocumentBuilder db;
 	private Unmarshaller xium;
 
@@ -44,7 +44,7 @@ public final class RuleFactory {
 		xium = jaxbContext.createUnmarshaller();
 	}
 
-	public static RuleFactory getInstance() {
+	public static synchronized RuleFactory getInstance() {
 		if (instance == null) {
 			LOGGER.debug("Create new Factory instance");
 			
