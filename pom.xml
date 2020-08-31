@@ -7,7 +7,7 @@
 	<groupId>de.tgmz.sonar.plugins.xinfo</groupId>
 	<artifactId>sonar-xinfo-plugin</artifactId>
 	<packaging>sonar-plugin</packaging>
-	<version>1.2.4</version>
+	<version>1.2.5-SNAPSHOT</version>
 
 	<name>Xinfo Plugin for SonarQube</name>
 	<description>Xinfo plugin for SonarQube</description>
@@ -16,7 +16,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<sonar.apiVersion>6.7</sonar.apiVersion>
 		<tycho.version>1.0.0</tycho.version>
-		<jdk.min.version>1.7</jdk.min.version>
+		<jdk.min.version>1.8</jdk.min.version>
 		<jacoco.version>0.8.1</jacoco.version>
 		<dependency-check.version>5.0.0</dependency-check.version>
 		<maven.build.timestamp.format>yyyyMMdd</maven.build.timestamp.format>
@@ -81,7 +81,7 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.12</version>
+			<version>4.13</version>
 			<scope>test</scope>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.codehaus.staxmate/staxmate -->

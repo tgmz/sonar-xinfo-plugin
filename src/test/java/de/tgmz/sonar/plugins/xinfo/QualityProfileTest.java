@@ -39,7 +39,7 @@ public class QualityProfileTest {
 		this.qp = qp;
 	}
 
-	@Test
+	@Test(expected = Test.None.class)
 	public void test() throws InstantiationException, IllegalAccessException  {
 		qp.newInstance().define(new BuiltInQualityProfilesDefinition.Context());
 	}

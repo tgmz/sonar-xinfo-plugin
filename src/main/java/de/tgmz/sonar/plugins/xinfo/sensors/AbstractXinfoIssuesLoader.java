@@ -324,8 +324,14 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 			LOGGER.error("Error matching {} against {} in less than {} millseconds, possible redos attack", s, p, TIMEOUT);
 			
 			return new MatcherResult(MatcherResult.MatcherResultState.ERROR);
-		} catch (InterruptedException | ExecutionException e) {
-			LOGGER.error("Error matching {} against {}", s, p, e);
+		} catch (ExecutionException e) {
+			LOGGER.error("Exectution error matching {} against {}", s, p, e);
+			
+			return new MatcherResult(MatcherResult.MatcherResultState.ERROR);
+		} catch (InterruptedException e) {
+			LOGGER.error("Interrupted error matching {} against {}", s, p, e);
+			
+			Thread.currentThread().interrupt();
 			
 			return new MatcherResult(MatcherResult.MatcherResultState.ERROR);
 		}
@@ -363,7 +369,7 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 	
 	private static boolean isProbablyTest(List<String> lines, Language lang) {
 		if (lang == Language.PLI) {
-			if (lines.size() > 0 && (lines.get(lines.size() - 1).contains(" IF LINKSTAT = 'X'")
+			if (!lines.isEmpty() && (lines.get(lines.size() - 1).contains(" IF LINKSTAT = 'X'")
 									|| lines.get(lines.size() - 1).contains(" IF $CVT_LINKSTAT = 'X'"))) {
 				return true;
 			}
@@ -386,7 +392,7 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 	}
 	private static boolean isProbablyInComment(List<String> lines, Language lang) {
 		if (lang == Language.PLI || lang == Language.SAS || lang == Language.MACRO) {
-			if (lines.size() > 0) {
+			if (!lines.isEmpty()) {
 				for (int i = lines.size() - 1; i >= 0; i--) {
 					if (lines.get(i).contains("*/")) {
 						return false;

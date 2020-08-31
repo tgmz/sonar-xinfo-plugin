@@ -33,7 +33,7 @@ import de.tgmz.sonar.plugins.xinfo.mc.McTemplates;
  */
 public final class PatternFactory {
 	private static final Logger LOGGER = Loggers.get(PatternFactory.class);
-	private static volatile PatternFactory instance;
+	private static PatternFactory instance;
 	private McTemplates mcTemplates; 
 
 	private PatternFactory() throws ParserConfigurationException, JAXBException {
@@ -54,7 +54,7 @@ public final class PatternFactory {
 		}
 	}
 
-	public static PatternFactory getInstance() {
+	public static synchronized PatternFactory getInstance() {
 		if (instance == null) {
 			LOGGER.debug("Create new Factory instance");
 			

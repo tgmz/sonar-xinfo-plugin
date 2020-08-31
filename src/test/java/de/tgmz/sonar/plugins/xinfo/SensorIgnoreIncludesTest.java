@@ -50,7 +50,7 @@ public class SensorIgnoreIncludesTest {
 		sensorDescriptor = new DefaultSensorDescriptor();
 	}
 	
-	@Test
+	@Test(expected = Test.None.class)
 	public void testPli() {
 		PliColorizer colorizer = new PliColorizer();
 		PliIssuesLoader issuesLoader = new PliIssuesLoader(sensorContext.fileSystem());

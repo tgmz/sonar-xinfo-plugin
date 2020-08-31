@@ -14,5 +14,5 @@ package de.tgmz.sonar.plugins.xinfo.color.sas;
  * SAS keywords.
  */
 public enum ReservedWords {
-	options, libname;
+	OPTIONS, LIBNAME;
 }

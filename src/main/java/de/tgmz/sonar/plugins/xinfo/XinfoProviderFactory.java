@@ -16,13 +16,13 @@ import org.sonar.api.config.Configuration;
  * Singleton factory for the XinfoProvider to use.
  */
 public final class XinfoProviderFactory {
-	private static volatile IXinfoProvider provider;
+	private static IXinfoProvider provider;
 	
 	private XinfoProviderFactory() {
 		// Empty private constructor to hide the implicit public one
 	}
 	
-	public static IXinfoProvider getProvider(Configuration configuration) {
+	public static synchronized IXinfoProvider getProvider(Configuration configuration) {
 		if (provider == null) {
 			provider = new XinfoFileProvider(configuration);
 		}
