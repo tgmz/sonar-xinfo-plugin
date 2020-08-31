@@ -82,7 +82,7 @@ public class SensorTest {
 		new File("testresources/xml/plitest6.xml").delete();
 	}
 	
-	@Test
+	@Test(expected = Test.None.class)
 	public void testPli() {
 		PliColorizer colorizer = new PliColorizer();
 		PliIssuesLoader issuesLoader = new PliIssuesLoader(sensorContext.fileSystem());
@@ -94,7 +94,7 @@ public class SensorTest {
 		issuesLoader.execute(sensorContext);
 	}
 
-	@Test
+	@Test(expected = Test.None.class)
 	public void testCobol() {
 		CobolColorizer colorizer = new CobolColorizer();
 		CobolIssuesLoader issuesLoader = new CobolIssuesLoader(sensorContext.fileSystem());
@@ -106,7 +106,7 @@ public class SensorTest {
 		issuesLoader.execute(sensorContext);
 	}
 
-	@Test
+	@Test(expected = Test.None.class)
 	public void testAssember() {
 		AssemblerColorizer colorizer = new AssemblerColorizer();
 		AssemblerIssuesLoader issuesLoader = new AssemblerIssuesLoader(sensorContext.fileSystem());
@@ -118,7 +118,7 @@ public class SensorTest {
 		issuesLoader.execute(sensorContext);
 	}
 
-	@Test
+	@Test(expected = Test.None.class)
 	public void testMacro() {
 		MacroColorizer colorizer = new MacroColorizer();
 		MacroIssuesLoader issuesLoader = new MacroIssuesLoader(sensorContext.fileSystem());
@@ -130,7 +130,7 @@ public class SensorTest {
 		issuesLoader.execute(sensorContext);
 	}
 
-	@Test
+	@Test(expected = Test.None.class)
 	public void testSas() {
 		SasColorizer colorizer = new SasColorizer();
 		SasIssuesLoader issuesLoader = new SasIssuesLoader(sensorContext.fileSystem());
@@ -142,12 +142,12 @@ public class SensorTest {
 		issuesLoader.execute(sensorContext);
 	}
 
-	@Test
+	@Test(expected = Test.None.class)
 	public void testRulesDefinition() {
 		new XinfoRulesDefinition().define(new RulesDefinition.Context());
 	}
 	
-	@Test
+	@Test(expected = Test.None.class)
 	public void testCpd() {
 		CpdTokenizerSensor cpdSensor = new CpdTokenizerSensor();
 		

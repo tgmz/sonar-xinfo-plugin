@@ -34,12 +34,7 @@ public abstract class AbstractColorizing implements IColorizing {
 	private String[] content;
 	private int limit;
 	
-	private static final ThreadLocal<NumberFormat> NF = new ThreadLocal<NumberFormat>() {
-		@Override
-		protected NumberFormat initialValue() {
-			return NumberFormat.getNumberInstance();
-		}
-	};
+    public static final ThreadLocal<NumberFormat> NF = ThreadLocal.withInitial(() -> NumberFormat.getNumberInstance());
 
 	/**
 	 * Creates the areas of a file to color.
