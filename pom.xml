@@ -81,7 +81,7 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.13</version>
+			<version>4.13.1</version>
 			<scope>test</scope>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.codehaus.staxmate/staxmate -->
@@ -134,7 +134,7 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>jaxb2-maven-plugin</artifactId>
-				<version>2.3</version>
+				<version>2.5.0</version>
 				<executions>
 					<execution>
 						<id>xjc-plicomp</id>
@@ -153,6 +153,9 @@
 								<source>src/main/dtd/plicomp.dtd</source>
 							</sources>
 							<clearOutputDir>false</clearOutputDir>
+					
+							<!-- External parsing is disabled by default. "Cannot parse URI: file:/C: ..." -->
+							<externalEntityProcessing>true</externalEntityProcessing>
 						</configuration>
 					</execution>
 					<execution>
@@ -172,6 +175,9 @@
 								<source>src/main/dtd/xinfo-rules.dtd</source>
 							</sources>
 							<clearOutputDir>false</clearOutputDir>
+					
+							<!-- External parsing is disabled by default. "Cannot parse URI: file:/C: ..." -->
+							<externalEntityProcessing>true</externalEntityProcessing>
 						</configuration>
 					</execution>
 					<execution>
@@ -191,6 +197,9 @@
 								<source>src/main/dtd/dtcc.dtd</source>
 							</sources>
 							<clearOutputDir>false</clearOutputDir>
+					
+							<!-- External parsing is disabled by default. "Cannot parse URI: file:/C: ..." -->
+							<externalEntityProcessing>true</externalEntityProcessing>
 						</configuration>
 					</execution>
 					<execution>
@@ -210,6 +219,9 @@
 								<source>src/main/dtd/mc.dtd</source>
 							</sources>
 							<clearOutputDir>false</clearOutputDir>
+					
+							<!-- External parsing is disabled by default. "Cannot parse URI: file:/C: ..." -->
+							<externalEntityProcessing>true</externalEntityProcessing>
 						</configuration>
 					</execution>
 					<execution>
@@ -226,6 +238,9 @@
 								<source>src/main/xsd/sonar</source>
 							</sources>
 							<clearOutputDir>false</clearOutputDir>
+					
+							<!-- External parsing is disabled by default. "Cannot parse URI: file:/C: ..." -->
+							<externalEntityProcessing>true</externalEntityProcessing>
 						</configuration>
 					</execution>
 				</executions>
