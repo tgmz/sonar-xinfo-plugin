@@ -67,7 +67,8 @@ public class CreatePliRules {
 		for (String s0 : l) {
 			if (!(s0.startsWith("© Copyright IBM Corp.")	// Copyright
 					|| s0.contains(" • ")					// Überschrift
-					|| s0.contains("Enterprise PL/I for z/OS Messages and Codes"))) {	// Footer
+					|| s0.contains(".....") 				// Contents
+					|| s0.contains("Enterprise PL/I for z/OS"))) {	// Footer
 				try {
 					Integer.parseInt(s0.trim());			// Seitenzahl?
 					
@@ -97,6 +98,20 @@ public class CreatePliRules {
 			sta = end;
 		}
 		
+		String key = "IBM2671I W";
+		
+		if (!rules.contains(key)) {
+			/* Undocumented */
+			Rule r = createDefaults(key);
+			r.setName("The variable var is passed as argument number count to entry entry. The corresponding parameter has the ASSIGNABLE attribute, and hence the variable could bemodified despite having the NONASSIGNABLE attribute.");
+			r.setDescription(r.getName());
+			r.setSeverity("MAJOR");
+				
+			jaxbMarshaller.marshal(r, pw);
+		
+			pw.println();
+		}
+		
 		pw.println("</xinfo-rules>");
 		
 		pw.close();
@@ -113,17 +128,11 @@ public class CreatePliRules {
 		
 		String sev = msg.substring(9, 10);
 		
-		Rule r = new Rule();
-		r.setCardinality("SINGLE");
-		r.setInternalKey(key);
-		r.setKey(key);
-		r.setStatus(RuleStatus.READY.toString());
-		Tag tag = new Tag(); tag.setvalue("xinfo"); r.getTag().add(tag);
-		r.setRemediationFunction("CONSTANT_ISSUE");
-		r.setRemediationFunctionBaseEffort("0d 0h 10min");
+		Rule r = createDefaults(key);
 		
-		int desc = s.indexOf("Explanation: ", sta);
-		r.setDescription(s.substring(desc + "Explanation: ".length(), end));
+		int desc = s.indexOf("Explanation ", sta);
+		int suffix = s.indexOf("Codes Chapter", sta);
+		r.setDescription(s.substring(desc + "Explanation ".length(), suffix));
 		
 		String name = s.substring(sta + 11, desc);
 		
@@ -182,7 +191,17 @@ public class CreatePliRules {
 		jaxbMarshaller.marshal(r, pw);
 		
 		pw.println();
-		
 	}
+	private Rule createDefaults(String key) {
+		Rule r = new Rule();
+		r.setCardinality("SINGLE");
+		r.setInternalKey(key);
+		r.setKey(key);
+		r.setStatus(RuleStatus.READY.toString());
+		Tag tag = new Tag(); tag.setvalue("xinfo"); r.getTag().add(tag);
+		r.setRemediationFunction("CONSTANT_ISSUE");
+		r.setRemediationFunctionBaseEffort("0d 0h 10min");
 
+		return r;
+	}
 }
