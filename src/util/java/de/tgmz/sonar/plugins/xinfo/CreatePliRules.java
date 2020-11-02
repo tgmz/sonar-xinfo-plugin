@@ -67,7 +67,8 @@ public class CreatePliRules {
 		for (String s0 : l) {
 			if (!(s0.startsWith("© Copyright IBM Corp.")	// Copyright
 					|| s0.contains(" • ")					// Überschrift
-					|| s0.contains("Enterprise PL/I for z/OS Messages and Codes"))) {	// Footer
+					|| s0.contains(".....") 				// Contents
+					|| s0.contains("Enterprise PL/I for z/OS"))) {	// Footer
 				try {
 					Integer.parseInt(s0.trim());			// Seitenzahl?
 					
@@ -122,8 +123,9 @@ public class CreatePliRules {
 		r.setRemediationFunction("CONSTANT_ISSUE");
 		r.setRemediationFunctionBaseEffort("0d 0h 10min");
 		
-		int desc = s.indexOf("Explanation: ", sta);
-		r.setDescription(s.substring(desc + "Explanation: ".length(), end));
+		int desc = s.indexOf("Explanation ", sta);
+		int suffix = s.indexOf("Codes Chapter", sta);
+		r.setDescription(s.substring(desc + "Explanation ".length(), suffix));
 		
 		String name = s.substring(sta + 11, desc);
 		
