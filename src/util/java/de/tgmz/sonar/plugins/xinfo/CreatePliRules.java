@@ -98,6 +98,16 @@ public class CreatePliRules {
 			sta = end;
 		}
 		
+		/* Undocumented */
+		Rule r = createDefaults("IBM2671I W");
+		r.setName("The variable var is passed as argument number count to entry entry. The corresponding parameter has the ASSIGNABLE attribute, and hence the variable could bemodified despite having the NONASSIGNABLE attribute.");
+		r.setDescription(r.getName());
+		r.setSeverity("MAJOR");
+		
+		jaxbMarshaller.marshal(r, pw);
+		
+		pw.println();
+		
 		pw.println("</xinfo-rules>");
 		
 		pw.close();
@@ -114,14 +124,7 @@ public class CreatePliRules {
 		
 		String sev = msg.substring(9, 10);
 		
-		Rule r = new Rule();
-		r.setCardinality("SINGLE");
-		r.setInternalKey(key);
-		r.setKey(key);
-		r.setStatus(RuleStatus.READY.toString());
-		Tag tag = new Tag(); tag.setvalue("xinfo"); r.getTag().add(tag);
-		r.setRemediationFunction("CONSTANT_ISSUE");
-		r.setRemediationFunctionBaseEffort("0d 0h 10min");
+		Rule r = createDefaults(key);
 		
 		int desc = s.indexOf("Explanation ", sta);
 		int suffix = s.indexOf("Codes Chapter", sta);
@@ -184,7 +187,17 @@ public class CreatePliRules {
 		jaxbMarshaller.marshal(r, pw);
 		
 		pw.println();
-		
 	}
+	private Rule createDefaults(String key) {
+		Rule r = new Rule();
+		r.setCardinality("SINGLE");
+		r.setInternalKey(key);
+		r.setKey(key);
+		r.setStatus(RuleStatus.READY.toString());
+		Tag tag = new Tag(); tag.setvalue("xinfo"); r.getTag().add(tag);
+		r.setRemediationFunction("CONSTANT_ISSUE");
+		r.setRemediationFunctionBaseEffort("0d 0h 10min");
 
+		return r;
+	}
 }

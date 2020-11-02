@@ -22727,4 +22727,16 @@
     <tag>xinfo</tag>
     <type>BUG</type>
 </rule>
+<rule>
+    <cardinality>SINGLE</cardinality>
+    <description>The variable var is passed as argument number count to entry entry. The corresponding parameter has the ASSIGNABLE attribute, and hence the variable could bemodified despite having the NONASSIGNABLE attribute.</description>
+    <internalKey>IBM2671I W</internalKey>
+    <key>IBM2671I W</key>
+    <name>The variable var is passed as argument number count to entry entry. The corresponding parameter has the ASSIGNABLE attribute, and hence the variable could bemodified despite having the NONASSIGNABLE attribute.</name>
+    <remediationFunction>CONSTANT_ISSUE</remediationFunction>
+    <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
+    <severity>MAJOR</severity>
+    <status>READY</status>
+    <tag>xinfo</tag>
+</rule>
 </xinfo-rules>
