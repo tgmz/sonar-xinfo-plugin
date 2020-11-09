@@ -67,9 +67,9 @@ public class McPatternTest {
 		assertTrue(match(" EXEC SQL DROP TABLE DBZILK01.TBZI0019KURS_TGL; "));
 		assertTrue(match(" EXEC SQL EXECUTE IMMEDIATE :S; "));
 		assertTrue(match("DCL X CHAR(25) INIT ('hans.meier@google.com');"));
-		assertFalse(match("DCL X CHAR(25) INIT ('postkorbXY@bayernlb.de');"));
-		assertFalse(match("DCL X CHAR(25) INIT ('postkorb.bildamanadmin@bayernlb.de');"));
-		assertTrue(match("%THEN %let empfaenger=%str(josef.niebisch@bayernlb.de);"));
+		assertFalse(match("DCL X CHAR(25) INIT ('postkorbXY@blahblah.com');"));
+		assertFalse(match("DCL X CHAR(25) INIT ('postkorb.bildamanadmin@blahblah.com');"));
+		assertTrue(match("%THEN %let empfaenger=%str(josef.niebisch@blahblah.com);"));
 		  
 		assertTrue(match("/* Meine Bombe */"));
 	}
