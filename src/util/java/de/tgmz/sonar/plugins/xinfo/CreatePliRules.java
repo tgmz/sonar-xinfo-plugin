@@ -102,10 +102,26 @@ public class CreatePliRules {
 		
 		if (!rules.contains(key)) {
 			/* Undocumented */
-			Rule r = createDefaults(key);
-			r.setName("The variable var is passed as argument number count to entry entry. The corresponding parameter has the ASSIGNABLE attribute, and hence the variable could bemodified despite having the NONASSIGNABLE attribute.");
-			r.setDescription(r.getName());
+			String s0 = "The variable var is passed as argument number count to entry entry. The corresponding parameter has the ASSIGNABLE attribute, and hence the variable could be modified despite having the NONASSIGNABLE attribute.";
+			
+			Rule r = createDefaults(key, s0);
+			r.setDescription(s0);
 			r.setSeverity("MAJOR");
+				
+			jaxbMarshaller.marshal(r, pw);
+		
+			pw.println();
+		}
+		
+		key = "IBM2847I I";
+		
+		if (!rules.contains(key)) {
+			/* Undocumented */
+			String s0 = "Source in RETURN statement has a MAXLENGTH of lenght which is greater than the length of length in the corresponding RETURNS attribute";
+			
+			Rule r = createDefaults(key, s0);
+			r.setDescription(s0);
+			r.setSeverity("MINOR");
 				
 			jaxbMarshaller.marshal(r, pw);
 		
@@ -128,15 +144,12 @@ public class CreatePliRules {
 		
 		String sev = msg.substring(9, 10);
 		
-		Rule r = createDefaults(key);
-		
 		int desc = s.indexOf("Explanation ", sta);
 		int suffix = s.indexOf("Codes Chapter", sta);
+		
+		Rule r = createDefaults(key, s.substring(sta + 11, desc));
+		
 		r.setDescription(s.substring(desc + "Explanation ".length(), suffix));
-		
-		String name = s.substring(sta + 11, desc);
-		
-		r.setName(name.substring(0, Math.min(name.length(), 200))); // VARCHAR(200) in DB
 		
 		switch (r.getKey()) {
 		case "IBM1035I I":	// The next statement was merged with this statement.
@@ -192,7 +205,7 @@ public class CreatePliRules {
 		
 		pw.println();
 	}
-	private Rule createDefaults(String key) {
+	private Rule createDefaults(String key, String name) {
 		Rule r = new Rule();
 		r.setCardinality("SINGLE");
 		r.setInternalKey(key);
@@ -201,7 +214,8 @@ public class CreatePliRules {
 		Tag tag = new Tag(); tag.setvalue("xinfo"); r.getTag().add(tag);
 		r.setRemediationFunction("CONSTANT_ISSUE");
 		r.setRemediationFunctionBaseEffort("0d 0h 10min");
-
+		r.setName(name.substring(0, Math.min(name.length(), 200))); // VARCHAR(200) in DB
+		
 		return r;
 	}
 }

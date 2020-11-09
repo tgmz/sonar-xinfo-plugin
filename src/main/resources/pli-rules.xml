@@ -22729,13 +22729,25 @@
 </rule>
 <rule>
     <cardinality>SINGLE</cardinality>
-    <description>The variable var is passed as argument number count to entry entry. The corresponding parameter has the ASSIGNABLE attribute, and hence the variable could bemodified despite having the NONASSIGNABLE attribute.</description>
+    <description>The variable var is passed as argument number count to entry entry. The corresponding parameter has the ASSIGNABLE attribute, and hence the variable could be modified despite having the NONASSIGNABLE attribute.</description>
     <internalKey>IBM2671I W</internalKey>
     <key>IBM2671I W</key>
-    <name>The variable var is passed as argument number count to entry entry. The corresponding parameter has the ASSIGNABLE attribute, and hence the variable could bemodified despite having the NONASSIGNABLE attribute.</name>
+    <name>The variable var is passed as argument number count to entry entry. The corresponding parameter has the ASSIGNABLE attribute, and hence the variable could be modified despite having the NONASSIGNABLE </name>
     <remediationFunction>CONSTANT_ISSUE</remediationFunction>
     <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
     <severity>MAJOR</severity>
+    <status>READY</status>
+    <tag>xinfo</tag>
+</rule>
+<rule>
+    <cardinality>SINGLE</cardinality>
+    <description>Source in RETURN statement has a MAXLENGTH of lenght which is greater than the length of length in the corresponding RETURNS attribute</description>
+    <internalKey>IBM2847I I</internalKey>
+    <key>IBM2847I I</key>
+    <name>Source in RETURN statement has a MAXLENGTH of lenght which is greater than the length of length in the corresponding RETURNS attribute</name>
+    <remediationFunction>CONSTANT_ISSUE</remediationFunction>
+    <remediationFunctionBaseEffort>0d 0h 10min</remediationFunctionBaseEffort>
+    <severity>MINOR</severity>
     <status>READY</status>
     <tag>xinfo</tag>
 </rule>
