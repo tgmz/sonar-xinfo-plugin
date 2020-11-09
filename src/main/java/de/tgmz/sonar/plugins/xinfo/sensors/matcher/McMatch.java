@@ -10,6 +10,8 @@
   *******************************************************************************/
 package de.tgmz.sonar.plugins.xinfo.sensors.matcher;
 
+import javax.annotation.Generated;
+
 /**
  * A malicious code match
  */
@@ -32,6 +34,7 @@ public class McMatch {
 	}
 
 	@Override
+	@Generated(value = "Eclipse")
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
@@ -41,6 +44,7 @@ public class McMatch {
 	}
 
 	@Override
+	@Generated(value = "Eclipse")
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
