@@ -18,9 +18,11 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.TreeMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -60,6 +62,7 @@ import de.tgmz.sonar.plugins.xinfo.plicomp.MESSAGE;
 import de.tgmz.sonar.plugins.xinfo.plicomp.PACKAGE;
 import de.tgmz.sonar.plugins.xinfo.sensors.matcher.CallableMatcher;
 import de.tgmz.sonar.plugins.xinfo.sensors.matcher.MatcherResult;
+import de.tgmz.sonar.plugins.xinfo.sensors.matcher.McMatch;
 
 /**
  * This Sensor loads the results of an analysis performed by 
@@ -76,7 +79,7 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 	private Language lang;
 	private Map<String, Rule> ruleMap;
 	private Map<String, Pattern> patternCache;
-
+	
 	public AbstractXinfoIssuesLoader(final FileSystem fileSystem, Language lang) {
 		this.fileSystem = fileSystem;
 		this.lang = lang;
@@ -228,10 +231,10 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 			String line;
 			List<String> previousLines = new ArrayList<>();
 			
-			int i = 0;
+			int lineNumber = 0;
 			
 			while ((line = br.readLine()) != null) {
-				++i; 
+				++lineNumber; 
 				
 				if (lang != Language.SAS && line.length() > 72) {
 					line = line.substring(0,  72);
@@ -241,18 +244,20 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 									|| isProbablyTest(previousLines, lang) 
 									|| isProbablyInComment(previousLines, lang);
 				
+				Map<Integer, List<McMatch>> mcMatchesForLines = new TreeMap<>(); 
+				
 				for (McTemplate entry : PatternFactory.getInstance().getMcTemplates().getMcTemplate()) {
 					if ("true".equals(entry.getIgnoreincomment()) && ignoreable) {
 						LOGGER.debug("Ignoring {}", entry.getKey());
 					} else {	
-						for (McRegex r : entry.getMcRegex()) {
-							Pattern p = patternCache.get(r.getvalue());
-							
-							if (p == null) {
-								p = "false".equals(r.getCasesensitive()) ? Pattern.compile(r.getvalue(), Pattern.CASE_INSENSITIVE) :  Pattern.compile(r.getvalue());  
-								
-								patternCache.put(r.getvalue(), p);
-							}
+						List<McRegex> mcRegex = entry.getMcRegex();
+						mcRegex.sort((o1, o2) -> o1.getType().compareTo(o2.getType()));
+						
+						for (McRegex r : mcRegex) {
+							Pattern p = patternCache.computeIfAbsent(r.getvalue(), key -> 
+								"false".equals(r.getCasesensitive()) ? 
+										Pattern.compile(r.getvalue(), Pattern.CASE_INSENSITIVE) :  
+										Pattern.compile(r.getvalue()));									
 							
 							List<String> split = Arrays.asList(r.getLang().split("\\,"));
 							
@@ -260,13 +265,23 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 								MatcherResult mr = match(p, line);
 							
 								if (mr.getState() == MatcherResult.MatcherResultState.MATCH) {
-									String desc = MessageFormat.format(ruleMap.get(entry.getKey()).getDescription(), mr.getMatch());
-								
-									saveIssue(file, i, entry.getKey(), desc, null);
+									McMatch mcMatch = new McMatch(entry.getKey(), MessageFormat.format(ruleMap.get(entry.getKey()).getDescription(), mr.getMatch()));
+									
+									if ("+".equals(r.getType())) {
+										LOGGER.debug("Adding {}", mcMatch);
+										mcMatchesForLines.computeIfAbsent(lineNumber, k -> new LinkedList<>()).add(mcMatch);
+									} else {
+										LOGGER.debug("Removing {}", mcMatch);
+										mcMatchesForLines.computeIfPresent(lineNumber, (k,l) -> l.remove(mcMatch) && l.isEmpty() ? null : l);
+									}
 								}
 							}
 						}
 					}
+				}
+				
+				for(Entry<Integer,List<McMatch>> mcMatchesForLine : mcMatchesForLines.entrySet()) {
+					mcMatchesForLine.getValue().forEach(mcMatch -> saveIssue(file, mcMatchesForLine.getKey(), mcMatch.getKey(), mcMatch.getDesc(), null));
 				}
 				
 				previousLines.add(line.toUpperCase(Locale.ROOT).replaceAll("\\s+"," ")); //Replace all spaces with a single blank
