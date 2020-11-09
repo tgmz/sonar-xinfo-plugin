@@ -6,3 +6,4 @@
 <!ELEMENT mc-regex (#PCDATA)>
 <!ATTLIST mc-regex lang CDATA "all">
 <!ATTLIST mc-regex casesensitive CDATA "true">
+<!ATTLIST mc-regex type CDATA "+">

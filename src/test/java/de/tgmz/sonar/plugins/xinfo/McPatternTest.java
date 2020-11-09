@@ -13,6 +13,7 @@ package de.tgmz.sonar.plugins.xinfo;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.util.List;
 import java.util.regex.Pattern;
 
 import org.junit.Test;
@@ -66,20 +67,29 @@ public class McPatternTest {
 		assertTrue(match(" EXEC SQL DROP TABLE DBZILK01.TBZI0019KURS_TGL; "));
 		assertTrue(match(" EXEC SQL EXECUTE IMMEDIATE :S; "));
 		assertTrue(match("DCL X CHAR(25) INIT ('hans.meier@google.com');"));
+		assertFalse(match("DCL X CHAR(25) INIT ('postkorbXY@bayernlb.de');"));
+		assertFalse(match("DCL X CHAR(25) INIT ('postkorb.bildamanadmin@bayernlb.de');"));
+		assertTrue(match("%THEN %let empfaenger=%str(josef.niebisch@bayernlb.de);"));
+		  
 		assertTrue(match("/* Meine Bombe */"));
 	}
 	
 	private boolean match(String s) {
+		boolean result = false;
+		
 		for (McTemplate entry : PatternFactory.getInstance().getMcTemplates().getMcTemplate()) {
-			for (McRegex r : entry.getMcRegex()) {
+			List<McRegex> mcRegexSorted = entry.getMcRegex();
+			mcRegexSorted.sort((o1, o2) -> o1.getType().compareTo(o2.getType()));
+
+			for (McRegex r : mcRegexSorted) {
 				Pattern p = "false".equals(r.getCasesensitive()) ? Pattern.compile(r.getvalue(), Pattern.CASE_INSENSITIVE) :  Pattern.compile(r.getvalue());  
 				
 				if (AbstractXinfoIssuesLoader.match(p, s).getState() == MatcherResultState.MATCH) {
-						return true;
+					result = "+".equals(r.getType());
 				}
 			}
 		}
 		
-		return false;
+		return result;
 	}
 }
