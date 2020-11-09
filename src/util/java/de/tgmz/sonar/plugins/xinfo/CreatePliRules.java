@@ -67,7 +67,8 @@ public class CreatePliRules {
 		for (String s0 : l) {
 			if (!(s0.startsWith("© Copyright IBM Corp.")	// Copyright
 					|| s0.contains(" • ")					// Überschrift
-					|| s0.contains("Enterprise PL/I for z/OS Messages and Codes"))) {	// Footer
+					|| s0.contains(".....") 				// Contents
+					|| s0.contains("Enterprise PL/I for z/OS"))) {	// Footer
 				try {
 					Integer.parseInt(s0.trim());			// Seitenzahl?
 					
@@ -97,6 +98,36 @@ public class CreatePliRules {
 			sta = end;
 		}
 		
+		String key = "IBM2671I W";
+		
+		if (!rules.contains(key)) {
+			/* Undocumented */
+			String s0 = "The variable var is passed as argument number count to entry entry. The corresponding parameter has the ASSIGNABLE attribute, and hence the variable could be modified despite having the NONASSIGNABLE attribute.";
+			
+			Rule r = createDefaults(key, s0);
+			r.setDescription(s0);
+			r.setSeverity("MAJOR");
+				
+			jaxbMarshaller.marshal(r, pw);
+		
+			pw.println();
+		}
+		
+		key = "IBM2847I I";
+		
+		if (!rules.contains(key)) {
+			/* Undocumented */
+			String s0 = "Source in RETURN statement has a MAXLENGTH of lenght which is greater than the length of length in the corresponding RETURNS attribute";
+			
+			Rule r = createDefaults(key, s0);
+			r.setDescription(s0);
+			r.setSeverity("MINOR");
+				
+			jaxbMarshaller.marshal(r, pw);
+		
+			pw.println();
+		}
+		
 		pw.println("</xinfo-rules>");
 		
 		pw.close();
@@ -113,21 +144,12 @@ public class CreatePliRules {
 		
 		String sev = msg.substring(9, 10);
 		
-		Rule r = new Rule();
-		r.setCardinality("SINGLE");
-		r.setInternalKey(key);
-		r.setKey(key);
-		r.setStatus(RuleStatus.READY.toString());
-		Tag tag = new Tag(); tag.setvalue("xinfo"); r.getTag().add(tag);
-		r.setRemediationFunction("CONSTANT_ISSUE");
-		r.setRemediationFunctionBaseEffort("0d 0h 10min");
+		int desc = s.indexOf("Explanation ", sta);
+		int suffix = s.indexOf("Codes Chapter", sta);
 		
-		int desc = s.indexOf("Explanation: ", sta);
-		r.setDescription(s.substring(desc + "Explanation: ".length(), end));
+		Rule r = createDefaults(key, s.substring(sta + 11, desc));
 		
-		String name = s.substring(sta + 11, desc);
-		
-		r.setName(name.substring(0, Math.min(name.length(), 200))); // VARCHAR(200) in DB
+		r.setDescription(s.substring(desc + "Explanation ".length(), suffix));
 		
 		switch (r.getKey()) {
 		case "IBM1035I I":	// The next statement was merged with this statement.
@@ -182,7 +204,18 @@ public class CreatePliRules {
 		jaxbMarshaller.marshal(r, pw);
 		
 		pw.println();
-		
 	}
-
+	private Rule createDefaults(String key, String name) {
+		Rule r = new Rule();
+		r.setCardinality("SINGLE");
+		r.setInternalKey(key);
+		r.setKey(key);
+		r.setStatus(RuleStatus.READY.toString());
+		Tag tag = new Tag(); tag.setvalue("xinfo"); r.getTag().add(tag);
+		r.setRemediationFunction("CONSTANT_ISSUE");
+		r.setRemediationFunctionBaseEffort("0d 0h 10min");
+		r.setName(name.substring(0, Math.min(name.length(), 200))); // VARCHAR(200) in DB
+		
+		return r;
+	}
 }
