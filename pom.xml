@@ -15,10 +15,9 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<sonar.apiVersion>6.7</sonar.apiVersion>
-		<tycho.version>1.0.0</tycho.version>
+		<tycho.version>1.7.0</tycho.version>
 		<jdk.min.version>1.8</jdk.min.version>
 		<jacoco.version>0.8.1</jacoco.version>
-		<dependency-check.version>5.0.0</dependency-check.version>
 		<maven.build.timestamp.format>yyyyMMdd</maven.build.timestamp.format>
 	</properties>
 
@@ -391,19 +390,6 @@
 					<excludePackageNames>de.tgmz.sonar.plugins.xinfo.plicomp,de.tgmz.sonar.plugins.xinfo.debugtool.codecoverage,de.tgmz.sonar.plugins.xinfo.sonar.codecoverage</excludePackageNames>
 				</configuration>
 			</plugin>
-			<plugin>
-				<groupId>org.owasp</groupId>
-				<artifactId>dependency-check-maven</artifactId>
-				<version>${dependency-check.version}</version>
-				<configuration>
-					<detail>true</detail>
-					<logFile>${project.build.directory}/dependency-check.log</logFile>
-					<nexusAnalyzerEnabled>false</nexusAnalyzerEnabled>
-					<skipProvidedScope>true</skipProvidedScope>
-					<format>HTML</format>
-					<outputDirectory>${sonar.dependencyCheck.reportPath}</outputDirectory>
-				</configuration>
-			</plugin>
 		</plugins>
 	</reporting>
 
@@ -500,6 +486,43 @@
 								<jacoco-agent.destfile>target/jacoco.exec</jacoco-agent.destfile>
 							</systemPropertyVariables>
 						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<profile>
+			<id>dc</id>
+			<properties>
+				<dependency-check.version>6.0.0</dependency-check.version>
+				<dependency-check.suppressionFile></dependency-check.suppressionFile>
+				<sonar.dependencyCheck.htmlReportPath>${project.build.directory}/dependency-check-report.html</sonar.dependencyCheck.htmlReportPath>
+			</properties>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.owasp</groupId>
+						<artifactId>dependency-check-maven</artifactId>
+						<version>${dependency-check.version}</version>
+						<configuration>
+							<assemblyAnalyzerEnabled>false</assemblyAnalyzerEnabled>
+							<centralAnalyzerEnabled>false</centralAnalyzerEnabled>
+							<logFile>${project.build.directory}/dependency-check.log</logFile>
+							<skipProvidedScope>false</skipProvidedScope>
+							<failOnError>false</failOnError>
+							<failBuildOnCVSS>11</failBuildOnCVSS>
+							<formats>
+								<format>HTML</format>
+							</formats>
+						</configuration>
+						<executions>
+							<execution>
+								<id>dependency-check</id>
+								<phase>package</phase>
+								<goals>
+									<goal>aggregate</goal>
+								</goals>
+							</execution>
+						</executions>
 					</plugin>
 				</plugins>
 			</build>
