@@ -400,8 +400,8 @@
 	</licenses>
 
 	<ciManagement>
-		<system>Visual Studio Online</system>
-		<url>https://tgmz.visualstudio.com/MyStuff/_build/explorer</url>
+		<system>GitHub</system>
+		<url>https://github.com/tgmz/sonar-xinfo-plugin/actions</url>
 	</ciManagement>
 
 	<scm>
