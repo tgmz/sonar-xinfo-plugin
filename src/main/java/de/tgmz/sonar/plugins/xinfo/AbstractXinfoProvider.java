@@ -35,7 +35,7 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import de.tgmz.sonar.plugins.xinfo.config.XinfoConfig;
-import de.tgmz.sonar.plugins.xinfo.plicomp.PACKAGE;
+import de.tgmz.sonar.plugins.xinfo.generated.plicomp.PACKAGE;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**

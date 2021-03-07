@@ -25,6 +25,7 @@ import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+import de.tgmz.sonar.plugins.xinfo.generated.XinfoRules;
 import de.tgmz.sonar.plugins.xinfo.languages.Language;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 

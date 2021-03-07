@@ -24,6 +24,9 @@ import javax.xml.bind.Marshaller;
 
 import org.apache.commons.io.IOUtils;
 
+import de.tgmz.sonar.plugins.xinfo.generated.Rule;
+import de.tgmz.sonar.plugins.xinfo.generated.Tag;
+
 /**
  * Generates assembler-rules.xml.
  */

@@ -18,8 +18,8 @@ import java.util.regex.Pattern;
 
 import org.junit.Test;
 
-import de.tgmz.sonar.plugins.xinfo.mc.McRegex;
-import de.tgmz.sonar.plugins.xinfo.mc.McTemplate;
+import de.tgmz.sonar.plugins.xinfo.generated.mc.McRegex;
+import de.tgmz.sonar.plugins.xinfo.generated.mc.McTemplate;
 import de.tgmz.sonar.plugins.xinfo.sensors.AbstractXinfoIssuesLoader;
 import de.tgmz.sonar.plugins.xinfo.sensors.matcher.MatcherResult.MatcherResultState;
 
