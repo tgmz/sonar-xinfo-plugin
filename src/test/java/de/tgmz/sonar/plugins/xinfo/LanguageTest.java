@@ -18,9 +18,7 @@ import org.junit.Test;
 import de.tgmz.sonar.plugins.xinfo.languages.AssemblerLanguage;
 import de.tgmz.sonar.plugins.xinfo.languages.CobolLanguage;
 import de.tgmz.sonar.plugins.xinfo.languages.Language;
-import de.tgmz.sonar.plugins.xinfo.languages.MacroLanguage;
 import de.tgmz.sonar.plugins.xinfo.languages.PliLanguage;
-import de.tgmz.sonar.plugins.xinfo.languages.SasLanguage;
 
 /**
  * Simple testcases for languages
@@ -32,8 +30,6 @@ public class LanguageTest {
 		assertArrayEquals(new String[] {"pli", "pl1"}, new PliLanguage().getFileSuffixes());
 		assertArrayEquals(new String[] {"cbl", "cob"}, new CobolLanguage().getFileSuffixes());
 		assertArrayEquals(new String[] {"asm"}, new AssemblerLanguage().getFileSuffixes());
-		assertArrayEquals(new String[] {"sas"}, new SasLanguage().getFileSuffixes());
-		assertArrayEquals(new String[] {"inc", "mac", "cpy"}, new MacroLanguage().getFileSuffixes());
 	}
 
 	@Test
@@ -41,8 +37,6 @@ public class LanguageTest {
 		assertEquals(Language.ASSEMBLER, Language.getByKey("asm"));
 		assertEquals(Language.COBOL, Language.getByKey("cbl"));
 		assertEquals(Language.PLI, Language.getByKey("pli"));
-		assertEquals(Language.SAS, Language.getByKey("sas"));
-		assertEquals(Language.MACRO, Language.getByKey("mac"));
 		
 		assertEquals("xinfo-pli", Language.PLI.getRepoKey());
 		assertEquals("Xinfo PL/I", Language.PLI.getRepoName());
@@ -52,12 +46,6 @@ public class LanguageTest {
 		
 		assertEquals("xinfo-asm", Language.ASSEMBLER.getRepoKey());
 		assertEquals("Xinfo Assembler", Language.ASSEMBLER.getRepoName());
-		
-		assertEquals("xinfo-sas", Language.SAS.getRepoKey());
-		assertEquals("Xinfo SAS", Language.SAS.getRepoName());
-		
-		assertEquals("xinfo-mac", Language.MACRO.getRepoKey());
-		assertEquals("Xinfo Macro", Language.MACRO.getRepoName());
 	}
 
 	@Test(expected=IllegalArgumentException.class)

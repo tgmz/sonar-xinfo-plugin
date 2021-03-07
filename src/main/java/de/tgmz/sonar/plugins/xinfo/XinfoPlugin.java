@@ -16,24 +16,16 @@ import de.tgmz.sonar.plugins.xinfo.languages.AssemblerLanguage;
 import de.tgmz.sonar.plugins.xinfo.languages.AssemblerQualityProfileDefinition;
 import de.tgmz.sonar.plugins.xinfo.languages.CobolLanguage;
 import de.tgmz.sonar.plugins.xinfo.languages.CobolQualityProfileDefinition;
-import de.tgmz.sonar.plugins.xinfo.languages.MacQualityProfileDefinition;
-import de.tgmz.sonar.plugins.xinfo.languages.MacroLanguage;
 import de.tgmz.sonar.plugins.xinfo.languages.PliLanguage;
 import de.tgmz.sonar.plugins.xinfo.languages.PliQualityProfileDefinition;
-import de.tgmz.sonar.plugins.xinfo.languages.SasLanguage;
-import de.tgmz.sonar.plugins.xinfo.languages.SasQualityProfileDefinition;
 import de.tgmz.sonar.plugins.xinfo.rules.XinfoRulesDefinition;
 import de.tgmz.sonar.plugins.xinfo.sensors.AssemblerColorizer;
 import de.tgmz.sonar.plugins.xinfo.sensors.AssemblerIssuesLoader;
 import de.tgmz.sonar.plugins.xinfo.sensors.CobolColorizer;
 import de.tgmz.sonar.plugins.xinfo.sensors.CobolIssuesLoader;
 import de.tgmz.sonar.plugins.xinfo.sensors.CpdTokenizerSensor;
-import de.tgmz.sonar.plugins.xinfo.sensors.MacroColorizer;
-import de.tgmz.sonar.plugins.xinfo.sensors.MacroIssuesLoader;
 import de.tgmz.sonar.plugins.xinfo.sensors.PliColorizer;
 import de.tgmz.sonar.plugins.xinfo.sensors.PliIssuesLoader;
-import de.tgmz.sonar.plugins.xinfo.sensors.SasColorizer;
-import de.tgmz.sonar.plugins.xinfo.sensors.SasIssuesLoader;
 
 /**
  * This class is the entry point for all extensions. It is referenced in pom.xml.
@@ -49,17 +41,15 @@ public class XinfoPlugin implements Plugin {
     context.addExtensions(PliLanguage.class, PliQualityProfileDefinition.class);
     context.addExtensions(CobolLanguage.class, CobolQualityProfileDefinition.class);
     context.addExtensions(AssemblerLanguage.class, AssemblerQualityProfileDefinition.class);
-    context.addExtensions(SasLanguage.class, SasQualityProfileDefinition.class);
-    context.addExtensions(MacroLanguage.class, MacQualityProfileDefinition.class);
 
     // tutorial on measures
 
     // tutorial on rules
     context.addExtension(XinfoRulesDefinition.class);
 
-    context.addExtensions(PliIssuesLoader.class, CobolIssuesLoader.class, AssemblerIssuesLoader.class, SasIssuesLoader.class, MacroIssuesLoader.class);
+    context.addExtensions(PliIssuesLoader.class, CobolIssuesLoader.class, AssemblerIssuesLoader.class);
 
-    context.addExtensions(PliColorizer.class, CobolColorizer.class, AssemblerColorizer.class, SasColorizer.class, MacroColorizer.class);
+    context.addExtensions(PliColorizer.class, CobolColorizer.class, AssemblerColorizer.class);
 
     context.addExtension(CpdTokenizerSensor.class);
     // tutorial on settings

@@ -202,28 +202,6 @@
 						</configuration>
 					</execution>
 					<execution>
-						<id>xjc-mc</id>
-						<goals>
-							<goal>xjc</goal>
-						</goals>
-						<configuration>
-							<!-- Set the package of the generated code -->
-							<packageName>de.tgmz.sonar.plugins.xinfo.generated.mc</packageName>
-
-							<!-- Indicate that we should use DTD input instead of XSDs -->
-							<sourceType>dtd</sourceType>
-
-							<!-- Define the DTD file -->
-							<sources>
-								<source>src/main/dtd/mc.dtd</source>
-							</sources>
-							<clearOutputDir>false</clearOutputDir>
-					
-							<!-- External parsing is disabled by default. "Cannot parse URI: file:/C: ..." -->
-							<externalEntityProcessing>true</externalEntityProcessing>
-						</configuration>
-					</execution>
-					<execution>
 						<id>xjc-sonar-generic-coverage</id>
 						<goals>
 							<goal>xjc</goal>
