@@ -46,7 +46,7 @@ public class MacroColorizing extends AbstractColorizing {
 			while (m.find()) {
 				String token = getContent()[i].substring(m.start(), m.end());
 				
-				if (m.end() < 7 || m.start() > 71) {
+				if (m.end() <= 7 || m.start() >= 71) {
 					continue;
 				}
 			

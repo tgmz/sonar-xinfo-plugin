@@ -75,7 +75,7 @@ public class PliColorizing extends AbstractColorizing {
 			while (m.find()) {
 				String token = getContent()[i].substring(m.start(), m.end());
 			
-				if (m.start() > 71) {
+				if (m.start() >= 71) {
 					continue;
 				}
 			
