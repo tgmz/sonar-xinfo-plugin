@@ -25,8 +25,8 @@ import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+import de.tgmz.sonar.plugins.xinfo.generated.mc.McTemplates;
 import de.tgmz.sonar.plugins.xinfo.languages.Language;
-import de.tgmz.sonar.plugins.xinfo.mc.McTemplates;
 
 /**
  * Factory for creating the sonar rules for a {@link Language}

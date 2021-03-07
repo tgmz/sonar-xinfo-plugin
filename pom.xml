@@ -7,7 +7,7 @@
 	<groupId>de.tgmz.sonar.plugins.xinfo</groupId>
 	<artifactId>sonar-xinfo-plugin</artifactId>
 	<packaging>sonar-plugin</packaging>
-	<version>1.3.6</version>
+	<version>1.3.7</version>
 
 	<name>Xinfo Plugin for SonarQube</name>
 	<description>Xinfo plugin for SonarQube</description>
@@ -17,7 +17,7 @@
 		<sonar.apiVersion>6.7</sonar.apiVersion>
 		<tycho.version>1.7.0</tycho.version>
 		<jdk.min.version>1.8</jdk.min.version>
-		<jacoco.version>0.8.1</jacoco.version>
+		<jacoco.version>0.8.6</jacoco.version>
 		<maven.build.timestamp.format>yyyyMMdd</maven.build.timestamp.format>
 	</properties>
 
@@ -37,17 +37,17 @@
 		<dependency>
 			<groupId>commons-net</groupId>
 			<artifactId>commons-net</artifactId>
-			<version>3.6</version>
+			<version>3.7.2</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
-			<version>2.6</version>
+			<version>2.8.0</version>
 		</dependency>
 		<dependency>
 			<groupId>com.google.code.findbugs</groupId>
 			<artifactId>annotations</artifactId>
-			<version>3.0.1</version>
+			<version>3.0.1u2</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-logging</groupId>
@@ -142,7 +142,7 @@
 						</goals>
 						<configuration>
 							<!-- Set the package of the generated code -->
-							<packageName>de.tgmz.sonar.plugins.xinfo.plicomp</packageName>
+							<packageName>de.tgmz.sonar.plugins.xinfo.generated.plicomp</packageName>
 
 							<!-- Indicate that we should use DTD input instead of XSDs -->
 							<sourceType>dtd</sourceType>
@@ -164,7 +164,7 @@
 						</goals>
 						<configuration>
 							<!-- Set the package of the generated code -->
-							<packageName>de.tgmz.sonar.plugins.xinfo</packageName>
+							<packageName>de.tgmz.sonar.plugins.xinfo.generated</packageName>
 
 							<!-- Indicate that we should use DTD input instead of XSDs -->
 							<sourceType>dtd</sourceType>
@@ -186,7 +186,7 @@
 						</goals>
 						<configuration>
 							<!-- Set the package of the generated code -->
-							<packageName>de.tgmz.sonar.plugins.xinfo.debugtool.codecoverage</packageName>
+							<packageName>de.tgmz.sonar.plugins.xinfo.generated.debugtool.codecoverage</packageName>
 
 							<!-- Indicate that we should use DTD input instead of XSDs -->
 							<sourceType>dtd</sourceType>
@@ -208,7 +208,7 @@
 						</goals>
 						<configuration>
 							<!-- Set the package of the generated code -->
-							<packageName>de.tgmz.sonar.plugins.xinfo.mc</packageName>
+							<packageName>de.tgmz.sonar.plugins.xinfo.generated.mc</packageName>
 
 							<!-- Indicate that we should use DTD input instead of XSDs -->
 							<sourceType>dtd</sourceType>
@@ -230,7 +230,7 @@
 						</goals>
 						<configuration>
 							<!-- Set the package of the generated code -->
-							<packageName>de.tgmz.sonar.plugins.xinfo.sonar.codecoverage</packageName>
+							<packageName>de.tgmz.sonar.plugins.xinfo.generated.sonar.codecoverage</packageName>
 
 							<!-- Define the xsd file -->
 							<sources>
@@ -376,7 +376,7 @@
 			<plugin>
 				<groupId>com.github.spotbugs</groupId>
 				<artifactId>spotbugs-maven-plugin</artifactId>
-				<version>3.1.11</version>
+				<version>4.2.0</version>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -415,8 +415,8 @@
 	</licenses>
 
 	<ciManagement>
-		<system>Visual Studio Online</system>
-		<url>https://tgmz.visualstudio.com/MyStuff/_build/explorer</url>
+		<system>GitHub</system>
+		<url>https://github.com/tgmz/sonar-xinfo-plugin/actions</url>
 	</ciManagement>
 
 	<scm>
@@ -489,9 +489,7 @@
 									<excludes>
 										<exclude>
 											de/tgmz/sonar/plugins/xinfo/Create*Rules.class,
-											de/tgmz/sonar/plugins/xinfo/plicomp/*.class,
-											de/tgmz/sonar/plugins/xinfo/debugtool/codecoverage/*.class,
-											de/tgmz/sonar/plugins/xinfo/sonar/codecoverage/*.class</exclude>
+											de/tgmz/sonar/plugins/xinfo/generated/**/*.class</exclude>
 									</excludes>
 								</configuration>
 							</execution>
@@ -508,7 +506,7 @@
 		<profile>
 			<id>dc</id>
 			<properties>
-				<dependency-check.version>6.0.0</dependency-check.version>
+				<dependency-check.version>6.1.1</dependency-check.version>
 				<dependency-check.suppressionFile></dependency-check.suppressionFile>
 				<sonar.dependencyCheck.htmlReportPath>${project.build.directory}/dependency-check-report.html</sonar.dependencyCheck.htmlReportPath>
 			</properties>

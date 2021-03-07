@@ -24,6 +24,9 @@ import javax.xml.bind.Marshaller;
 
 import org.apache.commons.io.IOUtils;
 
+import de.tgmz.sonar.plugins.xinfo.generated.Rule;
+import de.tgmz.sonar.plugins.xinfo.generated.Tag;
+
 /**
  * Generates assembler-rules.xml.
  */
@@ -101,14 +104,11 @@ public class CreateAssemblerRules {
 			
 			r.setDescription(name);
 			
-			switch (r.getKey()) {
-			default:
-				switch (sev) {
+			switch (sev) {
 				case "I": r.setSeverity("MINOR"); break;
 				case "W": r.setSeverity("MAJOR"); break;
 				case "E": r.setSeverity("CRITICAL"); break;
 				default: r.setSeverity("BLOCKER"); break;
-				}
 			}
 			
 			jaxbMarshaller.marshal(r, pw);

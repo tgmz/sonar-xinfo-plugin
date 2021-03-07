@@ -22,6 +22,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
+import de.tgmz.sonar.plugins.xinfo.generated.Rule;
 import de.tgmz.sonar.plugins.xinfo.languages.Language;
 
 /**

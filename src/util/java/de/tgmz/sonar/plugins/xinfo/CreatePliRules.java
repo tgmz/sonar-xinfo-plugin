@@ -28,6 +28,9 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.util.PDFTextStripper;
 import org.sonar.api.rule.RuleStatus;
 
+import de.tgmz.sonar.plugins.xinfo.generated.Rule;
+import de.tgmz.sonar.plugins.xinfo.generated.Tag;
+
 /**
  * Generates pli-rules.xml.
  */
