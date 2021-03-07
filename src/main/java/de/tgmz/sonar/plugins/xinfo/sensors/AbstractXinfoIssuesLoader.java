@@ -10,27 +10,10 @@
   *******************************************************************************/
 package de.tgmz.sonar.plugins.xinfo.sensors;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.nio.charset.Charset;
-import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.TreeMap;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-import java.util.regex.Pattern;
 
 import javax.annotation.Nullable;
 
@@ -47,22 +30,16 @@ import org.sonar.api.rule.RuleKey;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 
-import de.tgmz.sonar.plugins.xinfo.PatternFactory;
 import de.tgmz.sonar.plugins.xinfo.RuleFactory;
 import de.tgmz.sonar.plugins.xinfo.XinfoException;
 import de.tgmz.sonar.plugins.xinfo.XinfoFileAnalyzable;
 import de.tgmz.sonar.plugins.xinfo.XinfoProviderFactory;
 import de.tgmz.sonar.plugins.xinfo.config.XinfoConfig;
 import de.tgmz.sonar.plugins.xinfo.generated.Rule;
-import de.tgmz.sonar.plugins.xinfo.generated.mc.McRegex;
-import de.tgmz.sonar.plugins.xinfo.generated.mc.McTemplate;
 import de.tgmz.sonar.plugins.xinfo.generated.plicomp.FILE;
 import de.tgmz.sonar.plugins.xinfo.generated.plicomp.MESSAGE;
 import de.tgmz.sonar.plugins.xinfo.generated.plicomp.PACKAGE;
 import de.tgmz.sonar.plugins.xinfo.languages.Language;
-import de.tgmz.sonar.plugins.xinfo.sensors.matcher.CallableMatcher;
-import de.tgmz.sonar.plugins.xinfo.sensors.matcher.MatcherResult;
-import de.tgmz.sonar.plugins.xinfo.sensors.matcher.McMatch;
 
 /**
  * This Sensor loads the results of an analysis performed by 
@@ -71,21 +48,16 @@ import de.tgmz.sonar.plugins.xinfo.sensors.matcher.McMatch;
  */
 public abstract class AbstractXinfoIssuesLoader implements Sensor {
 	private static final Logger LOGGER = Loggers.get(AbstractXinfoIssuesLoader.class);
-	private static final Pattern COMMENT = Pattern.compile("^\\s*\\/\\*.*(\\*\\/)?\\s*$");
-	private static final int TIMEOUT = 1000;
-	private static final ExecutorService executor = Executors.newFixedThreadPool( 10 );
 	protected final FileSystem fileSystem;
 	protected SensorContext context;
 	private Language lang;
 	private Map<String, Rule> ruleMap;
-	private Map<String, Pattern> patternCache;
 	
 	public AbstractXinfoIssuesLoader(final FileSystem fileSystem, Language lang) {
 		this.fileSystem = fileSystem;
 		this.lang = lang;
 		
 		ruleMap = new TreeMap<>();
-		patternCache = new TreeMap<>();
 		
 		for (Rule r: RuleFactory.getInstance().getRules(lang).getRule()) {
 			ruleMap.put(r.getKey(), r);
@@ -104,8 +76,6 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 
 		this.context = aContext;
 		
-		Charset charset = Charset.forName(context.config().get(XinfoConfig.XINFO_ENCODING).orElse(Charset.defaultCharset().name()));
-		
 		Iterator<InputFile> fileIterator = fileSystem.inputFiles(fileSystem.predicates().hasLanguage(lang.getKey())).iterator();
 
 		int ctr = 0;
@@ -122,7 +92,7 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 				continue;
 			}
 				
-			createFindings(p, inputFile, charset);
+			createFindings(p, inputFile);
 			
 			if (++ctr % 100 == 0) {
 				LOGGER.info("{} files processed, current is {}", ctr, inputFile.filename());
@@ -130,7 +100,7 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 		}
 	}
 
-	private void createFindings(PACKAGE p, InputFile file, Charset charset) {
+	private void createFindings(PACKAGE p, InputFile file) {
 		for (MESSAGE m : p.getMESSAGE()) {
 			try {
 				int effectiveMessageLine = computeEffectiveMessageLine(p, m);
@@ -159,8 +129,6 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 				continue;
 			}
 		}
-		
-		findMc(file, charset);
 	}
 
 	private Severity computeExtraSeverity(InputFile file, String ruleKey, String message) {
@@ -226,71 +194,6 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 		newIssue.at(primaryLocation).save();
 	}
 	
-	protected void findMc(InputFile file, Charset charset) {
-		try (BufferedReader br = new BufferedReader(new InputStreamReader(file.inputStream(), charset))) {
-			String line;
-			List<String> previousLines = new ArrayList<>();
-			
-			int lineNumber = 0;
-			
-			while ((line = br.readLine()) != null) {
-				++lineNumber; 
-				
-				if (lang != Language.SAS && line.length() > 72) {
-					line = line.substring(0,  72);
-				}
-				
-				boolean ignoreable = isComment(line, lang, file.filename())
-									|| isProbablyTest(previousLines, lang) 
-									|| isProbablyInComment(previousLines, lang);
-				
-				Map<Integer, List<McMatch>> mcMatchesForLines = new TreeMap<>(); 
-				
-				for (McTemplate entry : PatternFactory.getInstance().getMcTemplates().getMcTemplate()) {
-					if ("true".equals(entry.getIgnoreincomment()) && ignoreable) {
-						LOGGER.debug("Ignoring {}", entry.getKey());
-					} else {	
-						List<McRegex> mcRegex = entry.getMcRegex();
-						mcRegex.sort((o1, o2) -> o1.getType().compareTo(o2.getType()));
-						
-						for (McRegex r : mcRegex) {
-							Pattern p = patternCache.computeIfAbsent(r.getvalue(), key -> 
-								"false".equals(r.getCasesensitive()) ? 
-										Pattern.compile(r.getvalue(), Pattern.CASE_INSENSITIVE) :  
-										Pattern.compile(r.getvalue()));									
-							
-							List<String> split = Arrays.asList(r.getLang().split("\\,"));
-							
-							if (split.contains(lang.getKey()) || split.contains("all")) {
-								MatcherResult mr = match(p, line);
-							
-								if (mr.getState() == MatcherResult.MatcherResultState.MATCH) {
-									McMatch mcMatch = new McMatch(entry.getKey(), MessageFormat.format(ruleMap.get(entry.getKey()).getDescription(), mr.getMatch()));
-									
-									if ("+".equals(r.getType())) {
-										LOGGER.debug("Adding {}", mcMatch);
-										mcMatchesForLines.computeIfAbsent(lineNumber, k -> new LinkedList<>()).add(mcMatch);
-									} else {
-										LOGGER.debug("Removing {}", mcMatch);
-										mcMatchesForLines.computeIfPresent(lineNumber, (k,l) -> l.remove(mcMatch) && l.isEmpty() ? null : l);
-									}
-								}
-							}
-						}
-					}
-				}
-				
-				for(Entry<Integer,List<McMatch>> mcMatchesForLine : mcMatchesForLines.entrySet()) {
-					mcMatchesForLine.getValue().forEach(mcMatch -> saveIssue(file, mcMatchesForLine.getKey(), mcMatch.getKey(), mcMatch.getDesc(), null));
-				}
-				
-				previousLines.add(line.toUpperCase(Locale.ROOT).replaceAll("\\s+"," ")); //Replace all spaces with a single blank
-			}
-		} catch (IOException e) {
-			LOGGER.error("Error reading {}", file, e);
-		}
-	}
-	
 	private int computeEffectiveMessageLine(PACKAGE p, MESSAGE m) throws XinfoException {
 		String msgFile = m.getMSGFILE();
 		
@@ -314,112 +217,5 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 				return Integer.parseInt(XinfoUtil.computeIncludedFromLine(p.getFILEREFERENCETABLE(), f, lang));
 			}
 		}
-	}
-	
-	
-	/**
-	 * Matches a string against a pattern. Public for test purposes
-	 * 
-	 * @param p pattern
-	 * @param s string
-	 * @return result
-	 */
-	public static MatcherResult match(Pattern p, String s) {
-		Future<String> fb = executor.submit(new CallableMatcher(p, s));
-		
-		try {
-			String ms = fb.get(TIMEOUT, TimeUnit.MILLISECONDS);
-			
-			if (ms != null) {
-				LOGGER.debug("String {} matched pattern [{}]", s, p);
-
-				return new MatcherResult(MatcherResult.MatcherResultState.MATCH, ms.trim());
-			}
-		} catch (TimeoutException e) {
-			LOGGER.error("Error matching {} against {} in less than {} millseconds, possible redos attack", s, p, TIMEOUT);
-			
-			return new MatcherResult(MatcherResult.MatcherResultState.ERROR);
-		} catch (ExecutionException e) {
-			LOGGER.error("Exectution error matching {} against {}", s, p, e);
-			
-			return new MatcherResult(MatcherResult.MatcherResultState.ERROR);
-		} catch (InterruptedException e) {
-			LOGGER.error("Interrupted error matching {} against {}", s, p, e);
-			
-			Thread.currentThread().interrupt();
-			
-			return new MatcherResult(MatcherResult.MatcherResultState.ERROR);
-		}
-		
-		return new MatcherResult(MatcherResult.MatcherResultState.MISMATCH);
-	}
-	
-	private static boolean isComment(String line, Language lang, String fileName) {
-		if (COMMENT.matcher(line).matches()) {
-			return true;
-		}
-		
-		if (lang == Language.SAS && line.trim().startsWith("*")) {
-			return true;
-		}
-		
-		if (lang == Language.ASSEMBLER && line.length() > 0 && "*".equals(line.substring(0, 1))) {
-			return true;
-		}
-		
-		if (lang == Language.COBOL && line.length() > 6 && "*".equals(line.substring(6, 7))) {
-			return true;
-		}
-		
-		if (lang == Language.MACRO && fileName.endsWith(".mac") && line.length() > 0 && "*".equals(line.substring(0, 1))) {
-			return true;
-		}
-		
-		if (lang == Language.MACRO && fileName.endsWith(".cpy") && line.length() > 6 && "*".equals(line.substring(6, 7))) {
-			return true;
-		}
-		
-		return false;
-	}
-	
-	private static boolean isProbablyTest(List<String> lines, Language lang) {
-		if (lang == Language.PLI) {
-			if (!lines.isEmpty() && (lines.get(lines.size() - 1).contains(" IF LINKSTAT = 'X'")
-									|| lines.get(lines.size() - 1).contains(" IF $CVT_LINKSTAT = 'X'"))) {
-				return true;
-			}
-			
-			if (lines.size() > 1) {
-				for (int i = lines.size() - 1; i > 0; i--) {
-					if (lines.get(i).contains(" END")) {
-						return false;
-					}
-					
-					if ((lines.get(i-1).contains(" IF LINKSTAT = 'X'") || lines.get(i-1).contains(" IF $CVT_LINKSTAT = 'X'"))
-						&& lines.get(i).contains(" THEN DO;")) {
-						return true;
-					}
-				}
-			}
-		}
-		
-		return false;
-	}
-	private static boolean isProbablyInComment(List<String> lines, Language lang) {
-		if (lang == Language.PLI || lang == Language.SAS || lang == Language.MACRO) {
-			if (!lines.isEmpty()) {
-				for (int i = lines.size() - 1; i >= 0; i--) {
-					if (lines.get(i).contains("*/")) {
-						return false;
-					}
-					
-					if (lines.get(i).contains("/*") && !lines.get(i).contains("*/")) {
-						return true;
-					}
-				}
-			}
-		}
-		
-		return false;
 	}
 }

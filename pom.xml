@@ -7,7 +7,7 @@
 	<groupId>de.tgmz.sonar.plugins.xinfo</groupId>
 	<artifactId>sonar-xinfo-plugin</artifactId>
 	<packaging>sonar-plugin</packaging>
-	<version>1.3.7</version>
+	<version>1.3.8-SNAPSHOT</version>
 
 	<name>Xinfo Plugin for SonarQube</name>
 	<description>Xinfo plugin for SonarQube</description>
@@ -194,28 +194,6 @@
 							<!-- Define the DTD file -->
 							<sources>
 								<source>src/main/dtd/dtcc.dtd</source>
-							</sources>
-							<clearOutputDir>false</clearOutputDir>
-					
-							<!-- External parsing is disabled by default. "Cannot parse URI: file:/C: ..." -->
-							<externalEntityProcessing>true</externalEntityProcessing>
-						</configuration>
-					</execution>
-					<execution>
-						<id>xjc-mc</id>
-						<goals>
-							<goal>xjc</goal>
-						</goals>
-						<configuration>
-							<!-- Set the package of the generated code -->
-							<packageName>de.tgmz.sonar.plugins.xinfo.generated.mc</packageName>
-
-							<!-- Indicate that we should use DTD input instead of XSDs -->
-							<sourceType>dtd</sourceType>
-
-							<!-- Define the DTD file -->
-							<sources>
-								<source>src/main/dtd/mc.dtd</source>
 							</sources>
 							<clearOutputDir>false</clearOutputDir>
 					

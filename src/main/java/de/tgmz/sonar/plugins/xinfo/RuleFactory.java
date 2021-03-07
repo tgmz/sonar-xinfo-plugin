@@ -75,16 +75,6 @@ public final class RuleFactory {
 			throw new XinfoRuntimeException(s, e);
 		}
 		
-		try (InputStream is = this.getClass().getClassLoader().getResourceAsStream("mc-rules.xml")) {
-			Document doc = db.parse(new InputSource(is));
-
-			result.getRule().addAll(((XinfoRules) xium.unmarshal(doc)).getRule());
-		} catch (IOException | SAXException | JAXBException e) {
-			String s = "Error parsing rules";
-			
-			throw new XinfoRuntimeException(s, e);
-		}
-		
 		return result;
 	}
 }
