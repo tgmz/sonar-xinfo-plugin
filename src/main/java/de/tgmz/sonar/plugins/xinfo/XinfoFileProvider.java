@@ -27,8 +27,7 @@ import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 
 import de.tgmz.sonar.plugins.xinfo.config.XinfoConfig;
-import de.tgmz.sonar.plugins.xinfo.plicomp.ObjectFactory;
-import de.tgmz.sonar.plugins.xinfo.plicomp.PACKAGE;
+import de.tgmz.sonar.plugins.xinfo.generated.plicomp.PACKAGE;
 
 /**
  * Provides programinformations by walking through the filesystem. 
@@ -43,7 +42,7 @@ public class XinfoFileProvider extends AbstractXinfoProvider {
 
 	@Override
 	public PACKAGE getXinfo(IXinfoAnalyzable pgm) throws XinfoException {
-		PACKAGE result = new ObjectFactory().createPACKAGE();
+		PACKAGE result = new de.tgmz.sonar.plugins.xinfo.generated.plicomp.ObjectFactory().createPACKAGE();
 		
 		String xinfoFile;
 		

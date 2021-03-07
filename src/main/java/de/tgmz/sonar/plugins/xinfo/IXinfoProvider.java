@@ -10,7 +10,7 @@
   *******************************************************************************/
 package de.tgmz.sonar.plugins.xinfo;
 
-import de.tgmz.sonar.plugins.xinfo.plicomp.PACKAGE;
+import de.tgmz.sonar.plugins.xinfo.generated.plicomp.PACKAGE;
 
 /**
  * Interface for providing programinformations.

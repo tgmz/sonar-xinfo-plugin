@@ -24,7 +24,7 @@ import org.junit.Test;
 import org.sonar.api.config.internal.ConfigurationBridge;
 import org.sonar.api.config.internal.MapSettings;
 
-import de.tgmz.sonar.plugins.xinfo.plicomp.PACKAGE;
+import de.tgmz.sonar.plugins.xinfo.generated.plicomp.PACKAGE;
 
 public class XinfoProviderTest {
 	/**

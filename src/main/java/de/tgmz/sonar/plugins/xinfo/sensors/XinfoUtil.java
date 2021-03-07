@@ -16,9 +16,9 @@ import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 
 import de.tgmz.sonar.plugins.xinfo.XinfoException;
+import de.tgmz.sonar.plugins.xinfo.generated.plicomp.FILE;
+import de.tgmz.sonar.plugins.xinfo.generated.plicomp.FILEREFERENCETABLE;
 import de.tgmz.sonar.plugins.xinfo.languages.Language;
-import de.tgmz.sonar.plugins.xinfo.plicomp.FILE;
-import de.tgmz.sonar.plugins.xinfo.plicomp.FILEREFERENCETABLE;
 
 /**
  * Some utility methods to walk through a {@link de.tgmz.sonar.plugins.xinfo.plicomp.PACKAGE}.

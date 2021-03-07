@@ -142,7 +142,7 @@
 						</goals>
 						<configuration>
 							<!-- Set the package of the generated code -->
-							<packageName>de.tgmz.sonar.plugins.xinfo.plicomp</packageName>
+							<packageName>de.tgmz.sonar.plugins.xinfo.generated.plicomp</packageName>
 
 							<!-- Indicate that we should use DTD input instead of XSDs -->
 							<sourceType>dtd</sourceType>
@@ -164,7 +164,7 @@
 						</goals>
 						<configuration>
 							<!-- Set the package of the generated code -->
-							<packageName>de.tgmz.sonar.plugins.xinfo</packageName>
+							<packageName>de.tgmz.sonar.plugins.xinfo.generated</packageName>
 
 							<!-- Indicate that we should use DTD input instead of XSDs -->
 							<sourceType>dtd</sourceType>
@@ -186,7 +186,7 @@
 						</goals>
 						<configuration>
 							<!-- Set the package of the generated code -->
-							<packageName>de.tgmz.sonar.plugins.xinfo.debugtool.codecoverage</packageName>
+							<packageName>de.tgmz.sonar.plugins.xinfo.generated.debugtool.codecoverage</packageName>
 
 							<!-- Indicate that we should use DTD input instead of XSDs -->
 							<sourceType>dtd</sourceType>
@@ -208,7 +208,7 @@
 						</goals>
 						<configuration>
 							<!-- Set the package of the generated code -->
-							<packageName>de.tgmz.sonar.plugins.xinfo.mc</packageName>
+							<packageName>de.tgmz.sonar.plugins.xinfo.generated.mc</packageName>
 
 							<!-- Indicate that we should use DTD input instead of XSDs -->
 							<sourceType>dtd</sourceType>
@@ -230,7 +230,7 @@
 						</goals>
 						<configuration>
 							<!-- Set the package of the generated code -->
-							<packageName>de.tgmz.sonar.plugins.xinfo.sonar.codecoverage</packageName>
+							<packageName>de.tgmz.sonar.plugins.xinfo.generated.sonar.codecoverage</packageName>
 
 							<!-- Define the xsd file -->
 							<sources>
@@ -489,9 +489,7 @@
 									<excludes>
 										<exclude>
 											de/tgmz/sonar/plugins/xinfo/Create*Rules.class,
-											de/tgmz/sonar/plugins/xinfo/plicomp/*.class,
-											de/tgmz/sonar/plugins/xinfo/debugtool/codecoverage/*.class,
-											de/tgmz/sonar/plugins/xinfo/sonar/codecoverage/*.class</exclude>
+											de/tgmz/sonar/plugins/xinfo/generated/**/*.class</exclude>
 									</excludes>
 								</configuration>
 							</execution>
