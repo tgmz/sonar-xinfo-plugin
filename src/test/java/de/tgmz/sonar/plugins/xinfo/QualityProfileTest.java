@@ -37,7 +37,7 @@ public class QualityProfileTest {
 		this.qp = qp;
 	}
 
-	@Test
+	@Test(expected = Test.None.class)
 	public void test() throws InstantiationException, IllegalAccessException  {
 		qp.newInstance().define(new BuiltInQualityProfilesDefinition.Context());
 	}
@@ -45,7 +45,9 @@ public class QualityProfileTest {
 	@Parameters(name = "{index}: Check for language [{0}]")
 	public static Collection<Object[]> data() {
 		Object[][] data = new Object[][] {
-				{ PliQualityProfileDefinition.class }, { CobolQualityProfileDefinition.class }, { AssemblerQualityProfileDefinition.class } ,
+				{ PliQualityProfileDefinition.class },
+				{ CobolQualityProfileDefinition.class },
+				{ AssemblerQualityProfileDefinition.class } ,
 		};
 		return Arrays.asList(data);
 	}

@@ -13,7 +13,6 @@ package de.tgmz.sonar.plugins.xinfo;
 import java.io.FileInputStream;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
-import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -22,6 +21,9 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 
 import org.apache.commons.io.IOUtils;
+
+import de.tgmz.sonar.plugins.xinfo.generated.Rule;
+import de.tgmz.sonar.plugins.xinfo.generated.Tag;
 
 /**
  * Generates assembler-rules.xml-
@@ -36,7 +38,7 @@ public class CreateCobolRules {
 		
 		pw.println("<xinfo-rules>");
 		
-		JAXBContext jaxbContext = JAXBContext.newInstance(SonarRule.class);
+		JAXBContext jaxbContext = JAXBContext.newInstance(Rule.class);
 		Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
 
 		// output pretty printed
@@ -70,26 +72,23 @@ public class CreateCobolRules {
 			String key = msg.substring(0, 11);
 			String sev = msg.substring(10, 11);
 			
-			SonarRule r = new SonarRule();
+			Rule r = new Rule();
 			r.setCardinality("SINGLE");
 			r.setInternalKey(key);
 			r.setKey(key);
 			r.setStatus("READY");
-			r.setTag(Collections.singletonList("xinfo"));
+			Tag tag = new Tag(); tag.setvalue("xinfo"); r.getTag().add(tag);
 			
 			String name = s.substring(sta + 16, end).trim();
 			
 			r.setName(name.substring(0, Math.min(name.length(), 200))); // VARCHAR(200) in DB
 			r.setDescription(name);
 			
-			switch (r.getKey()) {
-			default:
-				switch (sev) {
+			switch (sev) {
 				case "I": r.setSeverity("MINOR"); break;
 				case "W": r.setSeverity("MAJOR"); break;
 				case "E": r.setSeverity("CRITICAL"); break;
 				default: r.setSeverity("BLOCKER"); break;
-				}
 			}
 			
 			jaxbMarshaller.marshal(r, pw);

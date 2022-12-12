@@ -11,6 +11,7 @@
 package de.tgmz.sonar.plugins.xinfo.color.pli;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -33,7 +34,7 @@ public class PliColorizing extends AbstractColorizing {
 	private static final Pattern PLI_COMMENT_PATTERN = Pattern.compile("\\/\\*.*\\*\\/");
 	private static final Pattern PLI_PREPROCESS_PATTERN = Pattern.compile("%\\w+");
 	private static final Pattern PLI_STRING_PATTERN = Pattern.compile("[\"'].*[\"']");
-	private static final Pattern PLI_WORD_PATTERN = Pattern.compile("[\\w$§\\.]+");
+	private static final Pattern PLI_WORD_PATTERN = Pattern.compile("[\\w$§\\.]+");		//Underscore IS a word character
 
 	static {
 		// Keywords
@@ -51,8 +52,8 @@ public class PliColorizing extends AbstractColorizing {
 		}
 	}
 	
-	public PliColorizing(InputFile file, int limit) throws IOException {
-		super(file, limit);
+	public PliColorizing(InputFile file, Charset charset, int limit) throws IOException {
+		super(file, charset, limit);
 	}
 
 	@Override
@@ -74,7 +75,7 @@ public class PliColorizing extends AbstractColorizing {
 			while (m.find()) {
 				String token = getContent()[i].substring(m.start(), m.end());
 			
-				if (m.start() > 71) {
+				if (m.start() >= 71) {
 					continue;
 				}
 			
@@ -84,10 +85,10 @@ public class PliColorizing extends AbstractColorizing {
 	}
 	
 	private void colorizeToken(int lineNumber, int startOffset, int endOffset, String token) {
-		if (PLI_KEYWORDS.contains(token.toUpperCase(Locale.US))) {			
+		if (PLI_KEYWORDS.contains(token.toUpperCase(Locale.ROOT))) {			
 			getAreas().add(new ColorizingData(lineNumber, startOffset, lineNumber, endOffset, token, TypeOfText.KEYWORD));
 		} else {
-			if (PLI_BUILTIN.contains(token.toUpperCase(Locale.US))) {			
+			if (PLI_BUILTIN.contains(token.toUpperCase(Locale.ROOT))) {			
 				getAreas().add(new ColorizingData(lineNumber, startOffset, lineNumber, endOffset, token, TypeOfText.KEYWORD_LIGHT));
 			} else {
 				if (NumberUtils.isNumber(token)) {

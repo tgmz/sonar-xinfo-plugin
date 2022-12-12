@@ -10,7 +10,12 @@
   *******************************************************************************/
 package de.tgmz.sonar.plugins.xinfo.sensors;
 
+import java.io.IOException;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.TreeMap;
+
+import javax.annotation.Nullable;
 
 import org.apache.commons.lang.StringUtils;
 import org.sonar.api.batch.fs.FileSystem;
@@ -26,16 +31,15 @@ import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 
 import de.tgmz.sonar.plugins.xinfo.RuleFactory;
-import de.tgmz.sonar.plugins.xinfo.SonarRule;
 import de.tgmz.sonar.plugins.xinfo.XinfoException;
 import de.tgmz.sonar.plugins.xinfo.XinfoFileAnalyzable;
 import de.tgmz.sonar.plugins.xinfo.XinfoProviderFactory;
-import de.tgmz.sonar.plugins.xinfo.XinfoRules;
 import de.tgmz.sonar.plugins.xinfo.config.XinfoConfig;
+import de.tgmz.sonar.plugins.xinfo.generated.Rule;
+import de.tgmz.sonar.plugins.xinfo.generated.plicomp.FILE;
+import de.tgmz.sonar.plugins.xinfo.generated.plicomp.MESSAGE;
+import de.tgmz.sonar.plugins.xinfo.generated.plicomp.PACKAGE;
 import de.tgmz.sonar.plugins.xinfo.languages.Language;
-import de.tgmz.sonar.plugins.xinfo.plicomp.FILE;
-import de.tgmz.sonar.plugins.xinfo.plicomp.MESSAGE;
-import de.tgmz.sonar.plugins.xinfo.plicomp.PACKAGE;
 
 /**
  * This Sensor loads the results of an analysis performed by 
@@ -44,18 +48,21 @@ import de.tgmz.sonar.plugins.xinfo.plicomp.PACKAGE;
  */
 public abstract class AbstractXinfoIssuesLoader implements Sensor {
 	private static final Logger LOGGER = Loggers.get(AbstractXinfoIssuesLoader.class);
-	private final FileSystem fileSystem;
-	private SensorContext context;
-	private XinfoRules xinfoRules;
+	protected final FileSystem fileSystem;
+	protected SensorContext context;
 	private Language lang;
-
+	private Map<String, Rule> ruleMap;
+	
 	public AbstractXinfoIssuesLoader(final FileSystem fileSystem, Language lang) {
 		this.fileSystem = fileSystem;
 		this.lang = lang;
 		
-		xinfoRules = RuleFactory.getInstance().getRules(lang);
+		ruleMap = new TreeMap<>();
+		
+		for (Rule r: RuleFactory.getInstance().getRules(lang).getRule()) {
+			ruleMap.put(r.getKey(), r);
+		}
 	}
-
 
 	@Override
 	public void describe(final SensorDescriptor descriptor) {
@@ -93,37 +100,79 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 		}
 	}
 
-	private void saveIssue(final InputFile inputFile, int line, String externalRuleKey, final String message) {
-		LOGGER.debug("Save issue {} for file {} on line {}", externalRuleKey, inputFile.filename(), line);
-		
-		String ruleKeyToSave;
-		
-		if (lang == Language.COBOL) {
-			// Chars at 3 and 4 indicate the compile phase which issued the message
-			// In ErrMsg these chars are replaced by "XX"
-			ruleKeyToSave = externalRuleKey.substring(0,  3) + "XX" + externalRuleKey.substring(5);
-		} else {
-			ruleKeyToSave = externalRuleKey;
+	private void createFindings(PACKAGE p, InputFile file) {
+		for (MESSAGE m : p.getMESSAGE()) {
+			try {
+				int effectiveMessageLine = computeEffectiveMessageLine(p, m);
+				
+				if (effectiveMessageLine > -1) {
+					Severity severity = null;
+					
+					String ruleKey = m.getMSGNUMBER();
+					String message = m.getMSGTEXT();
+					
+					if (context.config().getBoolean(XinfoConfig.XINFO_EXTRA).orElse(Boolean.FALSE)) {
+						severity = computeExtraSeverity(file, ruleKey, message);
+					}
+					
+					if (lang == Language.COBOL) {
+						// Chars at 3 and 4 indicate the compile phase which issued the message
+						// In ErrMsg these chars are replaced by "XX"
+						ruleKey = ruleKey.substring(0,  3) + "XX" + ruleKey.substring(5);
+					}
+					
+					saveIssue(file, effectiveMessageLine, ruleKey, message, severity);
+				}
+			} catch (XinfoException e) {
+				LOGGER.error("Error in xinfo", e);
+			
+				continue;
+			}
+		}
+	}
+
+	private Severity computeExtraSeverity(InputFile file, String ruleKey, String message) {
+		//The procedure procedure is not referenced.
+		if ("IBM1213I W".equals(ruleKey) && message.contains("SEQERR")) {
+			return Severity.INFO;
 		}
 		
-		RuleKey ruleKey = RuleKey.of(lang.getRepoKey(), ruleKeyToSave);
+		//Variable variable is unreferenced.
+		if ("IBM2418I E".equals(ruleKey) && message.contains("PLERROR")) {
+			return Severity.INFO;
+		}
+		
+		//Argument to MAIN procedure is not CHARACTER VARYING.
+		if ("IBM1195I W".equals(ruleKey)) {
+			try {
+				if (file.contents().contains("PIMS")) {
+					return Severity.INFO;
+				}
+			} catch (IOException e) {
+				LOGGER.warn("Cannot get contents of {}", file);
+			}
+		}
+		
+		return null;
+	}
+
+	private void saveIssue(final InputFile inputFile, int line, String ruleKeyString, final String message, @Nullable Severity severity) {
+		LOGGER.debug("Save issue {} for file {} on line {}", ruleKeyString, inputFile.filename(), line);
+		
+		RuleKey ruleKey = RuleKey.of(lang.getRepoKey(), ruleKeyString);
 
 		NewIssue newIssue = context.newIssue().forRule(ruleKey);
 		
-		boolean found = false;
+		Rule r = ruleMap.get(ruleKeyString);
 		
-		for (Iterator<SonarRule> iterator = xinfoRules.getRules().iterator(); iterator.hasNext() && !found;) {
-			SonarRule r = iterator.next();
-			
-			if (ruleKeyToSave.equals(r.getKey())) {
+		if (r != null) {
+			if (severity == null) {
 				newIssue.overrideSeverity(Severity.valueOf(r.getSeverity()));
-				
-				found = true;
+			} else {
+				newIssue.overrideSeverity(severity);
 			}
-		}
-
-		if (!found) {
-			LOGGER.error("Xinfo message {} unknown", ruleKeyToSave);
+		} else {
+			LOGGER.error("Xinfo message {} unknown", ruleKeyString);
 			
 			return;
 		}
@@ -145,24 +194,6 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 		newIssue.at(primaryLocation).save();
 	}
 	
-	private void createFindings(PACKAGE p, InputFile file) {
-		for (MESSAGE m : p.getMESSAGE()) {
-			try {
-				int effectiveMessageLine = computeEffectiveMessageLine(p, m);
-				
-				if (effectiveMessageLine > -1) {
-					String ruleKey = m.getMSGNUMBER();
-					String message = m.getMSGTEXT();
-			
-					saveIssue(file, effectiveMessageLine, ruleKey, message);
-				}
-			} catch (XinfoException e) {
-				LOGGER.error("Error in xinfo", e);
-			
-				continue;
-			}
-		}
-	}
 	private int computeEffectiveMessageLine(PACKAGE p, MESSAGE m) throws XinfoException {
 		String msgFile = m.getMSGFILE();
 		

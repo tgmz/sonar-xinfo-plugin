@@ -11,12 +11,12 @@
 package de.tgmz.sonar.plugins.xinfo.sensors;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.Iterator;
 
 import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.TextRange;
-import org.sonar.api.batch.fs.internal.DefaultInputFile;
 import org.sonar.api.batch.sensor.Sensor;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.SensorDescriptor;
@@ -62,13 +62,23 @@ public abstract class AbstractColorizer<T extends IColorizing> implements Sensor
 			NewHighlighting newHighlighting = context.newHighlighting().onFile(inputFile);
 			
 			try {
-				IColorizing ph = getColorizing(inputFile, Math.max(DEFAULT_LIMIT, context.config().getInt(XinfoConfig.COLORIZING_LIMIT).orElse(Integer.valueOf(5000))));
+				int limit = Math.max(DEFAULT_LIMIT, context.config().getInt(XinfoConfig.COLORIZING_LIMIT).orElse(Integer.valueOf(5000)));
+				String charset = context.config().get(XinfoConfig.XINFO_ENCODING).orElse(System.getProperty("file.encoding"));
+				
+				IColorizing ph = getColorizing(inputFile, Charset.forName(charset), limit);
 	
 				for (Iterator<ColorizingData> iterator = ph.getAreas().getAreas().iterator(); iterator.hasNext();) {
 					ColorizingData hd = iterator.next();
 
-					//CHECKSTYLE DISABLE LineLength for 1 line
-					TextRange newRange = ((DefaultInputFile) inputFile).newRange(hd.getStartLineNumber(), hd.getStartOffset(), hd.getEndLineNumber(), hd.getEndOffset());
+					TextRange newRange;
+					try {
+						//CHECKSTYLE DISABLE LineLength for 1 line
+						newRange = inputFile.newRange(hd.getStartLineNumber(), hd.getStartOffset(), hd.getEndLineNumber(), hd.getEndOffset());
+					} catch (IllegalArgumentException e) {
+						LOGGER.error("Invalid text range: Line start: {}. Line end: {}, Offset start: {}. Offset end: {} on content {}", hd.getStartLineNumber(), hd.getEndLineNumber(), hd.getStartOffset(), hd.getEndOffset(), hd.getContent());
+						
+						continue;
+					}
 				
 					newHighlighting.highlight(newRange, hd.getType());
 				}
@@ -87,9 +97,10 @@ public abstract class AbstractColorizer<T extends IColorizing> implements Sensor
 	/**
 	 * Subclasses must provide the {@link IColorizing} here.
 	 * @param f the file to colorize
+	 * @param charset the file's encoding
 	 * @param limit maximum number of lines to colorize
 	 * @return the implementation of the {@link IColorizing}
 	 * @throws IOException if the file can't be read 
 	 */
-	protected abstract T getColorizing(InputFile f, int limit) throws IOException;
+	protected abstract T getColorizing(InputFile f, Charset charset,  int limit) throws IOException;
 }

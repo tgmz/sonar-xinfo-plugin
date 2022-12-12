@@ -24,7 +24,7 @@ import org.sonar.api.utils.log.Loggers;
 public final class SecureDocumentBuilderFactory {
 	private static final Logger LOGGER = Loggers.get(SecureDocumentBuilderFactory.class);
 	private DocumentBuilderFactory dbf;
-	private static volatile SecureDocumentBuilderFactory instance;
+	private static SecureDocumentBuilderFactory instance;
 
 	private SecureDocumentBuilderFactory() throws ParserConfigurationException {
 		dbf = DocumentBuilderFactory.newInstance();
@@ -41,7 +41,7 @@ public final class SecureDocumentBuilderFactory {
 		dbf.setFeature("http://apache.org/xml/features/allow-java-encodings", true);
 	}
 
-	public static SecureDocumentBuilderFactory getInstance() {
+	public static synchronized SecureDocumentBuilderFactory getInstance() {
 		if (instance == null) {
 			LOGGER.debug("Create new SecureDocumentBuilderFactory instance");
 			

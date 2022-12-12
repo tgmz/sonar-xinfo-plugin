@@ -12,6 +12,7 @@
 package de.tgmz.sonar.plugins.xinfo;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThrows;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
@@ -23,7 +24,7 @@ import org.junit.Test;
 import org.sonar.api.config.internal.ConfigurationBridge;
 import org.sonar.api.config.internal.MapSettings;
 
-import de.tgmz.sonar.plugins.xinfo.plicomp.PACKAGE;
+import de.tgmz.sonar.plugins.xinfo.generated.plicomp.PACKAGE;
 
 public class XinfoProviderTest {
 	/**
@@ -39,12 +40,12 @@ public class XinfoProviderTest {
 		}
 	}
 	
-	@Test(expected=XinfoException.class)
-	public void testClosedInputStream() throws XinfoException, IOException {
+	@Test
+	public void testClosedInputStream() throws IOException {
 		FileInputStream fis = new FileInputStream("testresources/xml/plitest.xml");
 		fis.close();
 		
-		assertNotNull(new DummyXinfoProvider().createXinfo(fis));
+		assertThrows(XinfoException.class, () -> new DummyXinfoProvider().createXinfo(fis));
 	}
 
 	@Test
@@ -59,17 +60,24 @@ public class XinfoProviderTest {
 		assertNotNull(new DummyXinfoProvider().createXinfo(IOUtils.toInputStream(s, StandardCharsets.UTF_8)));
 	}
 	
-	@Test(expected=XinfoException.class)
-	public void testUnparseable() throws XinfoException, IOException {
+	@Test
+	public void testUnparseable() throws IOException {
 		String s = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><p>";
 		
-		assertNotNull(new DummyXinfoProvider().createXinfo(IOUtils.toInputStream(s, StandardCharsets.UTF_8)));
+		assertThrows(XinfoException.class, () -> new DummyXinfoProvider().createXinfo(IOUtils.toInputStream(s, StandardCharsets.UTF_8)));
 	}
 	
-	@Test(expected=XinfoException.class)
-	public void testUnparseableWrongEncoding() throws XinfoException, IOException {
+	@Test
+	public void testUnmarshalable() throws IOException {
+		String s = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><p></p>";
+		
+		assertThrows(XinfoException.class, () -> new DummyXinfoProvider().createXinfo(IOUtils.toInputStream(s, StandardCharsets.UTF_8)));
+	}
+	
+	@Test
+	public void testUnparseableWrongEncoding() throws IOException {
 		String s = "<?xml version=\"1.0\" encoding=\"foobar\"?><p>";
 		
-		assertNotNull(new DummyXinfoProvider().createXinfo(IOUtils.toInputStream(s, StandardCharsets.UTF_8)));
+		assertThrows(XinfoException.class, () -> new DummyXinfoProvider().createXinfo(IOUtils.toInputStream(s, StandardCharsets.UTF_8)));
 	}
 }

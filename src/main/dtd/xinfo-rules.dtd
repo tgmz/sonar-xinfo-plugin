@@ -1,0 +1,14 @@
+<?xml encoding="UTF-8"?>
+<!ELEMENT xinfo-rules (rule*)>
+<!ELEMENT rule (cardinality,description,internalKey,key,name,remediationFunction,remediationFunctionBaseEffort,severity,status,tag*,type)>
+<!ELEMENT cardinality (#PCDATA)>
+<!ELEMENT description (#PCDATA)>
+<!ELEMENT internalKey (#PCDATA)>
+<!ELEMENT key (#PCDATA)>
+<!ELEMENT name (#PCDATA)>
+<!ELEMENT remediationFunction (#PCDATA)>
+<!ELEMENT remediationFunctionBaseEffort (#PCDATA)>
+<!ELEMENT severity (#PCDATA)>
+<!ELEMENT status (#PCDATA)>
+<!ELEMENT tag (#PCDATA)>
+<!ELEMENT type (#PCDATA)>

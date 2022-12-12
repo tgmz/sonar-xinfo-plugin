@@ -34,25 +34,21 @@ public abstract class AbstractColorizing implements IColorizing {
 	private String[] content;
 	private int limit;
 	
-	private static final ThreadLocal<NumberFormat> NF = new ThreadLocal<NumberFormat>() {
-		@Override
-		protected NumberFormat initialValue() {
-			return NumberFormat.getNumberInstance();
-		}
-	};
+    public static final ThreadLocal<NumberFormat> NF = ThreadLocal.withInitial(NumberFormat::getNumberInstance);
 
 	/**
 	 * Creates the areas of a file to color.
 	 * @param file the file to color
+	 * @param charset the files encoding
 	 * @param limit maximum number of lines to colorize
 	 * @throws IOException if the file can't be read
 	 */
-	public AbstractColorizing(InputFile file, int limit) throws IOException {
+	public AbstractColorizing(InputFile file, Charset charset, int limit) throws IOException {
 		this.limit = limit;
 		
 		LOGGER.debug("Colorize file {}", file.toString());
 		
-		List<String> readLines = IOUtils.readLines(file.inputStream(), Charset.defaultCharset());
+		List<String> readLines = IOUtils.readLines(file.inputStream(), charset);
 		
 		if (readLines.size() > limit) {
 			LOGGER.warn("File {} containes {} lines. Syntax highlighting will be limited to {} lines"

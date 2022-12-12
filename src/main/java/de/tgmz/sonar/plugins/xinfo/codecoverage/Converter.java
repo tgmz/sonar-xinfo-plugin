@@ -28,12 +28,12 @@ import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
 import de.tgmz.sonar.plugins.xinfo.SecureDocumentBuilderFactory;
-import de.tgmz.sonar.plugins.xinfo.debugtool.codecoverage.CSECT;
-import de.tgmz.sonar.plugins.xinfo.debugtool.codecoverage.DTCODECOVERAGEFILE;
-import de.tgmz.sonar.plugins.xinfo.debugtool.codecoverage.EXECUTED;
-import de.tgmz.sonar.plugins.xinfo.debugtool.codecoverage.UNEXECUTED;
-import de.tgmz.sonar.plugins.xinfo.sonar.codecoverage.Coverage;
-import de.tgmz.sonar.plugins.xinfo.sonar.codecoverage.Coverage.File.LineToCover;
+import de.tgmz.sonar.plugins.xinfo.generated.debugtool.codecoverage.CSECT;
+import de.tgmz.sonar.plugins.xinfo.generated.debugtool.codecoverage.DTCODECOVERAGEFILE;
+import de.tgmz.sonar.plugins.xinfo.generated.debugtool.codecoverage.EXECUTED;
+import de.tgmz.sonar.plugins.xinfo.generated.debugtool.codecoverage.UNEXECUTED;
+import de.tgmz.sonar.plugins.xinfo.generated.sonar.codecoverage.Coverage;
+import de.tgmz.sonar.plugins.xinfo.generated.sonar.codecoverage.Coverage.File.LineToCover;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
@@ -41,8 +41,8 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  */
 public class Converter {
 	private static final Converter instance = new Converter();
-	private static final de.tgmz.sonar.plugins.xinfo.sonar.codecoverage.ObjectFactory OF 
-						= new de.tgmz.sonar.plugins.xinfo.sonar.codecoverage.ObjectFactory();
+	private static final de.tgmz.sonar.plugins.xinfo.generated.sonar.codecoverage.ObjectFactory OF 
+						= new de.tgmz.sonar.plugins.xinfo.generated.sonar.codecoverage.ObjectFactory();
 	private JAXBContext jaxbContext;
 	
 	public static Converter getInstance() {
@@ -59,7 +59,7 @@ public class Converter {
 		
 		Coverage cov = OF.createCoverage();
 		
-		de.tgmz.sonar.plugins.xinfo.sonar.codecoverage.Coverage.File cf = OF.createCoverageFile();
+		de.tgmz.sonar.plugins.xinfo.generated.sonar.codecoverage.Coverage.File cf = OF.createCoverageFile();
 		
 		CSECT csect = unmarshal.getLOADMODULE().getCOMPILATIONUNIT().getCSECT();
 		

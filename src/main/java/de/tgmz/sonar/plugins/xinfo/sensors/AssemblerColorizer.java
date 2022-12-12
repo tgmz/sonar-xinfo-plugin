@@ -11,6 +11,7 @@
 package de.tgmz.sonar.plugins.xinfo.sensors;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 
 import org.sonar.api.batch.fs.InputFile;
 
@@ -27,7 +28,7 @@ public class AssemblerColorizer extends AbstractColorizer<AssemblerColorizing> {
 	}
 
 	@Override
-	protected AssemblerColorizing getColorizing(InputFile f, int limit) throws IOException {
-		return new AssemblerColorizing(f, limit);
+	protected AssemblerColorizing getColorizing(InputFile f, Charset charset, int limit) throws IOException {
+		return new AssemblerColorizing(f, charset, limit);
 	}
 }

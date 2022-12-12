@@ -48,7 +48,7 @@ public class XinfoPlugin implements Plugin {
     context.addExtension(XinfoRulesDefinition.class);
 
     context.addExtensions(PliIssuesLoader.class, CobolIssuesLoader.class, AssemblerIssuesLoader.class);
-    
+
     context.addExtensions(PliColorizer.class, CobolColorizer.class, AssemblerColorizer.class);
 
     context.addExtension(CpdTokenizerSensor.class);

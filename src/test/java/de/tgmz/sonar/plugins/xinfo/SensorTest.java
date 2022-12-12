@@ -19,7 +19,6 @@ import org.apache.commons.io.IOUtils;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.sonar.api.Plugin;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.SensorDescriptor;
 import org.sonar.api.batch.sensor.internal.DefaultSensorDescriptor;
@@ -50,6 +49,7 @@ public class SensorTest {
 	public static void setupOnce() throws IOException {
 		MapSettings ms = new MapSettings();
 		ms.setProperty(XinfoConfig.XINFO_ROOT, LOC + File.separator +"xml");
+		ms.setProperty(XinfoConfig.XINFO_EXTRA, "true");
 		
 		File baseDir = new File(LOC);
 		
@@ -59,6 +59,9 @@ public class SensorTest {
 		((SensorContextTester) sensorContext).fileSystem().add(SonarTestFileUtil.create(LOC, "plitest.pli", Language.PLI));
 		((SensorContextTester) sensorContext).fileSystem().add(SonarTestFileUtil.create(LOC, "plitest5.pli", Language.PLI));
 		((SensorContextTester) sensorContext).fileSystem().add(SonarTestFileUtil.create(LOC, "plitest6.pli", Language.PLI));
+		((SensorContextTester) sensorContext).fileSystem().add(SonarTestFileUtil.create(LOC, "plitest7.pli", Language.PLI));
+		((SensorContextTester) sensorContext).fileSystem().add(SonarTestFileUtil.create(LOC, "plitest8.pli", Language.PLI));
+		((SensorContextTester) sensorContext).fileSystem().add(SonarTestFileUtil.create(LOC, "plitest9.pli", Language.PLI));
 		((SensorContextTester) sensorContext).fileSystem().add(SonarTestFileUtil.create(LOC, "asmtest.asm", Language.ASSEMBLER));
 		((SensorContextTester) sensorContext).fileSystem().add(SonarTestFileUtil.create(LOC, "cobtest.cbl", Language.COBOL));
 		
@@ -72,7 +75,7 @@ public class SensorTest {
 		new File("testresources/xml/plitest6.xml").delete();
 	}
 	
-	@Test
+	@Test(expected = Test.None.class)
 	public void testPli() {
 		PliColorizer colorizer = new PliColorizer();
 		PliIssuesLoader issuesLoader = new PliIssuesLoader(sensorContext.fileSystem());
@@ -84,7 +87,7 @@ public class SensorTest {
 		issuesLoader.execute(sensorContext);
 	}
 
-	@Test
+	@Test(expected = Test.None.class)
 	public void testCobol() {
 		CobolColorizer colorizer = new CobolColorizer();
 		CobolIssuesLoader issuesLoader = new CobolIssuesLoader(sensorContext.fileSystem());
@@ -96,7 +99,7 @@ public class SensorTest {
 		issuesLoader.execute(sensorContext);
 	}
 
-	@Test
+	@Test(expected = Test.None.class)
 	public void testAssember() {
 		AssemblerColorizer colorizer = new AssemblerColorizer();
 		AssemblerIssuesLoader issuesLoader = new AssemblerIssuesLoader(sensorContext.fileSystem());
@@ -108,22 +111,16 @@ public class SensorTest {
 		issuesLoader.execute(sensorContext);
 	}
 
-	@Test
+	@Test(expected = Test.None.class)
 	public void testRulesDefinition() {
 		new XinfoRulesDefinition().define(new RulesDefinition.Context());
 	}
 	
-	@Test
-	public void testPlugin() {
-		new XinfoPlugin().define(new Plugin.Context(null));
-	}
-	
-	@Test
+	@Test(expected = Test.None.class)
 	public void testCpd() {
 		CpdTokenizerSensor cpdSensor = new CpdTokenizerSensor();
 		
 		cpdSensor.describe(sensorDescriptor);
 		cpdSensor.execute(sensorContext);
 	}
-
 }

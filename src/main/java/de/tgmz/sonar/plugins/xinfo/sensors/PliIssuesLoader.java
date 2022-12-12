@@ -15,7 +15,7 @@ import org.sonar.api.batch.fs.FileSystem;
 import de.tgmz.sonar.plugins.xinfo.languages.Language;
 
 /**
- * Sensor for QA of Enterprise PL/I programes.
+ * Sensor for QA of Enterprise PL/I programs.
  */
 public class PliIssuesLoader extends AbstractXinfoIssuesLoader {
 

@@ -11,6 +11,7 @@
 package de.tgmz.sonar.plugins.xinfo.sensors;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 
 import org.sonar.api.batch.fs.InputFile;
 
@@ -27,7 +28,7 @@ public class CobolColorizer extends AbstractColorizer<CobolColorizing> {
 	}
 
 	@Override
-	protected CobolColorizing getColorizing(InputFile f, int limit) throws IOException {
-		return new CobolColorizing(f, limit);
+	protected CobolColorizing getColorizing(InputFile f, Charset charset, int limit) throws IOException {
+		return new CobolColorizing(f, charset, limit);
 	}
 }

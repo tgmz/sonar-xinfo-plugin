@@ -11,6 +11,7 @@
 package de.tgmz.sonar.plugins.xinfo.color.assembler;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -55,8 +56,8 @@ public class AssemblerColorizing extends AbstractColorizing {
 		}
 	}
 	
-	public AssemblerColorizing(InputFile file, int limit) throws IOException {
-		super(file, limit);
+	public AssemblerColorizing(InputFile file, Charset charset, int limit) throws IOException {
+		super(file, charset, limit);
 	}
 
 	@Override
@@ -81,10 +82,10 @@ public class AssemblerColorizing extends AbstractColorizing {
 	}
 
 	private void colorizeToken(int lineNumber, int startOffset, int endOffset, String token) {
-		if (INSTRUCTIONS.contains(token.toUpperCase(Locale.US))) {			
+		if (INSTRUCTIONS.contains(token.toUpperCase(Locale.ROOT))) {			
 			getAreas().add(new ColorizingData(lineNumber, startOffset, lineNumber, endOffset, token, TypeOfText.KEYWORD));
 		} else {
-			if (BUILTIN.contains(token.toUpperCase(Locale.US))) {			
+			if (BUILTIN.contains(token.toUpperCase(Locale.ROOT))) {			
 				getAreas().add(new ColorizingData(lineNumber, startOffset, lineNumber, endOffset, token, TypeOfText.KEYWORD_LIGHT));
 			} else {
 				if (NumberUtils.isNumber(token)) {

@@ -11,6 +11,7 @@
 package de.tgmz.sonar.plugins.xinfo.color.cobol;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -41,8 +42,8 @@ public class CobolColorizing extends AbstractColorizing {
 		}
 	}
 
-	public CobolColorizing(InputFile file, int limit) throws IOException {
-		super(file, limit);
+	public CobolColorizing(InputFile file, Charset charset, int limit) throws IOException {
+		super(file, charset, limit);
 	}
 
 	@Override
@@ -61,7 +62,7 @@ public class CobolColorizing extends AbstractColorizing {
 			while (m.find()) {
 				String token = getContent()[i].substring(m.start(), m.end());
 				
-				if (m.end() < 7 || m.start() > 71) {
+				if (m.end() <= 7 || m.start() >= 71) {
 					continue;
 				}
 			
@@ -71,7 +72,7 @@ public class CobolColorizing extends AbstractColorizing {
 	}
 	
 	private void colorizeToken(int lineNumber, int startOffset, int endOffset, String token) {
-		if (KEYWORDS.contains(token.toUpperCase(Locale.US))) {			
+		if (KEYWORDS.contains(token.toUpperCase(Locale.ROOT))) {			
 			getAreas().add(new ColorizingData(lineNumber, startOffset, lineNumber, endOffset, token, TypeOfText.KEYWORD));
 		} else {
 			if (NumberUtils.isNumber(token)) {

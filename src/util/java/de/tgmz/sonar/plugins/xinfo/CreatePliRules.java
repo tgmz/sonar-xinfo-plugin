@@ -13,8 +13,6 @@ package de.tgmz.sonar.plugins.xinfo;
 import java.io.PrintWriter;
 import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -29,6 +27,9 @@ import org.apache.commons.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.util.PDFTextStripper;
 import org.sonar.api.rule.RuleStatus;
+
+import de.tgmz.sonar.plugins.xinfo.generated.Rule;
+import de.tgmz.sonar.plugins.xinfo.generated.Tag;
 
 /**
  * Generates pli-rules.xml.
@@ -55,7 +56,7 @@ public class CreatePliRules {
 		
 		pw.println("<xinfo-rules>");
 		
-		JAXBContext jaxbContext = JAXBContext.newInstance(SonarRule.class);
+		JAXBContext jaxbContext = JAXBContext.newInstance(Rule.class);
 		jaxbMarshaller = jaxbContext.createMarshaller();
 
 		// output pretty printed
@@ -69,7 +70,8 @@ public class CreatePliRules {
 		for (String s0 : l) {
 			if (!(s0.startsWith("© Copyright IBM Corp.")	// Copyright
 					|| s0.contains(" • ")					// Überschrift
-					|| s0.contains("Enterprise PL/I for z/OS Messages and Codes"))) {	// Footer
+					|| s0.contains(".....") 				// Contents
+					|| s0.contains("Enterprise PL/I for z/OS"))) {	// Footer
 				try {
 					Integer.parseInt(s0.trim());			// Seitenzahl?
 					
@@ -99,12 +101,35 @@ public class CreatePliRules {
 			sta = end;
 		}
 		
-		// These messages are not described 
-		String IBM1479I = "IBM1479I E Multiple RETURN statements are not allowed under RULES(NOMULTIEXIT). Explanation: No description provided";
-		createRule(IBM1479I, 0, IBM1479I.length());
+		String key = "IBM2671I W";
 		
-		String IBM3988I = "IBM3988I S Statement has invalid syntax. Explanation: No description provided";
-		createRule(IBM3988I, 0, IBM3988I.length());
+		if (!rules.contains(key)) {
+			/* Undocumented */
+			String s0 = "The variable var is passed as argument number count to entry entry. The corresponding parameter has the ASSIGNABLE attribute, and hence the variable could be modified despite having the NONASSIGNABLE attribute.";
+			
+			Rule r = createDefaults(key, s0);
+			r.setDescription(s0);
+			r.setSeverity("MAJOR");
+				
+			jaxbMarshaller.marshal(r, pw);
+		
+			pw.println();
+		}
+		
+		key = "IBM2847I I";
+		
+		if (!rules.contains(key)) {
+			/* Undocumented */
+			String s0 = "Source in RETURN statement has a MAXLENGTH of lenght which is greater than the length of length in the corresponding RETURNS attribute";
+			
+			Rule r = createDefaults(key, s0);
+			r.setDescription(s0);
+			r.setSeverity("MINOR");
+				
+			jaxbMarshaller.marshal(r, pw);
+		
+			pw.println();
+		}
 		
 		pw.println("</xinfo-rules>");
 		
@@ -122,41 +147,54 @@ public class CreatePliRules {
 		
 		String sev = msg.substring(9, 10);
 		
-		SonarRule r = new SonarRule();
-		r.setCardinality("SINGLE");
-		r.setInternalKey(key);
-		r.setKey(key);
-		r.setStatus(RuleStatus.READY.toString());
-		r.setTag(Collections.singletonList("xinfo"));
-		r.setRemediationFunction("CONSTANT_ISSUE");
-		r.setRemediationFunctionBaseEffort("0d 0h 10min");
+		int desc = s.indexOf("Explanation ", sta);
+		int suffix = s.indexOf("Codes Chapter", sta);
 		
-		int desc = s.indexOf("Explanation: ", sta);
-		r.setDescription(s.substring(desc + "Explanation: ".length(), end));
+		Rule r = createDefaults(key, s.substring(sta + 11, desc));
 		
-		String name = s.substring(sta + 11, desc);
-		
-		r.setName(name.substring(0, Math.min(name.length(), 200))); // VARCHAR(200) in DB
+		r.setDescription(s.substring(desc + "Explanation ".length(), suffix));
 		
 		switch (r.getKey()) {
 		case "IBM1035I I":	// The next statement was merged with this statement.
 		case "IBM1036I I":	// The next statement-count statements were merged with this statement.
 		case "IBM1041I I":	// Comment spans line-count lines.
 		case "IBM3020I I":	// Comment spans line-count lines.
+		case "IBM1214I W":	// A dummy argument will be created for argument argument
+		case "IBM3000I I":	// This message is used to report DB2 or CICS backend messages with a return code of 0.
 			r.setSeverity("INFO");
 			break;
 		case "IBM2812I I":	// Argument number argument number to BUILTIN name built-in would lead to much better code if declared with the VALUE attribute
 			r.setSeverity("MAJOR");
-			r.setTag(Arrays.asList("xinfo", "performance"));
+			Tag tag0 = new Tag(); tag0.setvalue("performance"); r.getTag().add(tag0);
 			break;
 		case "IBM1208I W":	// INITIAL list for the array variable name contains only one item.
 		case "IBM2603I W":	// INITIAL list for the array variable name contains only one item.
 			r.setSeverity("MAJOR");
 			r.setType("BUG");
 			break;
+		case "IBM1059I I":	//SELECT statement contains no OTHERWISE clause
+		case "IBM1060I I":	//Name resolution for identifier selected its declaration in a structure, rather than its non-member declaration in a parent block.
+			r.setSeverity("MAJOR");
+			break;
+		case "IBM2804I I":	//Boolean is compared with something other than '1'b or '0'b.	
+			r.setSeverity("CRITICAL");
+			r.setType("BUG");
+			break;
 		case "IBM1063I I":	// Code generated for DO group would be more efficient if control variable were a 4-byte integer.
 			r.setSeverity("MINOR");
-			r.setTag(Arrays.asList("xinfo", "performance"));
+			Tag tag1 = new Tag(); tag1.setvalue("performance"); r.getTag().add(tag1);
+			break;
+		case "IBM2402I E":	//variable name is declared as BASED on the ADDR of variable name,
+							//but variable name requires more storage than variable name.
+		case "IBM2409I E":	//RETURN statement without an expression is invalid inside a subprocedure that specified the RETURNS attribute.
+		case "IBM2452I E":	//Scale factor is less than 0.  
+		case "IBM1247I E":	//Arithmetic operands should both be numeric  
+		case "IBM1482I E":	//The variable variable name is declared without any data attributes  
+		case "IBM1373I E":	//Variable variable name is implicitly declared  
+		case "IBM1274I E":	//RULES(NOLAXIF) requires BIT(1) expressions in IF, WHILE, etc  
+		case "IBM2436I E":	//Scale factor is larger than the precision  
+			r.setSeverity("BLOCKER");
+			break;
 		default:
 			switch (sev) {
 			case "I": r.setSeverity("MINOR"); break;
@@ -169,7 +207,18 @@ public class CreatePliRules {
 		jaxbMarshaller.marshal(r, pw);
 		
 		pw.println();
-		
 	}
-
+	private Rule createDefaults(String key, String name) {
+		Rule r = new Rule();
+		r.setCardinality("SINGLE");
+		r.setInternalKey(key);
+		r.setKey(key);
+		r.setStatus(RuleStatus.READY.toString());
+		Tag tag = new Tag(); tag.setvalue("xinfo"); r.getTag().add(tag);
+		r.setRemediationFunction("CONSTANT_ISSUE");
+		r.setRemediationFunctionBaseEffort("0d 0h 10min");
+		r.setName(name.substring(0, Math.min(name.length(), 200))); // VARCHAR(200) in DB
+		
+		return r;
+	}
 }

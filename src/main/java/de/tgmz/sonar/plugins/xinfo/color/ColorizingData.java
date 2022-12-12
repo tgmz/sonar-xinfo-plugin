@@ -10,6 +10,8 @@
   *******************************************************************************/
 package de.tgmz.sonar.plugins.xinfo.color;
 
+import javax.annotation.Nullable;
+
 import org.sonar.api.batch.sensor.highlighting.TypeOfText;
 
 /**
@@ -21,8 +23,6 @@ public class ColorizingData {
 	private int endLineNumber;
 	private int endOffset;
 	private TypeOfText type;
-
-	@SuppressWarnings("unused") 	// Content is only used for debugging
 	private String content;
 
 	public ColorizingData(int startLineNumber, int startOffset, int endLineNumber, int endOffset, String content, TypeOfText type) {
@@ -60,17 +60,13 @@ public class ColorizingData {
 		return endLineNumber;
 	}
 
-	/* 
-	 * Two ColorizingData are considered equal if they overlap. 
-	 * So we can simply add them to a Set and let it handle overlapping areas.
-	 */
-	public boolean overlap(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		
+	public boolean overlap(@Nullable Object obj) {
 		if (obj == null) {
 			return false;
+		}
+		
+		if (this == obj) {
+			return true;
 		}
 		
 		if (getClass() != obj.getClass()) {
@@ -100,5 +96,9 @@ public class ColorizingData {
 		}
 		
 		return true;
+	}
+
+	public String getContent() {
+		return content;
 	}
 }

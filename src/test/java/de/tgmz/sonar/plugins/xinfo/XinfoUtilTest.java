@@ -17,16 +17,16 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
+import de.tgmz.sonar.plugins.xinfo.generated.plicomp.FILE;
+import de.tgmz.sonar.plugins.xinfo.generated.plicomp.FILEREFERENCETABLE;
 import de.tgmz.sonar.plugins.xinfo.languages.Language;
-import de.tgmz.sonar.plugins.xinfo.plicomp.FILE;
-import de.tgmz.sonar.plugins.xinfo.plicomp.FILEREFERENCETABLE;
 import de.tgmz.sonar.plugins.xinfo.sensors.XinfoUtil;
 
 /**
  * Testcases for XinfoUtil.
  */
 public class XinfoUtilTest {
-	private static final de.tgmz.sonar.plugins.xinfo.plicomp.ObjectFactory OF = new de.tgmz.sonar.plugins.xinfo.plicomp.ObjectFactory();
+	private static final de.tgmz.sonar.plugins.xinfo.generated.plicomp.ObjectFactory OF = new de.tgmz.sonar.plugins.xinfo.generated.plicomp.ObjectFactory();
 	
 	@Test(expected=XinfoException.class)
 	public void testCannotCompute() throws XinfoException  {
