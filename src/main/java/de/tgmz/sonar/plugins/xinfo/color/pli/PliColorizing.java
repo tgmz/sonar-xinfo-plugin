@@ -10,7 +10,6 @@
   *******************************************************************************/
 package de.tgmz.sonar.plugins.xinfo.color.pli;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +18,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.math.NumberUtils;
+import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.sensor.highlighting.TypeOfText;
 
 import de.tgmz.sonar.plugins.xinfo.color.AbstractColorizing;
@@ -51,7 +51,7 @@ public class PliColorizing extends AbstractColorizing {
 		}
 	}
 	
-	public PliColorizing(File file, int limit) throws IOException {
+	public PliColorizing(InputFile file, int limit) throws IOException {
 		super(file, limit);
 	}
 

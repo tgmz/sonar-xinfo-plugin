@@ -11,10 +11,10 @@
 package de.tgmz.sonar.plugins.xinfo.languages;
 
 /**
- * Default Quality profile for the projects having files of language "pli"
+ * Default Quality profile for the projects having files of language "Assembler"
  */
-public final class PliQualityProfile extends AbstractXinfoQualityProfile {
-	public PliQualityProfile() {
-		super (Language.PLI);
+public final class AssemblerQualityProfileDefinition extends AbstractXinfoQualityProfileDefinition {
+	public AssemblerQualityProfileDefinition() {
+		super (Language.ASSEMBLER);
 	}
 }

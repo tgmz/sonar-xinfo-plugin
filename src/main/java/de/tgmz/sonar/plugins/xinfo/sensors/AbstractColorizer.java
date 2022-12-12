@@ -10,7 +10,6 @@
   *******************************************************************************/
 package de.tgmz.sonar.plugins.xinfo.sensors;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
 
@@ -27,8 +26,8 @@ import org.sonar.api.utils.log.Loggers;
 
 import de.tgmz.sonar.plugins.xinfo.color.ColorizingData;
 import de.tgmz.sonar.plugins.xinfo.color.IColorizing;
+import de.tgmz.sonar.plugins.xinfo.config.XinfoConfig;
 import de.tgmz.sonar.plugins.xinfo.languages.Language;
-import de.tgmz.sonar.plugins.xinfo.settings.XinfoSettings;
 
 /**
  * Abstract sensor to provide syntax highlighting.
@@ -63,9 +62,9 @@ public abstract class AbstractColorizer<T extends IColorizing> implements Sensor
 			NewHighlighting newHighlighting = context.newHighlighting().onFile(inputFile);
 			
 			try {
-				IColorizing ph = getColorizing(inputFile.file(), Math.max(DEFAULT_LIMIT, context.settings().getInt(XinfoSettings.COLORIZING_LIMIT)));
+				IColorizing ph = getColorizing(inputFile, Math.max(DEFAULT_LIMIT, context.config().getInt(XinfoConfig.COLORIZING_LIMIT).orElse(Integer.valueOf(5000))));
 	
-				for (Iterator<ColorizingData> iterator = ph.getAreas().iterator(); iterator.hasNext();) {
+				for (Iterator<ColorizingData> iterator = ph.getAreas().getAreas().iterator(); iterator.hasNext();) {
 					ColorizingData hd = iterator.next();
 
 					//CHECKSTYLE DISABLE LineLength for 1 line
@@ -75,12 +74,12 @@ public abstract class AbstractColorizer<T extends IColorizing> implements Sensor
 				}
 	
 				if (++ctr % 100 == 0) {
-					LOGGER.info("{} files processed, current is {}", ctr, inputFile.relativePath());
+					LOGGER.info("{} files processed, current is {}", ctr, inputFile.filename());
 				}
 				
 				newHighlighting.save();
 			} catch (IOException e) {
-				LOGGER.error("Error creating highlighting on file " + inputFile.relativePath(), e);
+				LOGGER.error("Error creating highlighting on file " + inputFile.filename(), e);
 			}
 		}
 	}
@@ -92,5 +91,5 @@ public abstract class AbstractColorizer<T extends IColorizing> implements Sensor
 	 * @return the implementation of the {@link IColorizing}
 	 * @throws IOException if the file can't be read 
 	 */
-	protected abstract T getColorizing(File f, int limit) throws IOException;
+	protected abstract T getColorizing(InputFile f, int limit) throws IOException;
 }

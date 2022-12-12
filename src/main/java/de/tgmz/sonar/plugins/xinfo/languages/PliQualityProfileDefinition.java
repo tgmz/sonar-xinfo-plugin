@@ -11,10 +11,10 @@
 package de.tgmz.sonar.plugins.xinfo.languages;
 
 /**
- * Default Quality profile for the projects having files of language "Cobol"
+ * Default Quality profile for the projects having files of language "pli"
  */
-public final class CobolQualityProfile extends AbstractXinfoQualityProfile {
-	public CobolQualityProfile() {
-		super (Language.COBOL);
+public final class PliQualityProfileDefinition extends AbstractXinfoQualityProfileDefinition {
+	public PliQualityProfileDefinition() {
+		super(Language.PLI);
 	}
 }

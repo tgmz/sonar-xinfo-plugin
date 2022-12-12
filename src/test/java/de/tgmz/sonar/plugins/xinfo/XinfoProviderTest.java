@@ -11,33 +11,27 @@
 
 package de.tgmz.sonar.plugins.xinfo;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
-import org.sonar.api.config.MapSettings;
-import org.sonar.api.config.Settings;
+import org.sonar.api.config.internal.ConfigurationBridge;
+import org.sonar.api.config.internal.MapSettings;
 
-import de.tgmz.sonar.plugins.xinfo.languages.Language;
 import de.tgmz.sonar.plugins.xinfo.plicomp.PACKAGE;
 
 public class XinfoProviderTest {
-	private static final Settings SETTINGS = new MapSettings();
-	
 	/**
 	 * Dummy to access the createXinfo(InputStream) method.
 	 */
 	private static class DummyXinfoProvider extends AbstractXinfoProvider {
 		public DummyXinfoProvider() {
-			super(new MapSettings());
+			super(new ConfigurationBridge(new MapSettings()));
 		}
 		@Override
 		public PACKAGE getXinfo(IXinfoAnalyzable pgm) throws XinfoException {
@@ -45,26 +39,6 @@ public class XinfoProviderTest {
 		}
 	}
 	
-	@Test
-	public void test() throws XinfoException, FileNotFoundException {
-		assertEquals(1, XinfoProviderFactory.getProvider(SETTINGS).getXinfo(new XinfoFileAnalyzable(Language.PLI, new File("testresources/plitest.pli"))).getMESSAGE().size());
-	}
-
-	@Test
-	public void testPliNoXinfo() throws XinfoException, FileNotFoundException {
-		assertEquals(0, XinfoProviderFactory.getProvider(SETTINGS).getXinfo(new XinfoFileAnalyzable(Language.PLI, new File("testresources/plitest3.pli"))).getMESSAGE().size());
-	}
-
-	@Test
-	public void testPliMultipleXinfo() throws XinfoException, FileNotFoundException {
-		assertEquals(0, XinfoProviderFactory.getProvider(SETTINGS).getXinfo(new XinfoFileAnalyzable(Language.PLI, new File("testresources/plitest2.pli"))).getMESSAGE().size());
-	}
-
-	@Test
-	public void testMessageInInclude() throws XinfoException, FileNotFoundException {
-		assertEquals(2, XinfoProviderFactory.getProvider(SETTINGS).getXinfo(new XinfoFileAnalyzable(Language.PLI, new File("testresources/plitest5.pli"))).getMESSAGE().size());
-	}
-
 	@Test(expected=XinfoException.class)
 	public void testClosedInputStream() throws XinfoException, IOException {
 		FileInputStream fis = new FileInputStream("testresources/xml/plitest.xml");

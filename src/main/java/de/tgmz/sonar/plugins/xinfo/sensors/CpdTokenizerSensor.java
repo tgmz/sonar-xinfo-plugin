@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.sonar.api.batch.fs.FilePredicates;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.sensor.Sensor;
@@ -60,7 +60,7 @@ public class CpdTokenizerSensor implements Sensor {
 		NewCpdTokens cpdTokens = context.newCpdTokens().onFile(inputFile);
 		
 		try {
-			for (String line : FileUtils.readLines(inputFile.file(), inputFile.charset())) {
+			for (String line : IOUtils.readLines(inputFile.inputStream(), inputFile.charset())) {
 				if (line.length() > left) {
 					String code = line.substring(left, Math.min(line.length(), 72));
 					

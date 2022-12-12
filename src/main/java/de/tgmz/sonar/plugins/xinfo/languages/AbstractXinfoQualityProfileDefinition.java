@@ -12,10 +12,7 @@ package de.tgmz.sonar.plugins.xinfo.languages;
 
 import java.util.Iterator;
 
-import org.sonar.api.profiles.ProfileDefinition;
-import org.sonar.api.profiles.RulesProfile;
-import org.sonar.api.rules.Rule;
-import org.sonar.api.utils.ValidationMessages;
+import org.sonar.api.server.profile.BuiltInQualityProfilesDefinition;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 
@@ -25,30 +22,31 @@ import de.tgmz.sonar.plugins.xinfo.SonarRule;
 /**
  * Default quality profile for the projects having files of a supported language.
  */
-public abstract class AbstractXinfoQualityProfile extends ProfileDefinition {
-	private static final Logger LOGGER = Loggers.get(AbstractXinfoQualityProfile.class);
+public abstract class AbstractXinfoQualityProfileDefinition implements BuiltInQualityProfilesDefinition {
+	private static final Logger LOGGER = Loggers.get(AbstractXinfoQualityProfileDefinition.class);
 	
 	private Language lang;
 
-	public AbstractXinfoQualityProfile(Language lang) {
+	public AbstractXinfoQualityProfileDefinition(Language lang) {
 		super();
 		this.lang = lang;
 	}
 
 	@Override
-	public RulesProfile createProfile(ValidationMessages validation) {
-		RulesProfile profile = RulesProfile.create("Xinfo Rules", lang.getKey());
-
+	public void define(Context context) {
+	    NewBuiltInQualityProfile profile = context.createBuiltInQualityProfile("Xinfo Rules", lang.getKey());
+	    profile.setDefault(false);
+	    
 		Iterator<SonarRule> it = RuleFactory.getInstance().getRules(lang).getRules().iterator();
 
 		while (it.hasNext()) {
 			String s = it.next().getKey();
 				
 			LOGGER.debug("Activate rule {}", s);
-				
-			profile.activateRule(Rule.create(lang.getRepoKey(), s), null);
+			
+		    profile.activateRule(lang.getRepoKey(), s);
 		}
-
-		return profile;
+	    
+	    profile.done();
 	}
 }

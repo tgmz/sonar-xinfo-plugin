@@ -31,6 +31,7 @@ import de.tgmz.sonar.plugins.xinfo.XinfoException;
 import de.tgmz.sonar.plugins.xinfo.XinfoFileAnalyzable;
 import de.tgmz.sonar.plugins.xinfo.XinfoProviderFactory;
 import de.tgmz.sonar.plugins.xinfo.XinfoRules;
+import de.tgmz.sonar.plugins.xinfo.config.XinfoConfig;
 import de.tgmz.sonar.plugins.xinfo.languages.Language;
 import de.tgmz.sonar.plugins.xinfo.plicomp.FILE;
 import de.tgmz.sonar.plugins.xinfo.plicomp.MESSAGE;
@@ -77,9 +78,9 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 			
 			PACKAGE p;
 			try {
-				p = XinfoProviderFactory.getProvider(context.settings()).getXinfo(new XinfoFileAnalyzable(lang, inputFile.file()));
+				p = XinfoProviderFactory.getProvider(context.config()).getXinfo(new XinfoFileAnalyzable(lang, inputFile));
 			} catch (XinfoException e) {
-				LOGGER.error("Error getting XINFO for file " + inputFile.relativePath(), e);
+				LOGGER.error("Error getting XINFO for file " + inputFile.filename(), e);
 				
 				continue;
 			}
@@ -87,13 +88,13 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 			createFindings(p, inputFile);
 			
 			if (++ctr % 100 == 0) {
-				LOGGER.info("{} files processed, current is {}", ctr, inputFile.relativePath());
+				LOGGER.info("{} files processed, current is {}", ctr, inputFile.filename());
 			}
 		}
 	}
 
 	private void saveIssue(final InputFile inputFile, int line, String externalRuleKey, final String message) {
-		LOGGER.debug("Save issue {} for file {} on line {}", externalRuleKey, inputFile.file().getName(), line);
+		LOGGER.debug("Save issue {} for file {} on line {}", externalRuleKey, inputFile.filename(), line);
 		
 		String ruleKeyToSave;
 		
@@ -133,7 +134,7 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 		
 		if (lineToSave > 0) {
 			if (lineToSave > inputFile.lines()) {
-				LOGGER.info("Linenumber {} for {} is outside range. It was reduced to {}", lineToSave, inputFile.file().getName(), inputFile.lines());
+				LOGGER.info("Linenumber {} for {} is outside range. It was reduced to {}", lineToSave, inputFile.filename(), inputFile.lines());
 				
 				lineToSave = inputFile.lines();
 			}
@@ -146,38 +147,44 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 	
 	private void createFindings(PACKAGE p, InputFile file) {
 		for (MESSAGE m : p.getMESSAGE()) {
-			String msgLine = m.getMSGLINE();
-			String msgNumber = m.getMSGNUMBER();
-			String msgText = m.getMSGTEXT();
-			String msgFile = m.getMSGFILE();
-			
-			// We cannot assign an issue to a unknown file
-			if (!StringUtils.isEmpty(msgFile)) {
-				if (!XinfoUtil.isMainFile(msgFile, lang)) { 
-					try {
-						// Get the FILE of the INCLUDE the compiler message belongs to
-						FILE f = XinfoUtil.computeFilefromFileNumber(p.getFILEREFERENCETABLE(), msgFile);
+			try {
+				int effectiveMessageLine = computeEffectiveMessageLine(p, m);
 				
-						if (f.getINCLUDEDFROMFILE() == null || f.getINCLUDEDONLINE() == null) {
-							continue;
-						}
+				if (effectiveMessageLine > -1) {
+					String ruleKey = m.getMSGNUMBER();
+					String message = m.getMSGTEXT();
 			
-						// Get the line number where it was included.
-						msgLine = XinfoUtil.computeIncludedFromLine(p.getFILEREFERENCETABLE(), f, lang);
-					} catch (XinfoException e) {
-						LOGGER.error("Error in xinfo", e);
-					
-						continue;
-					}
+					saveIssue(file, effectiveMessageLine, ruleKey, message);
 				}
-		
-				int line = msgLine == null ? 0 : Integer.parseInt(msgLine);
-				String ruleKey = msgNumber;
-				String message = msgText;
-		
-				saveIssue(file, line, ruleKey, message);
+			} catch (XinfoException e) {
+				LOGGER.error("Error in xinfo", e);
+			
+				continue;
 			}
 		}
+	}
+	private int computeEffectiveMessageLine(PACKAGE p, MESSAGE m) throws XinfoException {
+		String msgFile = m.getMSGFILE();
 		
+		if (StringUtils.isEmpty(msgFile)) {
+			return -1;
+		}
+		
+		if (XinfoUtil.isMainFile(msgFile, lang)) {
+			return Integer.parseInt(m.getMSGLINE());
+		} else {
+			if (context.config().getBoolean(XinfoConfig.IGNORE_INCLUDES).orElse(Boolean.FALSE)) {
+				return -1;
+			} else {
+				FILE f = XinfoUtil.computeFilefromFileNumber(p.getFILEREFERENCETABLE(), msgFile);
+				
+				if (f.getINCLUDEDFROMFILE() == null || f.getINCLUDEDONLINE() == null) {
+					return -1;
+				}
+	
+				// Get the line number where it was included.
+				return Integer.parseInt(XinfoUtil.computeIncludedFromLine(p.getFILEREFERENCETABLE(), f, lang));
+			}
+		}
 	}
 }

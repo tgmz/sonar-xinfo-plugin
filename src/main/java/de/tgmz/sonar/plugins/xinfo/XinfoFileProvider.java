@@ -22,13 +22,13 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOCase;
 import org.apache.commons.io.filefilter.NameFileFilter;
 import org.apache.commons.io.filefilter.TrueFileFilter;
-import org.sonar.api.config.Settings;
+import org.sonar.api.config.Configuration;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 
+import de.tgmz.sonar.plugins.xinfo.config.XinfoConfig;
 import de.tgmz.sonar.plugins.xinfo.plicomp.ObjectFactory;
 import de.tgmz.sonar.plugins.xinfo.plicomp.PACKAGE;
-import de.tgmz.sonar.plugins.xinfo.settings.XinfoSettings;
 
 /**
  * Provides programinformations by walking through the filesystem. 
@@ -37,8 +37,8 @@ import de.tgmz.sonar.plugins.xinfo.settings.XinfoSettings;
 public class XinfoFileProvider extends AbstractXinfoProvider {
 	private static final Logger LOGGER = Loggers.get(XinfoFileProvider.class);
 	
-	public XinfoFileProvider(Settings settings) {
-		super(settings);
+	public XinfoFileProvider(Configuration configuration) {
+		super(configuration);
 	}
 
 	@Override
@@ -49,7 +49,7 @@ public class XinfoFileProvider extends AbstractXinfoProvider {
 		
 		xinfoFile = pgm.getName() + ".xml";
 				
-		String xinfoRoot = getSettings().getString(XinfoSettings.XINFO_ROOT);
+		String xinfoRoot = getConfiguration().get(XinfoConfig.XINFO_ROOT).orElse("xml");
 		
 		Path p = Paths.get(xinfoRoot == null ? "" : xinfoRoot).toAbsolutePath();
 		
