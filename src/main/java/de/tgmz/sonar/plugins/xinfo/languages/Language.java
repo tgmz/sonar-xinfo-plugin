@@ -10,9 +10,11 @@
   *******************************************************************************/
 package de.tgmz.sonar.plugins.xinfo.languages;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.io.FilenameUtils;
 import org.sonar.api.profiles.RulesProfile;
 import org.sonar.api.server.rule.RulesDefinition.NewRepository;
 
@@ -58,6 +60,18 @@ public enum Language {
 		}
 
 		throw new IllegalArgumentException("No language for key [" + key + "]");
+	}
+
+	public static Language getByExtension(File f) {
+		for (Language l : values()) {
+			for (String ext : l.defaultFileSuffixes) {
+				if (ext.equals(FilenameUtils.getExtension(f.getName()))) {
+					return l;
+				}
+			}
+		}
+
+		throw new IllegalArgumentException("No language for file [" + f + "]");
 	}
 
 	public String getKey() {

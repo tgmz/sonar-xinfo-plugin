@@ -10,6 +10,8 @@
   *******************************************************************************/
 package de.tgmz.sonar.plugins.xinfo;
 
+import org.sonar.api.batch.fs.InputFile;
+
 import de.tgmz.sonar.plugins.xinfo.generated.plicomp.PACKAGE;
 
 /**
@@ -17,5 +19,5 @@ import de.tgmz.sonar.plugins.xinfo.generated.plicomp.PACKAGE;
  */
 @FunctionalInterface 
 public interface IXinfoProvider {
-	PACKAGE getXinfo(IXinfoAnalyzable pgm) throws XinfoException;
+	PACKAGE getXinfo(InputFile pgm) throws XinfoException;
 }

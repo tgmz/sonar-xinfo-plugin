@@ -21,6 +21,7 @@ import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
+import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.config.internal.ConfigurationBridge;
 import org.sonar.api.config.internal.MapSettings;
 
@@ -35,7 +36,7 @@ public class XinfoProviderTest {
 			super(new ConfigurationBridge(new MapSettings()));
 		}
 		@Override
-		public PACKAGE getXinfo(IXinfoAnalyzable pgm) throws XinfoException {
+		public PACKAGE getXinfo(InputFile pgm) throws XinfoException {
 			return null;
 		}
 	}

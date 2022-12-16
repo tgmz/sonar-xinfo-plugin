@@ -10,7 +10,7 @@
   *******************************************************************************/
 package de.tgmz.sonar.plugins.xinfo.sensors;
 
-import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
@@ -32,11 +32,9 @@ import org.sonar.api.utils.log.Loggers;
 
 import de.tgmz.sonar.plugins.xinfo.RuleFactory;
 import de.tgmz.sonar.plugins.xinfo.XinfoException;
-import de.tgmz.sonar.plugins.xinfo.XinfoFileAnalyzable;
 import de.tgmz.sonar.plugins.xinfo.XinfoProviderFactory;
 import de.tgmz.sonar.plugins.xinfo.config.XinfoConfig;
 import de.tgmz.sonar.plugins.xinfo.generated.Rule;
-import de.tgmz.sonar.plugins.xinfo.generated.plicomp.FILE;
 import de.tgmz.sonar.plugins.xinfo.generated.plicomp.MESSAGE;
 import de.tgmz.sonar.plugins.xinfo.generated.plicomp.PACKAGE;
 import de.tgmz.sonar.plugins.xinfo.languages.Language;
@@ -47,12 +45,17 @@ import de.tgmz.sonar.plugins.xinfo.languages.Language;
  * correspond to the rules defined in "&lt;language&gt;-rules.xml".
  */
 public abstract class AbstractXinfoIssuesLoader implements Sensor {
+	private static class Issue {
+		InputFile inputFile;
+		int line;
+		String ruleKey;
+		String message;		
+	}
 	private static final Logger LOGGER = Loggers.get(AbstractXinfoIssuesLoader.class);
 	protected final FileSystem fileSystem;
 	protected SensorContext context;
 	private Language lang;
 	private Map<String, Rule> ruleMap;
-	
 	public AbstractXinfoIssuesLoader(final FileSystem fileSystem, Language lang) {
 		this.fileSystem = fileSystem;
 		this.lang = lang;
@@ -76,6 +79,8 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 
 		this.context = aContext;
 		
+		Charset charset = Charset.forName(context.config().get(XinfoConfig.XINFO_ENCODING).orElse(Charset.defaultCharset().name()));
+		
 		Iterator<InputFile> fileIterator = fileSystem.inputFiles(fileSystem.predicates().hasLanguage(lang.getKey())).iterator();
 
 		int ctr = 0;
@@ -85,14 +90,14 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 			
 			PACKAGE p;
 			try {
-				p = XinfoProviderFactory.getProvider(context.config()).getXinfo(new XinfoFileAnalyzable(lang, inputFile));
+				p = XinfoProviderFactory.getProvider(context.config()).getXinfo(inputFile);
 			} catch (XinfoException e) {
 				LOGGER.error("Error getting XINFO for file " + inputFile.filename(), e);
 				
 				continue;
 			}
 				
-			createFindings(p, inputFile);
+			createFindings(p, inputFile, charset);
 			
 			if (++ctr % 100 == 0) {
 				LOGGER.info("{} files processed, current is {}", ctr, inputFile.filename());
@@ -100,20 +105,15 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 		}
 	}
 
-	private void createFindings(PACKAGE p, InputFile file) {
+	private void createFindings(PACKAGE p, InputFile file, Charset charset) {
 		for (MESSAGE m : p.getMESSAGE()) {
 			try {
-				int effectiveMessageLine = computeEffectiveMessageLine(p, m);
+				Issue issue = computeIssue(p, m, file);
 				
-				if (effectiveMessageLine > -1) {
+				if (issue != null) {
 					Severity severity = null;
 					
-					String ruleKey = m.getMSGNUMBER();
-					String message = m.getMSGTEXT();
-					
-					if (context.config().getBoolean(XinfoConfig.XINFO_EXTRA).orElse(Boolean.FALSE)) {
-						severity = computeExtraSeverity(file, ruleKey, message);
-					}
+					String ruleKey = issue.ruleKey;
 					
 					if (lang == Language.COBOL) {
 						// Chars at 3 and 4 indicate the compile phase which issued the message
@@ -121,39 +121,36 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 						ruleKey = ruleKey.substring(0,  3) + "XX" + ruleKey.substring(5);
 					}
 					
-					saveIssue(file, effectiveMessageLine, ruleKey, message, severity);
+					saveIssue(issue.inputFile, issue.line, ruleKey, issue.message, severity);
 				}
 			} catch (XinfoException e) {
-				LOGGER.error("Error in xinfo", e);
+				LOGGER.error("Error in xinfo on file {}", file, e);
 			
 				continue;
 			}
 		}
 	}
-
-	private Severity computeExtraSeverity(InputFile file, String ruleKey, String message) {
-		//The procedure procedure is not referenced.
-		if ("IBM1213I W".equals(ruleKey) && message.contains("SEQERR")) {
-			return Severity.INFO;
+	
+	private Issue computeIssue(PACKAGE p, MESSAGE m, InputFile inputFile) throws XinfoException {
+		String msgFile = m.getMSGFILE();
+		
+		if (StringUtils.isEmpty(msgFile)) {
+			return null;
 		}
 		
-		//Variable variable is unreferenced.
-		if ("IBM2418I E".equals(ruleKey) && message.contains("PLERROR")) {
-			return Severity.INFO;
+		Issue result = new Issue();
+		
+		result.message = m.getMSGTEXT();
+		result.ruleKey = m.getMSGNUMBER();
+		
+		if (XinfoUtil.isMainFile(msgFile, lang)) {
+			result.line = Integer.parseInt(m.getMSGLINE());
+			result.inputFile = inputFile;
+		} else {
+			result = null;
 		}
 		
-		//Argument to MAIN procedure is not CHARACTER VARYING.
-		if ("IBM1195I W".equals(ruleKey)) {
-			try {
-				if (file.contents().contains("PIMS")) {
-					return Severity.INFO;
-				}
-			} catch (IOException e) {
-				LOGGER.warn("Cannot get contents of {}", file);
-			}
-		}
-		
-		return null;
+		return result;
 	}
 
 	private void saveIssue(final InputFile inputFile, int line, String ruleKeyString, final String message, @Nullable Severity severity) {
@@ -192,30 +189,5 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 		}
 		
 		newIssue.at(primaryLocation).save();
-	}
-	
-	private int computeEffectiveMessageLine(PACKAGE p, MESSAGE m) throws XinfoException {
-		String msgFile = m.getMSGFILE();
-		
-		if (StringUtils.isEmpty(msgFile)) {
-			return -1;
-		}
-		
-		if (XinfoUtil.isMainFile(msgFile, lang)) {
-			return Integer.parseInt(m.getMSGLINE());
-		} else {
-			if (context.config().getBoolean(XinfoConfig.IGNORE_INCLUDES).orElse(Boolean.FALSE)) {
-				return -1;
-			} else {
-				FILE f = XinfoUtil.computeFilefromFileNumber(p.getFILEREFERENCETABLE(), msgFile);
-				
-				if (f.getINCLUDEDFROMFILE() == null || f.getINCLUDEDONLINE() == null) {
-					return -1;
-				}
-	
-				// Get the line number where it was included.
-				return Integer.parseInt(XinfoUtil.computeIncludedFromLine(p.getFILEREFERENCETABLE(), f, lang));
-			}
-		}
 	}
 }

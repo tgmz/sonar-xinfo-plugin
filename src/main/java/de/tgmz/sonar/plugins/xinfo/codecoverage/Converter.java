@@ -17,10 +17,6 @@ import java.io.OutputStream;
 import java.math.BigInteger;
 import java.util.Iterator;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -35,6 +31,10 @@ import de.tgmz.sonar.plugins.xinfo.generated.debugtool.codecoverage.UNEXECUTED;
 import de.tgmz.sonar.plugins.xinfo.generated.sonar.codecoverage.Coverage;
 import de.tgmz.sonar.plugins.xinfo.generated.sonar.codecoverage.Coverage.File.LineToCover;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Marshaller;
+import jakarta.xml.bind.Unmarshaller;
 
 /**
  * Transforms a Debug Tool code Coverage out into a Sonarqube Code Coverage Input.

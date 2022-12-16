@@ -1,24 +1,40 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<!--
+/*******************************************************************************
+  * Copyright (c) 10.03.2022 Thomas Zierer.
+  * All rights reserved. This program and the accompanying materials
+  * are made available under the terms of the Eclipse Public License v2.0
+  * which accompanies this distribution, and is available at
+  * http://www.eclipse.org/legal/epl-v20.html
+  *
+  * Contributors:
+  *    Thomas Zierer - initial API and implementation and/or initial documentation
+  *******************************************************************************/
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>de.tgmz.sonar.plugins.xinfo</groupId>
 	<artifactId>sonar-xinfo-plugin</artifactId>
 	<packaging>sonar-plugin</packaging>
-	<version>1.3.8</version>
+	<version>1.4.3</version>
 
 	<name>Xinfo Plugin for SonarQube</name>
 	<description>Xinfo plugin for SonarQube</description>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<sonar.apiVersion>7.1</sonar.apiVersion>
+		<sonar.apiVersion>7.9.6</sonar.apiVersion>
 		<tycho.version>1.7.0</tycho.version>
 		<jdk.min.version>1.8</jdk.min.version>
-		<jacoco.version>0.8.6</jacoco.version>
+		<jacoco.version>0.8.7</jacoco.version>
 		<maven.build.timestamp.format>yyyyMMdd</maven.build.timestamp.format>
+		<sonar.coverage.exclusions>
+			**/AbstractRuleCreator.java,
+			**/CreateAssemblerRules.java,
+			**/CreateCobolRules.java,
+			**/CreatePliRules.java
+		</sonar.coverage.exclusions>
 	</properties>
 
 	<dependencies>
@@ -37,28 +53,35 @@
 		<dependency>
 			<groupId>commons-net</groupId>
 			<artifactId>commons-net</artifactId>
-			<version>3.7.2</version>
+			<version>3.8.0</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
-			<version>2.8.0</version>
+			<version>2.9.0</version>
 		</dependency>
 		<dependency>
 			<groupId>com.google.code.findbugs</groupId>
 			<artifactId>annotations</artifactId>
 			<version>3.0.1u2</version>
 		</dependency>
+
+		<dependency>
+			<groupId>jakarta.xml.bind</groupId>
+			<artifactId>jakarta.xml.bind-api</artifactId>
+			<version>3.0.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.glassfish.jaxb</groupId>
+			<artifactId>jaxb-runtime</artifactId>
+			<version>3.0.1</version>
+		</dependency>
+
 		<dependency>
 			<groupId>commons-logging</groupId>
 			<artifactId>commons-logging</artifactId>
 			<version>1.2</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-core</artifactId>
-			<version>2.13.3</version>
 			<scope>provided</scope>
 		</dependency>
 
@@ -80,7 +103,7 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.13.1</version>
+			<version>4.13.2</version>
 			<scope>test</scope>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.codehaus.staxmate/staxmate -->
@@ -93,6 +116,79 @@
 	<build>
 		<plugins>
 			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<version>3.2.0</version>
+				<executions>
+					<execution>
+						<id>add-source</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>add-source</goal>
+						</goals>
+						<configuration>
+							<sources>
+								<source>${project.basedir}/src/util/java</source>
+							</sources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<!-- Create the sonar rules definitions from original IBM documentation -->
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<version>3.0.0</version>
+				<executions>
+					<execution>
+						<id>generate-assembler-rules</id>
+						<phase>process-classes</phase>
+						<goals>
+							<goal>java</goal>
+						</goals>
+						<configuration>
+							<mainClass>de.tgmz.sonar.plugins.xinfo.CreateAssemblerRules</mainClass>
+							<arguments>
+								<argument>${project.basedir}/ibm/Assembler/asmp1021.pdf</argument>
+								<argument>${project.build.directory}/classes/assembler-rules.xml</argument>
+							</arguments>
+						</configuration>
+					</execution>
+					<execution>
+						<id>generate-cobol-rules</id>
+						<phase>process-classes</phase>
+						<goals>
+							<goal>java</goal>
+						</goals>
+						<configuration>
+							<mainClass>de.tgmz.sonar.plugins.xinfo.CreateCobolRules</mainClass>
+							<arguments>
+								<argument>${project.basedir}/ibm/cobol/ErrMsg.txt</argument>
+								<argument>${project.build.directory}/classes/cobol-rules.xml</argument>
+							</arguments>
+						</configuration>
+					</execution>
+					<execution>
+						<id>generate-pli-rules</id>
+						<phase>process-classes</phase>
+						<goals>
+							<goal>java</goal>
+						</goals>
+						<configuration>
+							<mainClass>de.tgmz.sonar.plugins.xinfo.CreatePliRules</mainClass>
+							<arguments>
+								<argument>${project.basedir}/ibm/pli/Messages and Codes.pdf</argument>
+								<argument>${project.build.directory}/classes/pli-rules.xml</argument>
+							</arguments>
+						</configuration>
+					</execution>
+				</executions>
+				<configuration>
+					<executable>java</executable>
+					<classpathScope>compile</classpathScope>
+				</configuration>
+			</plugin>
+			<plugin>
 				<groupId>org.sonarsource.sonar-packaging-maven-plugin</groupId>
 				<artifactId>sonar-packaging-maven-plugin</artifactId>
 				<version>1.16</version>
@@ -101,6 +197,12 @@
 					<pluginClass>de.tgmz.sonar.plugins.xinfo.XinfoPlugin</pluginClass>
 					<detail>true</detail>
 					<finalName>${project.build.finalName}.${maven.build.timestamp}</finalName>
+					<excludes>
+						<exclude>**/*AbstractRuleCreator.class</exclude>
+						<exclude>**/*CreateAssemblerRules.class</exclude>
+						<exclude>**/*CreateCobolRules.class</exclude>
+						<exclude>**/*CreatePliRules.class</exclude>
+					</excludes>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -133,7 +235,7 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>jaxb2-maven-plugin</artifactId>
-				<version>2.5.0</version>
+				<version>3.1.0</version>
 				<executions>
 					<execution>
 						<id>xjc-plicomp</id>
@@ -152,9 +254,12 @@
 								<source>src/main/dtd/plicomp.dtd</source>
 							</sources>
 							<clearOutputDir>false</clearOutputDir>
-					
+
 							<!-- External parsing is disabled by default. "Cannot parse URI: file:/C: ..." -->
 							<externalEntityProcessing>true</externalEntityProcessing>
+							
+							<!-- Suppress org.xml.sax.SAXParseException -->
+							<quiet>true</quiet>
 						</configuration>
 					</execution>
 					<execution>
@@ -174,9 +279,12 @@
 								<source>src/main/dtd/xinfo-rules.dtd</source>
 							</sources>
 							<clearOutputDir>false</clearOutputDir>
-					
+
 							<!-- External parsing is disabled by default. "Cannot parse URI: file:/C: ..." -->
 							<externalEntityProcessing>true</externalEntityProcessing>
+							
+							<!-- Suppress org.xml.sax.SAXParseException -->
+							<quiet>true</quiet>
 						</configuration>
 					</execution>
 					<execution>
@@ -196,9 +304,12 @@
 								<source>src/main/dtd/dtcc.dtd</source>
 							</sources>
 							<clearOutputDir>false</clearOutputDir>
-					
+
 							<!-- External parsing is disabled by default. "Cannot parse URI: file:/C: ..." -->
 							<externalEntityProcessing>true</externalEntityProcessing>
+							
+							<!-- Suppress org.xml.sax.SAXParseException -->
+							<quiet>true</quiet>
 						</configuration>
 					</execution>
 					<execution>
@@ -215,7 +326,7 @@
 								<source>src/main/xsd/sonar</source>
 							</sources>
 							<clearOutputDir>false</clearOutputDir>
-					
+
 							<!-- External parsing is disabled by default. "Cannot parse URI: file:/C: ..." -->
 							<externalEntityProcessing>true</externalEntityProcessing>
 						</configuration>
@@ -233,6 +344,31 @@
 						<goals>
 							<goal>native2ascii</goal>
 						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>3.1.0</version>
+				<executions>
+					<execution>
+						<id>copy-resource-one</id>
+						<phase>package</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+
+						<configuration>
+							<outputDirectory>${project.build.directory}/staging</outputDirectory>
+							<resources>
+								<resource>
+									<directory>${project.build.directory}</directory>
+									<includes>
+										<include>*.jar</include>
+									</includes>
+								</resource>
+							</resources>
+						</configuration>
 					</execution>
 				</executions>
 			</plugin>
@@ -323,6 +459,25 @@
 										<ignore></ignore>
 									</action>
 								</pluginExecution>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>
+											org.codehaus.mojo
+										</groupId>
+										<artifactId>
+											exec-maven-plugin
+										</artifactId>
+										<versionRange>
+											[3.0.0,)
+										</versionRange>
+										<goals>
+											<goal>java</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore></ignore>
+									</action>
+								</pluginExecution>
 							</pluginExecutions>
 						</lifecycleMappingMetadata>
 					</configuration>
@@ -380,7 +535,7 @@
 				<artifactId>maven-javadoc-plugin</artifactId>
 				<version>2.10.4</version>
 				<configuration>
-					<excludePackageNames>de.tgmz.sonar.plugins.xinfo.plicomp,de.tgmz.sonar.plugins.xinfo.debugtool.codecoverage,de.tgmz.sonar.plugins.xinfo.sonar.codecoverage</excludePackageNames>
+					<excludePackageNames>de.tgmz.sonar.plugins.xinfo.generated</excludePackageNames>
 				</configuration>
 			</plugin>
 		</plugins>
@@ -484,7 +639,7 @@
 		<profile>
 			<id>dc</id>
 			<properties>
-				<dependency-check.version>6.1.1</dependency-check.version>
+				<dependency-check.version>7.0.0</dependency-check.version>
 				<dependency-check.suppressionFile></dependency-check.suppressionFile>
 				<sonar.dependencyCheck.htmlReportPath>${project.build.directory}/dependency-check-report.html</sonar.dependencyCheck.htmlReportPath>
 			</properties>
@@ -498,12 +653,15 @@
 							<assemblyAnalyzerEnabled>false</assemblyAnalyzerEnabled>
 							<centralAnalyzerEnabled>false</centralAnalyzerEnabled>
 							<logFile>${project.build.directory}/dependency-check.log</logFile>
-							<skipProvidedScope>false</skipProvidedScope>
+							<skipProvidedScope>true</skipProvidedScope>
 							<failOnError>false</failOnError>
 							<failBuildOnCVSS>11</failBuildOnCVSS>
 							<formats>
 								<format>HTML</format>
 							</formats>
+							<suppressionFiles>
+								<suppressionFile>project-suppression.xml</suppressionFile>
+							</suppressionFiles>
 						</configuration>
 						<executions>
 							<execution>
@@ -512,6 +670,71 @@
 								<goals>
 									<goal>aggregate</goal>
 								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<profile>
+			<id>release-audit-trail</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.rat</groupId>
+						<artifactId>apache-rat-plugin</artifactId>
+						<version>0.13</version>
+						<executions>
+							<execution>
+								<id>rat-check</id>
+								<goals>
+									<goal>check</goal>
+								</goals>
+								<configuration>
+									<consoleOutput>true</consoleOutput>
+									<ignoreErrors>false</ignoreErrors>
+									<licenses>
+										<license implementation="org.apache.rat.analysis.license.SimplePatternBasedLicense">
+											<licenseFamilyCategory>TGMZ</licenseFamilyCategory>
+											<licenseFamilyName>TGMZ</licenseFamilyName>
+											<notes></notes>
+											<patterns>
+												<pattern>Thomas Zierer</pattern>
+											</patterns>
+										</license>
+									</licenses>
+									<licenseFamilies>
+										<licenseFamily implementation="org.apache.rat.license.SimpleLicenseFamily">
+											<familyName>TGMZ</familyName>
+										</licenseFamily>
+									</licenseFamilies>
+									<excludes combine.children="append">
+										<!-- Eclipse stuff -->
+										<exclude>**/.project</exclude>
+										<!-- z/OS stuff w/o comments -->
+										<exclude>**/*.pli</exclude>
+										<exclude>**/*.cbl</exclude>
+										<!-- Generated -->
+										<!-- Maven -->
+										<exclude>target/**</exclude>
+										<!-- Not distributed -->
+										<!-- Templates -->
+										<!-- Test resources -->
+										<exclude>testresources/**</exclude>
+										<exclude>src/test/resources/**</exclude>
+										<!-- IBM stuff -->
+										<exclude>ibm/**</exclude>
+										<exclude>src/main/dtd/dtcc.dtd</exclude>
+										<exclude>src/main/dtd/plicomp.dtd</exclude>
+										<!-- Sonarsource stuff -->
+										<exclude>src/main/xsd/sonar/sonar-generic-coverage.xsd</exclude>
+										<!-- Dummies -->
+										<exclude>src/main/resources/Dummy.txt</exclude>
+										<!-- Binaries -->
+										<!-- GitHub -->
+										<exclude>env.MAVEN_CACHE_FOLDER/**</exclude>
+									</excludes>
+								</configuration>
 							</execution>
 						</executions>
 					</plugin>

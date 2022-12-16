@@ -21,10 +21,9 @@ import org.sonar.api.config.PropertyDefinition;
  */
 public final class XinfoConfig {
 	public static final String COLORIZING_LIMIT = "sonar.xinfo.colorizing.limit";
-	public static final String IGNORE_INCLUDES = "sonar.xinfo.ignore.includes";
 	public static final String XINFO_ROOT = "sonar.xinfo.root.xinfo";
+	public static final String XINFO_CPD_OFF = "sonar.xinfo.cpd.off";
 	public static final String XINFO_ENCODING = "sonar.xinfo.encoding";
-	public static final String XINFO_EXTRA = "sonar.xinfo.extra";
 	public static final String CATEGORY = "Xinfo";
 
 	private XinfoConfig() {
@@ -37,22 +36,18 @@ public final class XinfoConfig {
 				.description("Xinfo Colorizing Limit")
 				.defaultValue(String.valueOf(5000))
 				.category(CATEGORY).build()
-			, PropertyDefinition.builder(IGNORE_INCLUDES)
-				.name("IgnoreIncludes")
-				.description("Ignore includes or copybooks")
-				.category(CATEGORY).build()
 			, PropertyDefinition.builder(XINFO_ROOT)
 				.name("RootXinfo")
 				.description("XINFO root directory")
+				.category(CATEGORY).build()
+			, PropertyDefinition.builder(XINFO_CPD_OFF)
+				.name("XinfoCpdOff")
+				.description("XINFO turn off copy/paste detection")
 				.category(CATEGORY).build()
 			, PropertyDefinition.builder(XINFO_ENCODING)
 				.name("EncodingXinfo")
 				.description("XINFO encoding")
 				.category(CATEGORY).build()
-			, PropertyDefinition.builder(XINFO_EXTRA)
-				.name("ExtraXinfo")
-				.description("Extra specifics")
-				.category(CATEGORY).build()
-			);
+		);
 	}
 }

@@ -13,9 +13,6 @@ package de.tgmz.sonar.plugins.xinfo;
 import java.io.IOException;
 import java.io.InputStream;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -28,6 +25,9 @@ import org.xml.sax.SAXException;
 import de.tgmz.sonar.plugins.xinfo.generated.XinfoRules;
 import de.tgmz.sonar.plugins.xinfo.languages.Language;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Unmarshaller;
 
 /**
  * Factory for creating the sonar rules for a {@link Language}

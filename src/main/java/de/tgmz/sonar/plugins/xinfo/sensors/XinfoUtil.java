@@ -21,7 +21,7 @@ import de.tgmz.sonar.plugins.xinfo.generated.plicomp.FILEREFERENCETABLE;
 import de.tgmz.sonar.plugins.xinfo.languages.Language;
 
 /**
- * Some utility methods to walk through a {@link de.tgmz.sonar.plugins.xinfo.plicomp.PACKAGE}.
+ * Some utility methods to walk through a {@link de.tgmz.sonar.plugins.xinfo.generated.plicomp.PACKAGE}.
  */
 public final class XinfoUtil {
 	private static final Logger LOGGER = Loggers.get(XinfoUtil.class);

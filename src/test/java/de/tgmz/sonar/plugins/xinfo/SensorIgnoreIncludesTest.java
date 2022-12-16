@@ -38,7 +38,6 @@ public class SensorIgnoreIncludesTest {
 	public static void setupOnce() throws IOException {
 		MapSettings ms = new MapSettings();
 		ms.setProperty(XinfoConfig.XINFO_ROOT, LOC + File.separator +"xml");
-		ms.setProperty(XinfoConfig.IGNORE_INCLUDES, true);
 		
 		File baseDir = new File(LOC);
 		

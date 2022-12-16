@@ -1,3 +1,15 @@
+<!---
+/*******************************************************************************
+  * Copyright (c) 20.10.2021 Thomas Zierer.
+  * All rights reserved. This program and the accompanying materials
+  * are made available under the terms of the Eclipse Public License v2.0
+  * which accompanies this distribution, and is available at
+  * http://www.eclipse.org/legal/epl-v20.html
+  *
+  * Contributors:
+  *    Thomas Zierer - initial API and implementation and/or initial documentation
+  *******************************************************************************/
+-->
 This plugin combines IBMs mainframe compilers with SonarQube. The principle is fairly easy: Compile the source file with one of IBMs compilers and use its output to populate Sonarqubes dashboard. Provide some syntax hightlighting so the code looks nicer.
 
 Supported languages
@@ -9,8 +21,9 @@ Supported languages
 
 Prerequisites
 =============
-* [SonarQube](http://www.sonarqube.org/downloads/) 6.3+
-* [SonarQube Scanner](http://docs.sonarqube.org/display/SCAN/Analyzing+with+SonarQube+Scanner) 2.8+
+* [SonarQube](http://www.sonarqube.org/downloads/) 7.9.6
+* [SonarQube Scanner](http://docs.sonarqube.org/display/SCAN/Analyzing+with+SonarQube+Scanner) sonar-scanner-cli-4.7.0.2747
+* Java 11
 * Maven 3.0+
 
 Usage

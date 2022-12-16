@@ -11,6 +11,7 @@
 
 package de.tgmz.sonar.plugins.xinfo;
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -19,6 +20,7 @@ import org.apache.commons.io.IOUtils;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.sonar.api.batch.sensor.Sensor;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.SensorDescriptor;
 import org.sonar.api.batch.sensor.internal.DefaultSensorDescriptor;
@@ -32,8 +34,9 @@ import de.tgmz.sonar.plugins.xinfo.rules.XinfoRulesDefinition;
 import de.tgmz.sonar.plugins.xinfo.sensors.AssemblerColorizer;
 import de.tgmz.sonar.plugins.xinfo.sensors.AssemblerIssuesLoader;
 import de.tgmz.sonar.plugins.xinfo.sensors.CobolColorizer;
+import de.tgmz.sonar.plugins.xinfo.sensors.CobolCpdSensor;
 import de.tgmz.sonar.plugins.xinfo.sensors.CobolIssuesLoader;
-import de.tgmz.sonar.plugins.xinfo.sensors.CpdTokenizerSensor;
+import de.tgmz.sonar.plugins.xinfo.sensors.DefaultCpdSensor;
 import de.tgmz.sonar.plugins.xinfo.sensors.PliColorizer;
 import de.tgmz.sonar.plugins.xinfo.sensors.PliIssuesLoader;
 
@@ -49,21 +52,23 @@ public class SensorTest {
 	public static void setupOnce() throws IOException {
 		MapSettings ms = new MapSettings();
 		ms.setProperty(XinfoConfig.XINFO_ROOT, LOC + File.separator +"xml");
-		ms.setProperty(XinfoConfig.XINFO_EXTRA, "true");
 		
 		File baseDir = new File(LOC);
 		
 		sensorContext = SensorContextTester.create(baseDir);
 		((SensorContextTester) sensorContext).setSettings(ms);
 		
-		((SensorContextTester) sensorContext).fileSystem().add(SonarTestFileUtil.create(LOC, "plitest.pli", Language.PLI));
-		((SensorContextTester) sensorContext).fileSystem().add(SonarTestFileUtil.create(LOC, "plitest5.pli", Language.PLI));
-		((SensorContextTester) sensorContext).fileSystem().add(SonarTestFileUtil.create(LOC, "plitest6.pli", Language.PLI));
-		((SensorContextTester) sensorContext).fileSystem().add(SonarTestFileUtil.create(LOC, "plitest7.pli", Language.PLI));
-		((SensorContextTester) sensorContext).fileSystem().add(SonarTestFileUtil.create(LOC, "plitest8.pli", Language.PLI));
-		((SensorContextTester) sensorContext).fileSystem().add(SonarTestFileUtil.create(LOC, "plitest9.pli", Language.PLI));
-		((SensorContextTester) sensorContext).fileSystem().add(SonarTestFileUtil.create(LOC, "asmtest.asm", Language.ASSEMBLER));
-		((SensorContextTester) sensorContext).fileSystem().add(SonarTestFileUtil.create(LOC, "cobtest.cbl", Language.COBOL));
+		File[] testresources = new File(LOC).listFiles(new FileFilter() {
+			
+			@Override
+			public boolean accept(File pathname) {
+				return pathname.isFile();
+			}
+		});
+		
+		for (File f : testresources) {
+			((SensorContextTester) sensorContext).fileSystem().add(SonarTestFileUtil.create(LOC, f.getName(), Language.getByExtension(f)));
+		}
 		
 		sensorDescriptor = new DefaultSensorDescriptor();
 		
@@ -118,7 +123,12 @@ public class SensorTest {
 	
 	@Test(expected = Test.None.class)
 	public void testCpd() {
-		CpdTokenizerSensor cpdSensor = new CpdTokenizerSensor();
+		Sensor cpdSensor = new DefaultCpdSensor();
+		
+		cpdSensor.describe(sensorDescriptor);
+		cpdSensor.execute(sensorContext);
+
+		cpdSensor = new CobolCpdSensor();
 		
 		cpdSensor.describe(sensorDescriptor);
 		cpdSensor.execute(sensorContext);

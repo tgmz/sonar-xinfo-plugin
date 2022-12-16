@@ -36,7 +36,8 @@ import de.tgmz.sonar.plugins.xinfo.languages.Language;
  */
 public abstract class AbstractColorizer<T extends IColorizing> implements Sensor {
 	private static final Logger LOGGER = Loggers.get(AbstractColorizer.class);
-	private static final int DEFAULT_LIMIT = 5000;
+	private static final int DEFAULT_LINES_LIMIT = 5000;
+	
 	private Language lang;
 
 	public AbstractColorizer(Language lang) {
@@ -52,8 +53,6 @@ public abstract class AbstractColorizer<T extends IColorizing> implements Sensor
 	
 	@Override
 	public void execute(final SensorContext context) {
-		LOGGER.debug("execute");
-
 	    FileSystem fs = context.fileSystem();
 	    
 		int ctr = 0;
@@ -62,7 +61,7 @@ public abstract class AbstractColorizer<T extends IColorizing> implements Sensor
 			NewHighlighting newHighlighting = context.newHighlighting().onFile(inputFile);
 			
 			try {
-				int limit = Math.max(DEFAULT_LIMIT, context.config().getInt(XinfoConfig.COLORIZING_LIMIT).orElse(Integer.valueOf(5000)));
+				int limit = Math.max(DEFAULT_LINES_LIMIT, context.config().getInt(XinfoConfig.COLORIZING_LIMIT).orElse(Integer.valueOf(5000)));
 				String charset = context.config().get(XinfoConfig.XINFO_ENCODING).orElse(System.getProperty("file.encoding"));
 				
 				IColorizing ph = getColorizing(inputFile, Charset.forName(charset), limit);
@@ -103,4 +102,5 @@ public abstract class AbstractColorizer<T extends IColorizing> implements Sensor
 	 * @throws IOException if the file can't be read 
 	 */
 	protected abstract T getColorizing(InputFile f, Charset charset,  int limit) throws IOException;
+	
 }

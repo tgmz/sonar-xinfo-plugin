@@ -1,5 +1,5 @@
 /*******************************************************************************
-  * Copyright (c) 09.11.2016 Thomas Zierer.
+  * Copyright (c) 18.01.2022 Thomas Zierer.
   * All rights reserved. This program and the accompanying materials
   * are made available under the terms of the Eclipse Public License v2.0
   * which accompanies this distribution, and is available at
@@ -10,46 +10,62 @@
   *******************************************************************************/
 package de.tgmz.sonar.plugins.xinfo;
 
-import java.io.FileInputStream;
-import java.io.PrintWriter;
-import java.nio.charset.StandardCharsets;
-import java.util.HashSet;
+import java.io.IOException;
+import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Marshaller;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.util.PDFTextStripper;
 
-import de.tgmz.sonar.plugins.xinfo.generated.Rule;
-import de.tgmz.sonar.plugins.xinfo.generated.Tag;
+import jakarta.xml.bind.JAXBException;
 
 /**
  * Generates assembler-rules.xml.
  */
-public class CreateAssemblerRules {
-	public static void main(String[] args) throws Exception {
-		new CreateAssemblerRules().perform();
+public class CreateAssemblerRules extends AbstractRuleCreator {
+	public CreateAssemblerRules(String documentation, String output) {
+		super(documentation, output);
+	}
+
+	public static void main(String... args) throws IOException, JAXBException {
+		new CreateAssemblerRules(args[0], args[1]).perform();
 	}
 	
-	private void perform() throws Exception {
-		Set<String> set = new HashSet<>();
-		
-		PrintWriter pw = new PrintWriter("src/main/resources/assembler-rules.xml", StandardCharsets.UTF_8.name());
-		
-		pw.println("<xinfo-rules>");
-		
-		JAXBContext jaxbContext = JAXBContext.newInstance(Rule.class);
-		Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
+	private void perform() throws JAXBException, IOException {
+		open();
 
-		// output pretty printed
-		jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-		jaxbMarshaller.setProperty(Marshaller.JAXB_FRAGMENT, true);
+		PDDocument asmp1021 = PDDocument.load(getDocumentation());
+		
+		PDFTextStripper pdfts = new PDFTextStripper();
+		
+		List<String> l0 = IOUtils.readLines(new StringReader(pdfts.getText(asmp1021)));
 
-		List<String> l = IOUtils.readLines(new FileInputStream("ibm/Assembler/asmp1021.txt"), StandardCharsets.UTF_8);
+		// Cut out relevant part of the "Appendix F" section
+		int i = 0;
+		
+		for (; i < l0.size(); i++) {
+			if (l0.get(i).startsWith("Appendix F. High Level Assembler messages")) {
+				break;
+			}
+		}
+		
+		for (; i < l0.size(); i++) {
+			if ("Messages".equals(l0.get(i))) {
+				break;
+			}
+		}
+
+		int j = i;
+
+		for (; j < l0.size(); j++) {
+			if (l0.get(j).startsWith("Appendix G. User interface macros")) {
+				break;
+			}
+		}
+		
+		List<String> l = new ArrayList<>(l0.subList(i, j));
 		
 		StringBuilder sb = new StringBuilder();
 		
@@ -71,55 +87,14 @@ public class CreateAssemblerRules {
 		
 		String s = sb.toString();
 		
-		Pattern p = Pattern.compile("ASMA\\d{3}[IWESU]");
-		
-		Matcher m = p.matcher(s);
-		
-		m.find();
-		int sta = m.start();
-		
-		while (m.find()) {
-			int end = m.start();
-			String msg = s.substring(sta, end);
-			
+		for (String msg : getSections(s, "ASMA\\d{3}[IWESU]")) {
 			String key = msg.substring(0, 8);
 			
-			if (!set.add(key)) {
-				sta = end;
-				
-				continue;
-			}
-			
-			String sev = msg.substring(7, 8);
-			
-			Rule r = new Rule();
-			r.setCardinality("SINGLE");
-			r.setInternalKey(key);
-			r.setKey(key);
-			r.setStatus("READY");
-			Tag tag = new Tag(); tag.setvalue("xinfo"); r.getTag().add(tag);
-			
-			String name = s.substring(sta + 9, end).trim();
-			r.setName(name.substring(0, Math.min(name.length(), 200))); // VARCHAR(200) in DB
-			
-			r.setDescription(name);
-			
-			switch (sev) {
-				case "I": r.setSeverity("MINOR"); break;
-				case "W": r.setSeverity("MAJOR"); break;
-				case "E": r.setSeverity("CRITICAL"); break;
-				default: r.setSeverity("BLOCKER"); break;
-			}
-			
-			jaxbMarshaller.marshal(r, pw);
-			
-			pw.println();
-			
-			sta = end;
+			createRule(key, msg.substring(9).trim());
 		}
 		
-		pw.println("</xinfo-rules>");
+		close();
 		
-		pw.close();
+		asmp1021.close();
 	}
 }
