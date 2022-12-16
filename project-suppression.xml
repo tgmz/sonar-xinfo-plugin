@@ -12,32 +12,4 @@
   *******************************************************************************/
 -->
 <suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
-<suppress>
-   <notes><![CDATA[
-   file name: commons-lang-2.6.jar
-   ]]></notes>
-   <packageUrl regex="true">^pkg:maven/commons\-lang/commons\-lang@.*$</packageUrl>
-   <cve>CVE-2021-38542</cve>
-</suppress>
-<suppress>
-   <notes><![CDATA[
-   file name: commons-lang-2.6.jar
-   ]]></notes>
-   <packageUrl regex="true">^pkg:maven/commons\-lang/commons\-lang@.*$</packageUrl>
-   <cve>CVE-2021-40110</cve>
-</suppress>
-<suppress>
-   <notes><![CDATA[
-   file name: commons-lang-2.6.jar
-   ]]></notes>
-   <packageUrl regex="true">^pkg:maven/commons\-lang/commons\-lang@.*$</packageUrl>
-   <cve>CVE-2021-40111</cve>
-</suppress>
-<suppress>
-   <notes><![CDATA[
-   file name: commons-lang-2.6.jar
-   ]]></notes>
-   <packageUrl regex="true">^pkg:maven/commons\-lang/commons\-lang@.*$</packageUrl>
-   <cve>CVE-2021-40525</cve>
-</suppress>
 </suppressions>

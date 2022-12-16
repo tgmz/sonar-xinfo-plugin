@@ -51,11 +51,6 @@
 			<version>2.6</version>
 		</dependency>
 		<dependency>
-			<groupId>commons-net</groupId>
-			<artifactId>commons-net</artifactId>
-			<version>3.8.0</version>
-		</dependency>
-		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
 			<version>2.9.0</version>
@@ -639,7 +634,7 @@
 		<profile>
 			<id>dc</id>
 			<properties>
-				<dependency-check.version>7.0.0</dependency-check.version>
+				<dependency-check.version>7.4.1</dependency-check.version>
 				<dependency-check.suppressionFile></dependency-check.suppressionFile>
 				<sonar.dependencyCheck.htmlReportPath>${project.build.directory}/dependency-check-report.html</sonar.dependencyCheck.htmlReportPath>
 			</properties>
@@ -654,8 +649,7 @@
 							<centralAnalyzerEnabled>false</centralAnalyzerEnabled>
 							<logFile>${project.build.directory}/dependency-check.log</logFile>
 							<skipProvidedScope>true</skipProvidedScope>
-							<failOnError>false</failOnError>
-							<failBuildOnCVSS>11</failBuildOnCVSS>
+							<failOnError>true</failOnError>
 							<formats>
 								<format>HTML</format>
 							</formats>
