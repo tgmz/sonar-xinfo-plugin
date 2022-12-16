@@ -13,6 +13,8 @@ package de.tgmz.sonar.plugins.xinfo;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
+import java.io.File;
+
 import org.junit.Test;
 
 import de.tgmz.sonar.plugins.xinfo.languages.AssemblerLanguage;
@@ -51,5 +53,15 @@ public class LanguageTest {
 	@Test(expected=IllegalArgumentException.class)
 	public void testLanguageWrongKey() {
 		Language.getByKey("wrong");
+	}
+
+	@Test
+	public void testLanguageByFile() {
+		Language.getByExtension(new File("temp.pli"));
+	}
+	
+	@Test(expected=IllegalArgumentException.class)
+	public void testLanguageByFileError() {
+		Language.getByExtension(new File("temp.php"));
 	}
 }

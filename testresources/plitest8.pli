@@ -1,3 +1,3 @@
  /* $$PIMS */
  Hallo: proc options(main);
- end Hallo;
+ end Hallo; /* This is a comment */

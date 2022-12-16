@@ -46,12 +46,12 @@ public abstract class AbstractColorizing implements IColorizing {
 	public AbstractColorizing(InputFile file, Charset charset, int limit) throws IOException {
 		this.limit = limit;
 		
-		LOGGER.debug("Colorize file {}", file.toString());
+		LOGGER.debug("Colorize file {}", file);
 		
 		List<String> readLines = IOUtils.readLines(file.inputStream(), charset);
 		
 		if (readLines.size() > limit) {
-			LOGGER.warn("File {} containes {} lines. Syntax highlighting will be limited to {} lines"
+			LOGGER.info("File {} containes {} lines. Syntax highlighting will be limited to {} lines"
 					, file.filename(), NF.get().format(readLines.size()), NF.get().format(this.limit));
 		}
 		

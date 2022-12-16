@@ -22,6 +22,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOCase;
 import org.apache.commons.io.filefilter.NameFileFilter;
 import org.apache.commons.io.filefilter.TrueFileFilter;
+import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.config.Configuration;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
@@ -41,12 +42,18 @@ public class XinfoFileProvider extends AbstractXinfoProvider {
 	}
 
 	@Override
-	public PACKAGE getXinfo(IXinfoAnalyzable pgm) throws XinfoException {
+	public PACKAGE getXinfo(InputFile pgm) throws XinfoException {
 		PACKAGE result = new de.tgmz.sonar.plugins.xinfo.generated.plicomp.ObjectFactory().createPACKAGE();
+
+		int idx = pgm.filename().lastIndexOf('.');
 		
 		String xinfoFile;
 		
-		xinfoFile = pgm.getName() + ".xml";
+		if (idx > -1) {
+			xinfoFile = pgm.filename().substring(0, idx) + ".xml";
+		} else {
+			xinfoFile = pgm.filename() + ".xml";
+		}
 				
 		String xinfoRoot = getConfiguration().get(XinfoConfig.XINFO_ROOT).orElse("xml");
 		

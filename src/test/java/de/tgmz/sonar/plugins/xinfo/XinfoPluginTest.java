@@ -14,6 +14,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 import org.sonar.api.Plugin;
+import org.sonar.api.SonarEdition;
 import org.sonar.api.SonarQubeSide;
 import org.sonar.api.SonarRuntime;
 import org.sonar.api.internal.SonarRuntimeImpl;
@@ -25,7 +26,7 @@ import org.sonar.api.utils.Version;
 public class XinfoPluginTest {
 	@Test
 	public void testSettings() {
-		SonarRuntime runtime = SonarRuntimeImpl.forSonarQube(Version.create(6, 7), SonarQubeSide.SCANNER);
+		SonarRuntime runtime = SonarRuntimeImpl.forSonarQube(Version.create(6, 7), SonarQubeSide.SCANNER, SonarEdition.COMMUNITY);
 		Plugin.Context context = new Plugin.Context(runtime);
 		new XinfoPlugin().define(context);
 		assertTrue(context.getExtensions().size() > 0);

@@ -20,9 +20,6 @@ import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -37,12 +34,16 @@ import org.xml.sax.SAXException;
 import de.tgmz.sonar.plugins.xinfo.config.XinfoConfig;
 import de.tgmz.sonar.plugins.xinfo.generated.plicomp.PACKAGE;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Unmarshaller;
 
 /**
  * Fundamental implementation of a XinfoProvider.
  */
 public abstract class AbstractXinfoProvider implements IXinfoProvider {
 	private static final Logger LOGGER = Loggers.get(AbstractXinfoProvider.class);
+	private static final String PROLOGUE = "<?xml version='1.0' encoding='IBM-01141'?>\n<!DOCTYPE plicomp SYSTEM 'plicomp.dtd'>\n";
 	private DocumentBuilder documentBuilder;
 	private Unmarshaller unmarshaller;
 	private Configuration configuration;
@@ -88,7 +89,7 @@ public abstract class AbstractXinfoProvider implements IXinfoProvider {
 		
 		try {
 			doc = documentBuilder.parse(new ByteArrayInputStream(buf));
-		} catch (UnsupportedEncodingException | CharConversionException e) {
+		} catch (UnsupportedEncodingException | CharConversionException | SAXException e) {
 			// Problems on z/OS: 
 			// - Enterprise PL/I for z/OS and IBM Java for z/OS use different
 			//   format for codepages, e.g. "IBM-1141" instead of "IBM01141" and so the XINFO 
@@ -99,10 +100,18 @@ public abstract class AbstractXinfoProvider implements IXinfoProvider {
 			// - COBOL and Assembler do not include a prologue. This causes a CharConversionException 
 			//   if xinfo is EBCDIC-encoded
 			try {
+				LOGGER.debug("Exception \"{}\" occurred, retrying", e.getMessage());
+				
 				String c = configuration.get(XinfoConfig.XINFO_ENCODING).orElse(Charset.defaultCharset().name());
 				
-				String xml = IOUtils.toString(new ByteArrayInputStream(buf), c != null ? Charset.forName(c) : Charset.defaultCharset());
+				String xml = IOUtils.toString(new ByteArrayInputStream(buf), c != null ? Charset.forName(c) : Charset.defaultCharset()).trim();
 
+				// Include the default prologue if necessary
+				// This helps if xml contains non-UTF-8 characters which may occur with assembler
+				if (!xml.startsWith("<?xml")) {
+					xml = PROLOGUE + xml;
+				}
+				
 				// 2nd problem: For some reason the compiler generates
 				// "<ÜDOCTYPE" or "<|DOCTYPE" instead of "<!DOCTYPE".
 				// Must do this, don't know why :-)
@@ -111,16 +120,15 @@ public abstract class AbstractXinfoProvider implements IXinfoProvider {
 				try (Reader isr = new StringReader(xml)) {
 					doc = documentBuilder.parse(new InputSource(isr));
 				}
-
+				
+				LOGGER.debug("Exception \"{}\" remedied", e.getMessage());
 			} catch (IOException | SAXException e0) {
-				String msg = "Error parsing XINFO";
+				LOGGER.error("Cannot remedy exception \"{}\", giving up", e.getMessage());
 				
-				LOGGER.error(msg);
-				
-				throw new XinfoException(msg, e0);
+				throw new XinfoException("Exception on parsing XINFO", e0);
 			}
-		} catch (IOException | SAXException e) {
-			String msg = "Error parsing XINFO";
+		} catch (IOException e) {
+			String msg = "I/O error on parsing XINFO";
 			
 			LOGGER.error(msg);
 			

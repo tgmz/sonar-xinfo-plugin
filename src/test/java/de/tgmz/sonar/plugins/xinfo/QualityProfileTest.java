@@ -11,6 +11,7 @@
 
 package de.tgmz.sonar.plugins.xinfo;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -38,8 +39,8 @@ public class QualityProfileTest {
 	}
 
 	@Test(expected = Test.None.class)
-	public void test() throws InstantiationException, IllegalAccessException  {
-		qp.newInstance().define(new BuiltInQualityProfilesDefinition.Context());
+	public void test() throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
+		qp.getDeclaredConstructor().newInstance().define(new BuiltInQualityProfilesDefinition.Context());
 	}
 	
 	@Parameters(name = "{index}: Check for language [{0}]")
