@@ -21,7 +21,7 @@ Supported languages
 
 Prerequisites
 =============
-* [SonarQube](http://www.sonarqube.org/downloads/) 7.9.6
+* [SonarQube](http://www.sonarqube.org/downloads/) 8.9.10
 * [SonarQube Scanner](http://docs.sonarqube.org/display/SCAN/Analyzing+with+SonarQube+Scanner) sonar-scanner-cli-4.7.0.2747
 * Java 11
 * Maven 3.0+
