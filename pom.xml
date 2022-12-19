@@ -24,7 +24,7 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<sonar.apiVersion>7.9.6</sonar.apiVersion>
+		<sonar.apiVersion>8.9.10.61524</sonar.apiVersion>
 		<tycho.version>1.7.0</tycho.version>
 		<jdk.min.version>1.8</jdk.min.version>
 		<jacoco.version>0.8.7</jacoco.version>
@@ -99,6 +99,12 @@
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>4.13.2</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.sonarsource.sonarqube</groupId>
+			<artifactId>sonar-plugin-api-impl</artifactId>
+			<version>${sonar.apiVersion}</version>
 			<scope>test</scope>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.codehaus.staxmate/staxmate -->
