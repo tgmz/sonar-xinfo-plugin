@@ -59,16 +59,21 @@ public class PliColorizing extends AbstractColorizing {
 	@Override
 	protected void createAreas() {
 		// Comments
-		//TODO: Multiline comments
 		colorizeAreaByPattern(PLI_COMMENT_PATTERN, TypeOfText.COMMENT);
+
+		//Multiline comments
+		//Not yet implemented
 		
 		// Preprocessor directives (%INCLUDE, %DCL, etc.)
 		colorizeAreaByPattern(PLI_PREPROCESS_PATTERN, TypeOfText.PREPROCESS_DIRECTIVE);
 		
 		// Strings
-		//TODO: Multiline strings
 		colorizeAreaByPattern(PLI_STRING_PATTERN, TypeOfText.STRING);
 
+		//multiline strings
+		//Not yet implemented
+		
+		//Reserved words
 		for (int i = 0; i < Math.min(getLimit(), getContent().length); ++i) {
 			Matcher m = PLI_WORD_PATTERN.matcher(getContent()[i]);
 		

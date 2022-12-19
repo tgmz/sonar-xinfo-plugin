@@ -27,7 +27,7 @@ public abstract class AbstractXinfoQualityProfileDefinition implements BuiltInQu
 	
 	private Language lang;
 
-	public AbstractXinfoQualityProfileDefinition(Language lang) {
+	protected AbstractXinfoQualityProfileDefinition(Language lang) {
 		super();
 		this.lang = lang;
 	}

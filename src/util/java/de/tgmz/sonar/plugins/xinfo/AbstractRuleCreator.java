@@ -39,7 +39,7 @@ public abstract class AbstractRuleCreator {
 	private Set<String> rules = new HashSet<>();
 	private Marshaller jaxbMarshaller;
 	
-	public AbstractRuleCreator(String documentation, String output) {
+	protected AbstractRuleCreator(String documentation, String output) {
 		super();
 		this.documentation = documentation;
 		this.output = output;

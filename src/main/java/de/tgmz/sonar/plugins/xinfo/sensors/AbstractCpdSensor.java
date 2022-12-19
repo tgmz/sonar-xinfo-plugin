@@ -45,7 +45,7 @@ public abstract class AbstractCpdSensor implements Sensor {
 		}
 	}
 
-	public AbstractCpdSensor(String description, String... lang) {
+	protected AbstractCpdSensor(String description, String... lang) {
 		this.description = description;
 		this.lang = lang;
 	}
