@@ -14,7 +14,6 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.ParserConfigurationException;
 
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
@@ -38,7 +37,7 @@ public final class RuleFactory {
 	private DocumentBuilder db;
 	private Unmarshaller xium;
 
-	private RuleFactory() throws ParserConfigurationException, JAXBException {
+	private RuleFactory() throws JAXBException {
 		db = SecureDocumentBuilderFactory.getInstance().getDocumentBuilder();
 
 		JAXBContext jaxbContext = JAXBContext.newInstance(XinfoRules.class);
@@ -51,7 +50,7 @@ public final class RuleFactory {
 			
 			try {
 				instance = new RuleFactory();
-			} catch (ParserConfigurationException | JAXBException e) {
+			} catch (JAXBException e) {
 				String s = "Error creating rule factory";
 				
 				throw new XinfoRuntimeException(s, e);

@@ -18,7 +18,6 @@ import java.math.BigInteger;
 import java.util.Iterator;
 
 import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
@@ -53,7 +52,7 @@ public class Converter {
 		DTCODECOVERAGEFILE unmarshal;
 		try {
 			unmarshal = getDtcodecoveragefile(is);
-		} catch (ParserConfigurationException | JAXBException | SAXException | IOException e) {
+		} catch (JAXBException | SAXException | IOException e) {
 			throw new ConverterException("Cannot parse Debug Tool output", e);
 		}
 		
@@ -110,7 +109,7 @@ public class Converter {
 
 	@SuppressFBWarnings(value="XXE_DOCUMENT", justification="Not possible due to DocumentBuilderFactory settings")
 	private DTCODECOVERAGEFILE getDtcodecoveragefile(InputStream is)
-			throws ParserConfigurationException, JAXBException, SAXException, IOException {
+			throws JAXBException, SAXException, IOException {
 		DocumentBuilder documentBuilder = SecureDocumentBuilderFactory.getInstance().getDocumentBuilder();
 
 		jaxbContext = JAXBContext.newInstance(DTCODECOVERAGEFILE.class);

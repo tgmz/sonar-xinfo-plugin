@@ -10,7 +10,6 @@
   *******************************************************************************/
 package de.tgmz.sonar.plugins.xinfo.sensors;
 
-import java.nio.charset.Charset;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
@@ -33,7 +32,6 @@ import org.sonar.api.utils.log.Loggers;
 import de.tgmz.sonar.plugins.xinfo.RuleFactory;
 import de.tgmz.sonar.plugins.xinfo.XinfoException;
 import de.tgmz.sonar.plugins.xinfo.XinfoProviderFactory;
-import de.tgmz.sonar.plugins.xinfo.config.XinfoConfig;
 import de.tgmz.sonar.plugins.xinfo.generated.Rule;
 import de.tgmz.sonar.plugins.xinfo.generated.plicomp.MESSAGE;
 import de.tgmz.sonar.plugins.xinfo.generated.plicomp.PACKAGE;
@@ -56,7 +54,8 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 	protected SensorContext context;
 	private Language lang;
 	private Map<String, Rule> ruleMap;
-	public AbstractXinfoIssuesLoader(final FileSystem fileSystem, Language lang) {
+	
+	protected AbstractXinfoIssuesLoader(final FileSystem fileSystem, Language lang) {
 		this.fileSystem = fileSystem;
 		this.lang = lang;
 		
@@ -79,8 +78,6 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 
 		this.context = aContext;
 		
-		Charset charset = Charset.forName(context.config().get(XinfoConfig.XINFO_ENCODING).orElse(Charset.defaultCharset().name()));
-		
 		Iterator<InputFile> fileIterator = fileSystem.inputFiles(fileSystem.predicates().hasLanguage(lang.getKey())).iterator();
 
 		int ctr = 0;
@@ -97,7 +94,7 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 				continue;
 			}
 				
-			createFindings(p, inputFile, charset);
+			createFindings(p, inputFile);
 			
 			if (++ctr % 100 == 0) {
 				LOGGER.info("{} files processed, current is {}", ctr, inputFile.filename());
@@ -105,33 +102,27 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 		}
 	}
 
-	private void createFindings(PACKAGE p, InputFile file, Charset charset) {
+	private void createFindings(PACKAGE p, InputFile file) {
 		for (MESSAGE m : p.getMESSAGE()) {
-			try {
-				Issue issue = computeIssue(p, m, file);
+			Issue issue = computeIssue(m, file);
 				
-				if (issue != null) {
-					Severity severity = null;
+			if (issue != null) {
+				Severity severity = null;
 					
-					String ruleKey = issue.ruleKey;
+				String ruleKey = issue.ruleKey;
 					
-					if (lang == Language.COBOL) {
-						// Chars at 3 and 4 indicate the compile phase which issued the message
-						// In ErrMsg these chars are replaced by "XX"
-						ruleKey = ruleKey.substring(0,  3) + "XX" + ruleKey.substring(5);
-					}
-					
-					saveIssue(issue.inputFile, issue.line, ruleKey, issue.message, severity);
+				if (lang == Language.COBOL) {
+					// Chars at 3 and 4 indicate the compile phase which issued the message
+					// In ErrMsg these chars are replaced by "XX"
+					ruleKey = ruleKey.substring(0,  3) + "XX" + ruleKey.substring(5);
 				}
-			} catch (XinfoException e) {
-				LOGGER.error("Error in xinfo on file {}", file, e);
-			
-				continue;
+					
+				saveIssue(issue.inputFile, issue.line, ruleKey, issue.message, severity);
 			}
 		}
 	}
 	
-	private Issue computeIssue(PACKAGE p, MESSAGE m, InputFile inputFile) throws XinfoException {
+	private Issue computeIssue(MESSAGE m, InputFile inputFile) {
 		String msgFile = m.getMSGFILE();
 		
 		if (StringUtils.isEmpty(msgFile)) {

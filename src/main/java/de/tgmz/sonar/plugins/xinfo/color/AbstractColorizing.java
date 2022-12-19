@@ -43,7 +43,7 @@ public abstract class AbstractColorizing implements IColorizing {
 	 * @param limit maximum number of lines to colorize
 	 * @throws IOException if the file can't be read
 	 */
-	public AbstractColorizing(InputFile file, Charset charset, int limit) throws IOException {
+    protected AbstractColorizing(InputFile file, Charset charset, int limit) throws IOException {
 		this.limit = limit;
 		
 		LOGGER.debug("Colorize file {}", file);

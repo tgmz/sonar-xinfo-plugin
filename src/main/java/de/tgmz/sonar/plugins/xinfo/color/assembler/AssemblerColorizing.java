@@ -66,9 +66,12 @@ public class AssemblerColorizing extends AbstractColorizing {
 		colorizeComments();
 		
 		// Strings
-		//TODO: Multiline strings
 		colorizeAreaByPattern(ASSEMBLER_STRING_PATTERN, TypeOfText.STRING);
 
+		//Multiline strings
+		//Not yet implemented
+		
+		//Reserved words
 		for (int i = 0; i < getContent().length; ++i) {
 			// Split the text by word characters and highlight keywords and numeric constants
 			Matcher m = ASSEMBLER_WORD_PATTERN.matcher(getContent()[i]);

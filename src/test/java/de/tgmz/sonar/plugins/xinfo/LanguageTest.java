@@ -16,6 +16,7 @@ import static org.junit.Assert.assertEquals;
 import java.io.File;
 
 import org.junit.Test;
+import org.junit.Test.None;
 
 import de.tgmz.sonar.plugins.xinfo.languages.AssemblerLanguage;
 import de.tgmz.sonar.plugins.xinfo.languages.CobolLanguage;
@@ -55,7 +56,7 @@ public class LanguageTest {
 		Language.getByKey("wrong");
 	}
 
-	@Test
+	@Test(expected=None.class)
 	public void testLanguageByFile() {
 		Language.getByExtension(new File("temp.pli"));
 	}

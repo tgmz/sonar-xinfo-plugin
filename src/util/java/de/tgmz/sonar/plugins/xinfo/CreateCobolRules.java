@@ -12,6 +12,7 @@ package de.tgmz.sonar.plugins.xinfo;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
@@ -34,24 +35,26 @@ public class CreateCobolRules extends AbstractRuleCreator {
 	private void perform() throws IOException, JAXBException {
 		open();
 		
-		List<String> l = IOUtils.readLines(new FileInputStream(getDocumentation()), StandardCharsets.UTF_8);
-		
-		StringBuilder sb = new StringBuilder();
-		
-		for (String s0 : l) {
-			if (!(s0.startsWith("1PP 5655-EC6") || s0.trim().length() == 1)) {	// Page header
-				sb.append(s0.substring(1).trim());
-				sb.append(' ');
-			}
-		}
-		
-		String s = sb.toString();
-		
-		for (String msg : getSections(s, "IGYXX\\d{4}\\-[IWESU]")) {
-			String key = msg.substring(0, 11);
-			String name = msg.substring(16).trim();
+		try(InputStream is = new FileInputStream(getDocumentation())) {
+			List<String> l = IOUtils.readLines(is, StandardCharsets.UTF_8);
 			
-			createRule(key, name);
+			StringBuilder sb = new StringBuilder();
+			
+			for (String s0 : l) {
+				if (!(s0.startsWith("1PP 5655-EC6") || s0.trim().length() == 1)) {	// Page header
+					sb.append(s0.substring(1).trim());
+					sb.append(' ');
+				}
+			}
+			
+			String s = sb.toString();
+			
+			for (String msg : getSections(s, "IGYXX\\d{4}\\-[IWESU]")) {
+				String key = msg.substring(0, 11);
+				String name = msg.substring(16).trim();
+				
+				createRule(key, name);
+			}
 		}
 		
 		close();

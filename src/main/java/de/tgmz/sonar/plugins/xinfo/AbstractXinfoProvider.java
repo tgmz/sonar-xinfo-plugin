@@ -21,7 +21,6 @@ import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 
 import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.io.IOUtils;
 import org.sonar.api.config.Configuration;
@@ -48,18 +47,18 @@ public abstract class AbstractXinfoProvider implements IXinfoProvider {
 	private Unmarshaller unmarshaller;
 	private Configuration configuration;
 
-	public AbstractXinfoProvider() {
+	protected AbstractXinfoProvider() {
 		try {
 			documentBuilder = SecureDocumentBuilderFactory.getInstance().getDocumentBuilder();
 
 			JAXBContext jaxbContext = JAXBContext.newInstance(PACKAGE.class);
 			unmarshaller = jaxbContext.createUnmarshaller();
-		} catch (ParserConfigurationException | JAXBException e) {
+		} catch (JAXBException e) {
 			throw new XinfoRuntimeException("Error in setup", e);
 		}
 	}
 
-	public AbstractXinfoProvider(Configuration configuration) {
+	protected AbstractXinfoProvider(Configuration configuration) {
 		this();
 		
 		this.configuration = configuration;

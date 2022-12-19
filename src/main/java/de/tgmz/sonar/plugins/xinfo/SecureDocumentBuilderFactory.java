@@ -23,11 +23,11 @@ import org.sonar.api.utils.log.Loggers;
  */
 public final class SecureDocumentBuilderFactory {
 	private static final Logger LOGGER = Loggers.get(SecureDocumentBuilderFactory.class);
-	private DocumentBuilderFactory dbf;
+	private DocumentBuilder documentBuilder;
 	private static SecureDocumentBuilderFactory instance;
 
 	private SecureDocumentBuilderFactory() throws ParserConfigurationException {
-		dbf = DocumentBuilderFactory.newInstance();
+		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 		
 		LOGGER.debug("Using DocumentBuilderFactory {}", dbf.getClass().getCanonicalName());
 		
@@ -39,6 +39,8 @@ public final class SecureDocumentBuilderFactory {
 		dbf.setFeature("http://apache.org/xml/features/nonvalidating/load-dtd-grammar", false);
 		dbf.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
 		dbf.setFeature("http://apache.org/xml/features/allow-java-encodings", true);
+		
+		documentBuilder = dbf.newDocumentBuilder();
 	}
 
 	public static synchronized SecureDocumentBuilderFactory getInstance() {
@@ -59,7 +61,7 @@ public final class SecureDocumentBuilderFactory {
 		return instance;
 	}
 	
-	public DocumentBuilder getDocumentBuilder() throws ParserConfigurationException {
-		return dbf.newDocumentBuilder();
+	public DocumentBuilder getDocumentBuilder() {
+		return documentBuilder;
 	}
 }

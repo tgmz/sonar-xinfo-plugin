@@ -40,7 +40,7 @@ public abstract class AbstractColorizer<T extends IColorizing> implements Sensor
 	
 	private Language lang;
 
-	public AbstractColorizer(Language lang) {
+	protected AbstractColorizer(Language lang) {
 		super();
 		this.lang = lang;
 	}
