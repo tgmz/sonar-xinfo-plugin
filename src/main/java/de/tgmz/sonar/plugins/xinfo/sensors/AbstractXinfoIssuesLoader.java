@@ -114,9 +114,32 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 				if (lang == Language.COBOL) {
 					// Chars at 3 and 4 indicate the compile phase which issued the message
 					// In ErrMsg these chars are replaced by "XX"
-					ruleKey = ruleKey.substring(0,  3) + "XX" + ruleKey.substring(5);
+					ruleKey = ruleKey.substring(0, 3) + "XX" + ruleKey.substring(5);
 				}
 					
+				if (lang == Language.CCPP) {
+					// The original rule key does not contain the severity. The severity is added in 
+					// XinfoFileProvider.getXinfoFromEvent() and is processed here.
+					switch (ruleKey.charAt(7)) {
+					case 'I':
+						severity = Severity.MINOR;
+						break;
+					case 'W':
+						severity = Severity.MAJOR;
+						break;
+					case 'E':
+						severity = Severity.CRITICAL;
+						break;
+					case 'U':
+					case 'S':
+					default:
+						severity = Severity.BLOCKER;
+						break;
+					}
+					
+					ruleKey = ruleKey.substring(0, 7);
+				}
+				
 				saveIssue(issue.inputFile, issue.line, ruleKey, issue.message, severity);
 			}
 		}

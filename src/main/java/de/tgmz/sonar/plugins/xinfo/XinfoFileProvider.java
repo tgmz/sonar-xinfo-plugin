@@ -105,8 +105,8 @@ public class XinfoFileProvider extends AbstractXinfoProvider {
 
 				m.setMSGFILE(s[2]);						// B: Increments starting with 1 for the primary file
 				m.setMSGLINE(s[5]);						// E: The source line number for which the message was issued.
-				m.setMSGNUMBER(s[9]);					// I: String Containing the message identifier
-														// J: Message severity character (I/W/E/S/U) (unused)
+				m.setMSGNUMBER(s[9] + s[10]);			// I: String Containing the message identifier
+														// J: Message severity character (I/W/E/S/U) (processed in AbstractXinfoIssuesLoader)
 				m.setMSGTEXT(s[13]);					// M: String containing message text
 				
 				ccomp.getMESSAGE().add(m);

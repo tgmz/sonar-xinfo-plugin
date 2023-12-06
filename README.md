@@ -17,7 +17,7 @@ Supported languages
 * Enterprise PL/I (best). Option used: XINFO(XML)
 * Enterprise COBOL (fair). Option used: EXIT(ADDEXIT(ELAXMGUX))
 * HL Assembler (so, so). Options used: EX(ADX(ELAXHASM))
-* C/C++. Not supported so far.
+* C/C++. (so, so). Options used: /CXX EVENTS
 
 Prerequisites
 =============
@@ -48,9 +48,9 @@ Usage
 
         cp target/sonar-xinfo-plugin-<version>.jar <sonarqube install dir>/extensions/plugins
 
-* Setup the compiler to generate its output in XML format (e.g. PL/I: XINFO(XML))
+* Setup the compiler to generate its output in XML or EVENTS format (e.g. PL/I: XINFO(XML))
 * Store sources and XINFO-output somewhere on the filesystem.
-* Use the properties sonar.sources to tell the sonar-scanner where to look for the sources and sonar.xinfo.root.xinfo to tell the plugin where to look for the XINFO-files. Make sure that pgm.pli|asm|cbl corresponds with pgm.xml
+* Use the properties sonar.sources to tell the sonar-scanner where to look for the sources and sonar.xinfo.root.xinfo to tell the plugin where to look for the XINFO-files. Make sure that pgm.pli|asm|cbl|c|cpp corresponds with pgm.xml
  
 * Analyze your sources with SonarQube using Sonar-scanner:
 
