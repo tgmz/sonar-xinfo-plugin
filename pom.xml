@@ -25,9 +25,9 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<sonar.apiVersion>8.9.10.61524</sonar.apiVersion>
-		<tycho.version>1.7.0</tycho.version>
+		<tycho.version>4.0.4</tycho.version>
 		<jdk.min.version>1.8</jdk.min.version>
-		<jacoco.version>0.8.7</jacoco.version>
+		<jacoco.version>0.8.10</jacoco.version>
 		<maven.build.timestamp.format>yyyyMMdd</maven.build.timestamp.format>
 		<sonar.coverage.exclusions>
 			**/AbstractRuleCreator.java,
@@ -628,11 +628,6 @@
 								</configuration>
 							</execution>
 						</executions>
-						<configuration>
-							<systemPropertyVariables>
-								<jacoco-agent.destfile>target/jacoco.exec</jacoco-agent.destfile>
-							</systemPropertyVariables>
-						</configuration>
 					</plugin>
 				</plugins>
 			</build>
@@ -640,7 +635,7 @@
 		<profile>
 			<id>dc</id>
 			<properties>
-				<dependency-check.version>7.4.1</dependency-check.version>
+				<dependency-check.version>8.4.2</dependency-check.version>
 				<dependency-check.suppressionFile></dependency-check.suppressionFile>
 				<sonar.dependencyCheck.htmlReportPath>${project.build.directory}/dependency-check-report.html</sonar.dependencyCheck.htmlReportPath>
 			</properties>
@@ -653,7 +648,6 @@
 						<configuration>
 							<assemblyAnalyzerEnabled>false</assemblyAnalyzerEnabled>
 							<centralAnalyzerEnabled>false</centralAnalyzerEnabled>
-							<logFile>${project.build.directory}/dependency-check.log</logFile>
 							<skipProvidedScope>false</skipProvidedScope>
 							<failOnError>true</failOnError>
 							<formats>
