@@ -218,6 +218,7 @@
 						<exclude>**/*CreateAssemblerRules.class</exclude>
 						<exclude>**/*CreateCobolRules.class</exclude>
 						<exclude>**/*CreatePliRules.class</exclude>
+						<exclude>**/*CreateCCPPRules.class</exclude>
 					</excludes>
 				</configuration>
 			</plugin>
