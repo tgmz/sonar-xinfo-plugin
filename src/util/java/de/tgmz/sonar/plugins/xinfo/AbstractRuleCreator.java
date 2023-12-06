@@ -97,10 +97,13 @@ public abstract class AbstractRuleCreator {
 		r.setDescription(description);
 		
 		switch (sev) {
-			case 'I': r.setSeverity("MINOR"); break;
+			case 'S':
+			case 'U': r.setSeverity("BLOCKER"); r.setType("BUG"); break;
 			case 'W': r.setSeverity("MAJOR"); break;
 			case 'E': r.setSeverity("CRITICAL"); r.setType("BUG"); break;
-			default: r.setSeverity("BLOCKER"); r.setType("BUG"); break;
+			case 'I': 
+			default: 
+				r.setSeverity("MINOR"); break;
 		}
 		
 		jaxbMarshaller.marshal(r, pw);
