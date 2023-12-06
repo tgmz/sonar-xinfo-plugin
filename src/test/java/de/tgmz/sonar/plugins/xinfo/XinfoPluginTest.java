@@ -26,7 +26,7 @@ import org.sonar.api.utils.Version;
 public class XinfoPluginTest {
 	@Test
 	public void testSettings() {
-		SonarRuntime runtime = SonarRuntimeImpl.forSonarQube(Version.create(6, 7), SonarQubeSide.SCANNER, SonarEdition.COMMUNITY);
+		SonarRuntime runtime = SonarRuntimeImpl.forSonarQube(Version.create(8, 9), SonarQubeSide.SCANNER, SonarEdition.COMMUNITY);
 		Plugin.Context context = new Plugin.Context(runtime);
 		new XinfoPlugin().define(context);
 		assertTrue(context.getExtensions().size() > 0);
