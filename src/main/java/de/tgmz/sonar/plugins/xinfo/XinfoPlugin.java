@@ -14,6 +14,8 @@ import org.sonar.api.Plugin;
 
 import de.tgmz.sonar.plugins.xinfo.languages.AssemblerLanguage;
 import de.tgmz.sonar.plugins.xinfo.languages.AssemblerQualityProfileDefinition;
+import de.tgmz.sonar.plugins.xinfo.languages.CCPPLanguage;
+import de.tgmz.sonar.plugins.xinfo.languages.CCPPQualityProfileDefinition;
 import de.tgmz.sonar.plugins.xinfo.languages.CobolLanguage;
 import de.tgmz.sonar.plugins.xinfo.languages.CobolQualityProfileDefinition;
 import de.tgmz.sonar.plugins.xinfo.languages.PliLanguage;
@@ -21,6 +23,7 @@ import de.tgmz.sonar.plugins.xinfo.languages.PliQualityProfileDefinition;
 import de.tgmz.sonar.plugins.xinfo.rules.XinfoRulesDefinition;
 import de.tgmz.sonar.plugins.xinfo.sensors.AssemblerColorizer;
 import de.tgmz.sonar.plugins.xinfo.sensors.AssemblerIssuesLoader;
+import de.tgmz.sonar.plugins.xinfo.sensors.CCPPIssuesLoader;
 import de.tgmz.sonar.plugins.xinfo.sensors.CobolColorizer;
 import de.tgmz.sonar.plugins.xinfo.sensors.CobolCpdSensor;
 import de.tgmz.sonar.plugins.xinfo.sensors.CobolIssuesLoader;
@@ -42,13 +45,14 @@ public class XinfoPlugin implements Plugin {
     context.addExtensions(PliLanguage.class, PliQualityProfileDefinition.class);
     context.addExtensions(CobolLanguage.class, CobolQualityProfileDefinition.class);
     context.addExtensions(AssemblerLanguage.class, AssemblerQualityProfileDefinition.class);
+    context.addExtensions(CCPPLanguage.class, CCPPQualityProfileDefinition.class);
 
     // tutorial on measures
 
     // tutorial on rules
     context.addExtension(XinfoRulesDefinition.class);
 
-    context.addExtensions(PliIssuesLoader.class, CobolIssuesLoader.class, AssemblerIssuesLoader.class);
+    context.addExtensions(PliIssuesLoader.class, CobolIssuesLoader.class, AssemblerIssuesLoader.class, CCPPIssuesLoader.class);
 
     context.addExtensions(PliColorizer.class, CobolColorizer.class, AssemblerColorizer.class);
 
