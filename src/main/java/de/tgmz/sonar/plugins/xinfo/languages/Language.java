@@ -25,6 +25,7 @@ public enum Language {
 	PLI("pli", "PL/I", "pli,pl1", "pli-rules.xml", "xinfo-pli", "Xinfo PL/I"),
 	COBOL("cbl", "Cobol", "cbl,cob", "cobol-rules.xml", "xinfo-cbl", "Xinfo COBOL"),
 	ASSEMBLER("asm", "Assembler", "asm", "assembler-rules.xml", "xinfo-asm", "Xinfo Assembler"),
+	CCPP("ccpp", "C/C++", "c,cpp", "ccpp-rules.xml", "xinfo-ccpp", "Xinfo C/C++"),
 	;
 	
 	private String key;
