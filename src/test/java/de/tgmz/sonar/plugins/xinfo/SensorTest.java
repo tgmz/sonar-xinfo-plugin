@@ -33,6 +33,7 @@ import de.tgmz.sonar.plugins.xinfo.languages.Language;
 import de.tgmz.sonar.plugins.xinfo.rules.XinfoRulesDefinition;
 import de.tgmz.sonar.plugins.xinfo.sensors.AssemblerColorizer;
 import de.tgmz.sonar.plugins.xinfo.sensors.AssemblerIssuesLoader;
+import de.tgmz.sonar.plugins.xinfo.sensors.CCPPIssuesLoader;
 import de.tgmz.sonar.plugins.xinfo.sensors.CobolColorizer;
 import de.tgmz.sonar.plugins.xinfo.sensors.CobolCpdSensor;
 import de.tgmz.sonar.plugins.xinfo.sensors.CobolIssuesLoader;
@@ -111,6 +112,14 @@ public class SensorTest {
 		
 		colorizer.describe(sensorDescriptor);
 		colorizer.execute(sensorContext);
+		
+		issuesLoader.describe(sensorDescriptor);
+		issuesLoader.execute(sensorContext);
+	}
+
+	@Test(expected = Test.None.class)
+	public void testCCPP() {
+		CCPPIssuesLoader issuesLoader = new CCPPIssuesLoader(sensorContext.fileSystem());
 		
 		issuesLoader.describe(sensorDescriptor);
 		issuesLoader.execute(sensorContext);
