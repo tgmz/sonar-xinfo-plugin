@@ -22,7 +22,7 @@ import org.apache.pdfbox.util.PDFTextStripper;
 import jakarta.xml.bind.JAXBException;
 
 /**
- * Generates assembler-rules.xml.
+ * Generates ccpp-rules.xml.
  */
 public class CreateCCPPRules extends AbstractRuleCreator {
 	public CreateCCPPRules(String documentation, String output) {
@@ -72,7 +72,7 @@ public class CreateCCPPRules extends AbstractRuleCreator {
 		for (String s0 : l) {
 			if (!s0.startsWith("z/OS: z/OS XL C/C++ Messages")) { // Copyright
 				try {
-					Integer.parseInt(s0.trim());			// Seitenzahl?
+					Integer.parseInt(s0.trim());			// Page?
 					
 					continue;
 				} catch (NumberFormatException e) {

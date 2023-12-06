@@ -47,11 +47,11 @@ public class CreatePliRules extends AbstractRuleCreator {
 		
 		for (String s0 : l) {
 			if (!(s0.startsWith("© Copyright IBM Corp.")	// Copyright
-					|| s0.contains(" • ")					// Überschrift
+					|| s0.contains(" • ")					// Header
 					|| s0.contains(".....") 				// Contents
 					|| s0.contains("Enterprise PL/I for z/OS"))) {	// Footer
 				try {
-					Integer.parseInt(s0.trim());			// Seitenzahl?
+					Integer.parseInt(s0.trim());			// Page?
 					
 					continue;
 				} catch (NumberFormatException e) {

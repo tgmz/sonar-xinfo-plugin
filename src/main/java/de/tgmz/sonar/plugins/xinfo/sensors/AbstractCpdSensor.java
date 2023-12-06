@@ -35,8 +35,8 @@ public abstract class AbstractCpdSensor implements Sensor {
 	 * Utility class for indexing tokens in one line.
 	 */
 	protected static final class WordToken {
-		public String token;
-		public int idx;
+		String token;
+		int idx;
 
 		public WordToken(String token, int idx) {
 			super();
