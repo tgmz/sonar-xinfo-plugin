@@ -33,7 +33,8 @@
 			**/AbstractRuleCreator.java,
 			**/CreateAssemblerRules.java,
 			**/CreateCobolRules.java,
-			**/CreatePliRules.java
+			**/CreatePliRules.java,
+			**/CreateCCPPRules.java
 		</sonar.coverage.exclusions>
 	</properties>
 
@@ -180,6 +181,20 @@
 							<arguments>
 								<argument>${project.basedir}/ibm/pli/Messages and Codes.pdf</argument>
 								<argument>${project.build.directory}/classes/pli-rules.xml</argument>
+							</arguments>
+						</configuration>
+					</execution>
+					<execution>
+						<id>generate-ccpp-rules</id>
+						<phase>process-classes</phase>
+						<goals>
+							<goal>java</goal>
+						</goals>
+						<configuration>
+							<mainClass>de.tgmz.sonar.plugins.xinfo.CreateCCPPRules</mainClass>
+							<arguments>
+								<argument>${project.basedir}/ibm/ccpp/cbcdg01_v2r4.pdf</argument>
+								<argument>${project.build.directory}/classes/ccpp-rules.xml</argument>
 							</arguments>
 						</configuration>
 					</execution>
