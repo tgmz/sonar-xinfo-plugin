@@ -17,14 +17,13 @@
 	<groupId>de.tgmz.sonar.plugins.xinfo</groupId>
 	<artifactId>sonar-xinfo-plugin</artifactId>
 	<packaging>sonar-plugin</packaging>
-	<version>1.5.0</version>
+	<version>2.0.0-SNAPSHOT</version>
 
 	<name>Xinfo Plugin for SonarQube</name>
 	<description>Xinfo plugin for SonarQube</description>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<sonar.apiVersion>8.9.10.61524</sonar.apiVersion>
 		<tycho.version>4.0.4</tycho.version>
 		<jdk.min.version>1.8</jdk.min.version>
 		<jacoco.version>0.8.10</jacoco.version>
@@ -40,9 +39,9 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>org.sonarsource.sonarqube</groupId>
-			<artifactId>sonar-plugin-api</artifactId>
-			<version>${sonar.apiVersion}</version>
+    		<groupId>org.sonarsource.api.plugin</groupId>
+    		<artifactId>sonar-plugin-api</artifactId>
+			<version>10.2.0.1908</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -103,10 +102,10 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.sonarsource.sonarqube</groupId>
-			<artifactId>sonar-plugin-api-impl</artifactId>
-			<version>${sonar.apiVersion}</version>
-			<scope>test</scope>
+    		<groupId>org.sonarsource.sonarqube</groupId>
+    		<artifactId>sonar-plugin-api-impl</artifactId>
+   		    <version>10.2.0.77647</version>
+    		<scope>test</scope>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.codehaus.staxmate/staxmate -->
 		<dependency>
