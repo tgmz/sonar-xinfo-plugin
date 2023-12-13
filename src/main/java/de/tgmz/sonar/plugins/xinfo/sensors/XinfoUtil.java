@@ -12,9 +12,6 @@ package de.tgmz.sonar.plugins.xinfo.sensors;
 
 import java.util.Iterator;
 
-import org.sonar.api.utils.log.Logger;
-import org.sonar.api.utils.log.Loggers;
-
 import de.tgmz.sonar.plugins.xinfo.XinfoException;
 import de.tgmz.sonar.plugins.xinfo.generated.plicomp.FILE;
 import de.tgmz.sonar.plugins.xinfo.generated.plicomp.FILEREFERENCETABLE;
@@ -24,8 +21,6 @@ import de.tgmz.sonar.plugins.xinfo.languages.Language;
  * Some utility methods to walk through a {@link de.tgmz.sonar.plugins.xinfo.generated.plicomp.PACKAGE}.
  */
 public final class XinfoUtil {
-	private static final Logger LOGGER = Loggers.get(XinfoUtil.class);
-	
 	private XinfoUtil() {
 		// private constructor to hide the implicit public one
 	}
@@ -41,11 +36,7 @@ public final class XinfoUtil {
 			}
 		}
 
-		String s = "Cannot compute file for filenumber " + idx;
-		
-		LOGGER.error(s);
-
-		throw new XinfoException(s);
+		throw new XinfoException("Cannot compute file for filenumber " + idx);
 	}
 
 	public static String computeIncludedFromLine(FILEREFERENCETABLE filereferencetable, FILE f, Language lang) throws XinfoException {

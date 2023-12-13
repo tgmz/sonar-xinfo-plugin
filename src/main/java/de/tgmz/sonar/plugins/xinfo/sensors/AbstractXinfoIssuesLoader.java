@@ -15,17 +15,18 @@ import java.util.Iterator;
 import javax.annotation.Nullable;
 
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.batch.fs.InputFile;
-import org.sonar.api.batch.rule.Severity;
 import org.sonar.api.batch.sensor.Sensor;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.SensorDescriptor;
 import org.sonar.api.batch.sensor.issue.NewIssue;
 import org.sonar.api.batch.sensor.issue.NewIssueLocation;
+import org.sonar.api.issue.impact.Severity;
+import org.sonar.api.issue.impact.SoftwareQuality;
 import org.sonar.api.rule.RuleKey;
-import org.sonar.api.utils.log.Logger;
-import org.sonar.api.utils.log.Loggers;
 
 import de.tgmz.sonar.plugins.xinfo.XinfoException;
 import de.tgmz.sonar.plugins.xinfo.XinfoProviderFactory;
@@ -45,7 +46,7 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 		String ruleKey;
 		String message;		
 	}
-	private static final Logger LOGGER = Loggers.get(AbstractXinfoIssuesLoader.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(AbstractXinfoIssuesLoader.class);
 	protected final FileSystem fileSystem;
 	protected SensorContext context;
 	private Language lang;
@@ -79,7 +80,7 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 			try {
 				p = XinfoProviderFactory.getProvider(context.config()).getXinfo(inputFile);
 			} catch (XinfoException e) {
-				LOGGER.error("Error getting XINFO for file " + inputFile.filename(), e);
+				LOGGER.error("Error getting XINFO for file {}", inputFile, e);
 				
 				continue;
 			}
@@ -87,7 +88,7 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 			createFindings(p, inputFile);
 			
 			if (++ctr % 100 == 0) {
-				LOGGER.info("{} files processed, current is {}", ctr, inputFile.filename());
+				LOGGER.info("{} files processed, current is {}", ctr, inputFile);
 			}
 		}
 	}
@@ -112,18 +113,16 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 					// XinfoFileProvider.getXinfoFromEvent() and is processed here.
 					switch (ruleKey.charAt(7)) {
 					case 'I':
-						severity = Severity.MINOR;
+						severity = Severity.LOW;
 						break;
 					case 'W':
-						severity = Severity.MAJOR;
+						severity = Severity.MEDIUM;
 						break;
 					case 'E':
-						severity = Severity.CRITICAL;
-						break;
-					case 'U':
 					case 'S':
+					case 'U':
 					default:
-						severity = Severity.BLOCKER;
+						severity = Severity.HIGH;
 						break;
 					}
 					
@@ -158,19 +157,24 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 	}
 
 	private void saveIssue(final InputFile inputFile, int line, String ruleKeyString, final String message, @Nullable Severity severity) {
-		LOGGER.debug("Save issue {} for file {} on line {}", ruleKeyString, inputFile.filename(), line);
+		LOGGER.debug("Save issue {} for file {} on line {}", ruleKeyString, inputFile, line);
 		
 		RuleKey ruleKey = RuleKey.of(lang.getRepoKey(), ruleKeyString);
 
 		NewIssue newIssue = context.newIssue().forRule(ruleKey);
+		
+		if (severity == null) {
+			newIssue.overrideImpact(SoftwareQuality.RELIABILITY, severity);
+		}
 		
 		NewIssueLocation primaryLocation = newIssue.newLocation().on(inputFile).message(message);
 		
 		int lineToSave = line;
 		
 		if (lineToSave > 0) {
-			if (lineToSave > inputFile.lines()) {
-				LOGGER.info("Linenumber {} for {} is outside range. It was reduced to {}", lineToSave, inputFile.filename(), inputFile.lines());
+			int maxLine = inputFile.lines();
+			if (lineToSave > maxLine) {
+				LOGGER.info("Linenumber {} for {} is outside range. It was reduced to {}", lineToSave, inputFile, maxLine);
 				
 				lineToSave = inputFile.lines();
 			}

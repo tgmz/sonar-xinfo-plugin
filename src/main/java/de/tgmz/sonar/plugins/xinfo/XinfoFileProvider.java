@@ -28,8 +28,8 @@ import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.apache.commons.io.filefilter.WildcardFileFilter;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.config.Configuration;
-import org.sonar.api.utils.log.Logger;
-import org.sonar.api.utils.log.Loggers;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.tgmz.sonar.plugins.xinfo.config.XinfoConfig;
 import de.tgmz.sonar.plugins.xinfo.generated.plicomp.FILE;
@@ -41,7 +41,7 @@ import de.tgmz.sonar.plugins.xinfo.generated.plicomp.PACKAGE;
  * Searches the filesystem for a suitable xinfo.xml file and parses it.
  */
 public class XinfoFileProvider extends AbstractXinfoProvider {
-	private static final Logger LOGGER = Loggers.get(XinfoFileProvider.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(XinfoFileProvider.class);
 	
 	public XinfoFileProvider(Configuration configuration) {
 		super(configuration);
@@ -61,7 +61,7 @@ public class XinfoFileProvider extends AbstractXinfoProvider {
 		
 		switch (listFiles.size()) {
 		case 0:
-			LOGGER.error("Cannot find compiler outpur for {}", pgm);
+			LOGGER.error("Cannot find compiler output for {}", pgm);
 			break;
 		case 1:
 			File next = listFiles.iterator().next();
@@ -73,11 +73,11 @@ public class XinfoFileProvider extends AbstractXinfoProvider {
 					result = getXinfoFromEvent(is);
 				}
 			} catch (IOException e) {
-				LOGGER.error("Exception parsing " + compOutput, e);
+				LOGGER.error("Exception parsing {}", compOutput, e);
 			}
 			break;
 		default:
-			LOGGER.error("Found multiple files " + compOutput);
+			LOGGER.error("Found multiple files {}", compOutput);
 			break;
 		}
 		
