@@ -10,14 +10,11 @@
   *******************************************************************************/
 package de.tgmz.sonar.plugins.xinfo.languages;
 
-import java.util.Iterator;
-
 import org.sonar.api.server.profile.BuiltInQualityProfilesDefinition;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 
 import de.tgmz.sonar.plugins.xinfo.RuleFactory;
-import de.tgmz.sonar.plugins.xinfo.generated.Rule;
 
 /**
  * Default quality profile for the projects having files of a supported language.
@@ -37,15 +34,7 @@ public abstract class AbstractXinfoQualityProfileDefinition implements BuiltInQu
 	    NewBuiltInQualityProfile profile = context.createBuiltInQualityProfile("Xinfo Rules", lang.getKey());
 	    profile.setDefault(false);
 	    
-		Iterator<Rule> it = RuleFactory.getInstance().getRules(lang).getRule().iterator();
-
-		while (it.hasNext()) {
-			String s = it.next().getKey();
-				
-			LOGGER.debug("Activate rule {}", s);
-			
-		    profile.activateRule(lang.getRepoKey(), s);
-		}
+		RuleFactory.getInstance().getRules(lang).forEach(s -> profile.activateRule(lang.getRepoKey(), s.getSimpleName()));
 	    
 	    profile.done();
 	}
