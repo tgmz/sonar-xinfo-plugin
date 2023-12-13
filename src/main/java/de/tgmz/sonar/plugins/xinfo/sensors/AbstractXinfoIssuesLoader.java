@@ -50,7 +50,6 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 	protected final FileSystem fileSystem;
 	protected SensorContext context;
 	private Language lang;
-	//private Map<String, Rule> ruleMap;
 	
 	protected AbstractXinfoIssuesLoader(final FileSystem fileSystem, Language lang) {
 		this.fileSystem = fileSystem;
@@ -102,12 +101,6 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 					
 				String ruleKey = issue.ruleKey;
 					
-				if (lang == Language.COBOL) {
-					// Chars at 3 and 4 indicate the compile phase which issued the message
-					// In ErrMsg these chars are replaced by "XX"
-					ruleKey = ruleKey.substring(0, 3) + "XX" + ruleKey.substring(5);
-				}
-					
 				if (lang == Language.CCPP) {
 					// The original rule key does not contain the severity. The severity is added in 
 					// XinfoFileProvider.getXinfoFromEvent() and is processed here.
@@ -146,6 +139,20 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 		result.message = m.getMSGTEXT();
 		result.ruleKey = m.getMSGNUMBER();
 		
+		if (lang == Language.COBOL) {
+			// Chars at 3 and 4 indicate the compile phase which issued the message
+			// In ErrMsg these chars are replaced by "XX"
+			result.ruleKey = result.ruleKey.substring(0, 3) + "XX" + result.ruleKey.substring(5, 9);	// remove severity
+		}
+			
+		if (lang == Language.PLI) {
+			result.ruleKey = result.ruleKey.substring(0, 8);	// remove severity
+		}
+			
+		if (lang == Language.ASSEMBLER) {
+			result.ruleKey = result.ruleKey.substring(0, 7);	// remove severity
+		}
+			
 		if (XinfoUtil.isMainFile(msgFile, lang)) {
 			result.line = Integer.parseInt(m.getMSGLINE());
 			result.inputFile = inputFile;
@@ -163,7 +170,7 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 
 		NewIssue newIssue = context.newIssue().forRule(ruleKey);
 		
-		if (severity == null) {
+		if (severity != null) {
 			newIssue.overrideImpact(SoftwareQuality.RELIABILITY, severity);
 		}
 		
