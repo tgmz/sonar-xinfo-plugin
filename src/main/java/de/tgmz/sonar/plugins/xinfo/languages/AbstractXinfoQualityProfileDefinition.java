@@ -11,8 +11,6 @@
 package de.tgmz.sonar.plugins.xinfo.languages;
 
 import org.sonar.api.server.profile.BuiltInQualityProfilesDefinition;
-import org.sonar.api.utils.log.Logger;
-import org.sonar.api.utils.log.Loggers;
 
 import de.tgmz.sonar.plugins.xinfo.RuleFactory;
 
@@ -20,8 +18,6 @@ import de.tgmz.sonar.plugins.xinfo.RuleFactory;
  * Default quality profile for the projects having files of a supported language.
  */
 public abstract class AbstractXinfoQualityProfileDefinition implements BuiltInQualityProfilesDefinition {
-	private static final Logger LOGGER = Loggers.get(AbstractXinfoQualityProfileDefinition.class);
-	
 	private Language lang;
 
 	protected AbstractXinfoQualityProfileDefinition(Language lang) {

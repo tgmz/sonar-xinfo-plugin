@@ -12,8 +12,8 @@ package de.tgmz.sonar.plugins.xinfo.rules;
 
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.api.server.rule.RulesDefinitionAnnotationLoader;
-import org.sonar.api.utils.log.Logger;
-import org.sonar.api.utils.log.Loggers;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.tgmz.sonar.plugins.xinfo.RuleFactory;
 import de.tgmz.sonar.plugins.xinfo.languages.Language;
@@ -22,7 +22,7 @@ import de.tgmz.sonar.plugins.xinfo.languages.Language;
  * Defines rules for all language.
  */
 public final class XinfoRulesDefinition implements RulesDefinition {
-	private static final Logger LOGGER = Loggers.get(XinfoRulesDefinition.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(XinfoRulesDefinition.class);
 
 	@Override
 	public void define(Context context) {

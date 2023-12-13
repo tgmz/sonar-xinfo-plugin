@@ -101,4 +101,11 @@ public class ColorizingData {
 	public String getContent() {
 		return content;
 	}
+
+	@Override
+	public String toString() {
+		return "ColorizingData [startLineNumber=" + startLineNumber + ", startOffset=" + startOffset
+				+ ", endLineNumber=" + endLineNumber + ", endOffset=" + endOffset + ", type=" + type + ", content="
+				+ content + "]";
+	}
 }

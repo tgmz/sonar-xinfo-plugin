@@ -20,14 +20,14 @@ import java.util.regex.Pattern;
 import org.apache.commons.io.IOUtils;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.sensor.highlighting.TypeOfText;
-import org.sonar.api.utils.log.Logger;
-import org.sonar.api.utils.log.Loggers;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Common functions for Syntax highlighting.
  */
 public abstract class AbstractColorizing implements IColorizing {
-	private static final Logger LOGGER = Loggers.get(AbstractColorizing.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(AbstractColorizing.class);
 
 	/** The areas to colorize. */
 	private HighligthedAreas areas;
