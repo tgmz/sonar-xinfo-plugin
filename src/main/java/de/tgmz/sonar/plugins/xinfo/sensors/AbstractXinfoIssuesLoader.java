@@ -11,8 +11,6 @@
 package de.tgmz.sonar.plugins.xinfo.sensors;
 
 import java.util.Iterator;
-import java.util.Map;
-import java.util.TreeMap;
 
 import javax.annotation.Nullable;
 
@@ -29,10 +27,8 @@ import org.sonar.api.rule.RuleKey;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 
-import de.tgmz.sonar.plugins.xinfo.RuleFactory;
 import de.tgmz.sonar.plugins.xinfo.XinfoException;
 import de.tgmz.sonar.plugins.xinfo.XinfoProviderFactory;
-import de.tgmz.sonar.plugins.xinfo.generated.Rule;
 import de.tgmz.sonar.plugins.xinfo.generated.plicomp.MESSAGE;
 import de.tgmz.sonar.plugins.xinfo.generated.plicomp.PACKAGE;
 import de.tgmz.sonar.plugins.xinfo.languages.Language;
@@ -53,17 +49,11 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 	protected final FileSystem fileSystem;
 	protected SensorContext context;
 	private Language lang;
-	private Map<String, Rule> ruleMap;
+	//private Map<String, Rule> ruleMap;
 	
 	protected AbstractXinfoIssuesLoader(final FileSystem fileSystem, Language lang) {
 		this.fileSystem = fileSystem;
 		this.lang = lang;
-		
-		ruleMap = new TreeMap<>();
-		
-		for (Rule r: RuleFactory.getInstance().getRules(lang).getRule()) {
-			ruleMap.put(r.getKey(), r);
-		}
 	}
 
 	@Override
@@ -173,20 +163,6 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 		RuleKey ruleKey = RuleKey.of(lang.getRepoKey(), ruleKeyString);
 
 		NewIssue newIssue = context.newIssue().forRule(ruleKey);
-		
-		Rule r = ruleMap.get(ruleKeyString);
-		
-		if (r != null) {
-			if (severity == null) {
-				newIssue.overrideSeverity(Severity.valueOf(r.getSeverity()));
-			} else {
-				newIssue.overrideSeverity(severity);
-			}
-		} else {
-			LOGGER.error("Xinfo message {} unknown", ruleKeyString);
-			
-			return;
-		}
 		
 		NewIssueLocation primaryLocation = newIssue.newLocation().on(inputFile).message(message);
 		

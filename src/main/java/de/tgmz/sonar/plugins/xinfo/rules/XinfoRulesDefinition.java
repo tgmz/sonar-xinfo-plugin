@@ -10,15 +10,12 @@
   *******************************************************************************/
 package de.tgmz.sonar.plugins.xinfo.rules;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-
 import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.api.server.rule.RulesDefinitionXmlLoader;
+import org.sonar.api.server.rule.RulesDefinitionAnnotationLoader;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 
+import de.tgmz.sonar.plugins.xinfo.RuleFactory;
 import de.tgmz.sonar.plugins.xinfo.languages.Language;
 
 /**
@@ -39,17 +36,9 @@ public final class XinfoRulesDefinition implements RulesDefinition {
 		
 		NewRepository repository = context.createRepository(lang.getRepoKey(), lang.getKey()).setName(lang.getRepoName());
 
-		try (InputStream rulesXml = this.getClass().getClassLoader().getResourceAsStream(lang.getRulesDefinition())) {
-			RulesDefinitionXmlLoader rulesLoader = new RulesDefinitionXmlLoader();
+		RulesDefinitionAnnotationLoader rulesLoader = new RulesDefinitionAnnotationLoader();
 
-			if (rulesXml != null) {
-				rulesLoader.load(repository, rulesXml, StandardCharsets.UTF_8.name());
-			} else {
-				LOGGER.error("Cannot find rules definition file {}", lang.getRulesDefinition());
-			}
-		} catch (IOException e) {
-			LOGGER.error("Error loading rules for " + lang.toString(), e);
-		}
+		RuleFactory.getInstance().getRules(lang).forEach(s -> rulesLoader.load(repository, s));
 
 		repository.done();
 	}

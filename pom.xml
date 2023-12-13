@@ -28,13 +28,6 @@
 		<jdk.min.version>1.8</jdk.min.version>
 		<jacoco.version>0.8.10</jacoco.version>
 		<maven.build.timestamp.format>yyyyMMdd</maven.build.timestamp.format>
-		<sonar.coverage.exclusions>
-			**/AbstractRuleCreator.java,
-			**/CreateAssemblerRules.java,
-			**/CreateCobolRules.java,
-			**/CreatePliRules.java,
-			**/CreateCCPPRules.java
-		</sonar.coverage.exclusions>
 	</properties>
 
 	<dependencies>
@@ -56,42 +49,30 @@
 			<version>2.9.0</version>
 		</dependency>
 		<dependency>
+    		<groupId>io.github.classgraph</groupId>
+    		<artifactId>classgraph</artifactId>
+    		<version>4.8.165</version>
+		</dependency>
+		<dependency>
 			<groupId>com.google.code.findbugs</groupId>
 			<artifactId>annotations</artifactId>
 			<version>3.0.1u2</version>
 		</dependency>
-
 		<dependency>
 			<groupId>jakarta.xml.bind</groupId>
 			<artifactId>jakarta.xml.bind-api</artifactId>
 			<version>3.0.1</version>
 		</dependency>
-
 		<dependency>
 			<groupId>org.glassfish.jaxb</groupId>
 			<artifactId>jaxb-runtime</artifactId>
 			<version>3.0.1</version>
 		</dependency>
-
 		<dependency>
 			<groupId>commons-logging</groupId>
 			<artifactId>commons-logging</artifactId>
 			<version>1.2</version>
 			<scope>provided</scope>
-		</dependency>
-
-		<!-- Only for src/util -->
-		<dependency>
-			<groupId>org.apache.pdfbox</groupId>
-			<artifactId>pdfbox</artifactId>
-			<version>1.8.16</version>
-			<scope>provided</scope>
-			<exclusions>
-				<exclusion>
-					<groupId>commons-logging</groupId>
-					<artifactId>commons-logging</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 
 		<!-- unit tests -->
@@ -117,6 +98,65 @@
 	<build>
 		<plugins>
 			<plugin>
+				<groupId>de.tgmz</groupId>
+				<artifactId>xinfo-maven-plugin</artifactId>
+				<version>1.0.0-SNAPSHOT</version>
+				<executions>
+					<execution>
+						<id>xinfo-pli</id>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+						<!-- Specify the MyMojo parameter -->
+							<outputDirectory>${project.build.directory}/generated-sources/xinfo</outputDirectory>
+							<targetPackage>de.tgmz.sonar.plugins.xinfo.rules.generated.pli</targetPackage>
+							<document>${project.basedir}/ibm/pli/Messages and Codes.pdf</document>
+							<lang>pli</lang>
+						</configuration>
+					</execution>
+					<execution>
+						<id>xinfo-asm</id>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+						<!-- Specify the MyMojo parameter -->
+							<outputDirectory>${project.build.directory}/generated-sources/xinfo</outputDirectory>
+							<targetPackage>de.tgmz.sonar.plugins.xinfo.rules.generated.asm</targetPackage>
+							<document>${project.basedir}/ibm/Assembler/asmp1021.pdf</document>
+							<lang>asm</lang>
+						</configuration>
+					</execution>
+					<execution>
+						<id>xinfo-cbl</id>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+						<!-- Specify the MyMojo parameter -->
+							<outputDirectory>${project.build.directory}/generated-sources/xinfo</outputDirectory>
+							<targetPackage>de.tgmz.sonar.plugins.xinfo.rules.generated.cbl</targetPackage>
+							<document>${project.basedir}/ibm/cobol/ErrMsg.txt</document>
+							<lang>cobol</lang>
+						</configuration>
+					</execution>
+					<execution>
+						<id>xinfo-ccpp</id>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+						<!-- Specify the MyMojo parameter -->
+							<outputDirectory>${project.build.directory}/generated-sources/xinfo</outputDirectory>
+							<targetPackage>de.tgmz.sonar.plugins.xinfo.rules.generated.ccpp</targetPackage>
+							<document>${project.basedir}/ibm/ccpp/cbcdg01_v2r4.pdf</document>
+							<lang>ccpp</lang>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>build-helper-maven-plugin</artifactId>
 				<version>3.2.0</version>
@@ -129,79 +169,11 @@
 						</goals>
 						<configuration>
 							<sources>
-								<source>${project.basedir}/src/util/java</source>
+								<source>${project.build.directory}/generated-sources/xinfo</source>
 							</sources>
 						</configuration>
 					</execution>
 				</executions>
-			</plugin>
-			<!-- Create the sonar rules definitions from original IBM documentation -->
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>exec-maven-plugin</artifactId>
-				<version>3.0.0</version>
-				<executions>
-					<execution>
-						<id>generate-assembler-rules</id>
-						<phase>process-classes</phase>
-						<goals>
-							<goal>java</goal>
-						</goals>
-						<configuration>
-							<mainClass>de.tgmz.sonar.plugins.xinfo.CreateAssemblerRules</mainClass>
-							<arguments>
-								<argument>${project.basedir}/ibm/Assembler/asmp1021.pdf</argument>
-								<argument>${project.build.directory}/classes/assembler-rules.xml</argument>
-							</arguments>
-						</configuration>
-					</execution>
-					<execution>
-						<id>generate-cobol-rules</id>
-						<phase>process-classes</phase>
-						<goals>
-							<goal>java</goal>
-						</goals>
-						<configuration>
-							<mainClass>de.tgmz.sonar.plugins.xinfo.CreateCobolRules</mainClass>
-							<arguments>
-								<argument>${project.basedir}/ibm/cobol/ErrMsg.txt</argument>
-								<argument>${project.build.directory}/classes/cobol-rules.xml</argument>
-							</arguments>
-						</configuration>
-					</execution>
-					<execution>
-						<id>generate-pli-rules</id>
-						<phase>process-classes</phase>
-						<goals>
-							<goal>java</goal>
-						</goals>
-						<configuration>
-							<mainClass>de.tgmz.sonar.plugins.xinfo.CreatePliRules</mainClass>
-							<arguments>
-								<argument>${project.basedir}/ibm/pli/Messages and Codes.pdf</argument>
-								<argument>${project.build.directory}/classes/pli-rules.xml</argument>
-							</arguments>
-						</configuration>
-					</execution>
-					<execution>
-						<id>generate-ccpp-rules</id>
-						<phase>process-classes</phase>
-						<goals>
-							<goal>java</goal>
-						</goals>
-						<configuration>
-							<mainClass>de.tgmz.sonar.plugins.xinfo.CreateCCPPRules</mainClass>
-							<arguments>
-								<argument>${project.basedir}/ibm/ccpp/cbcdg01_v2r4.pdf</argument>
-								<argument>${project.build.directory}/classes/ccpp-rules.xml</argument>
-							</arguments>
-						</configuration>
-					</execution>
-				</executions>
-				<configuration>
-					<executable>java</executable>
-					<classpathScope>compile</classpathScope>
-				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.sonarsource.sonar-packaging-maven-plugin</groupId>
@@ -212,13 +184,6 @@
 					<pluginClass>de.tgmz.sonar.plugins.xinfo.XinfoPlugin</pluginClass>
 					<detail>true</detail>
 					<finalName>${project.build.finalName}.${maven.build.timestamp}</finalName>
-					<excludes>
-						<exclude>**/*AbstractRuleCreator.class</exclude>
-						<exclude>**/*CreateAssemblerRules.class</exclude>
-						<exclude>**/*CreateCobolRules.class</exclude>
-						<exclude>**/*CreatePliRules.class</exclude>
-						<exclude>**/*CreateCCPPRules.class</exclude>
-					</excludes>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -268,31 +233,6 @@
 							<!-- Define the DTD file -->
 							<sources>
 								<source>src/main/dtd/plicomp.dtd</source>
-							</sources>
-							<clearOutputDir>false</clearOutputDir>
-
-							<!-- External parsing is disabled by default. "Cannot parse URI: file:/C: ..." -->
-							<externalEntityProcessing>true</externalEntityProcessing>
-							
-							<!-- Suppress org.xml.sax.SAXParseException -->
-							<quiet>true</quiet>
-						</configuration>
-					</execution>
-					<execution>
-						<id>xjc-xinfo</id>
-						<goals>
-							<goal>xjc</goal>
-						</goals>
-						<configuration>
-							<!-- Set the package of the generated code -->
-							<packageName>de.tgmz.sonar.plugins.xinfo.generated</packageName>
-
-							<!-- Indicate that we should use DTD input instead of XSDs -->
-							<sourceType>dtd</sourceType>
-
-							<!-- Define the DTD file -->
-							<sources>
-								<source>src/main/dtd/xinfo-rules.dtd</source>
 							</sources>
 							<clearOutputDir>false</clearOutputDir>
 

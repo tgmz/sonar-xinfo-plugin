@@ -17,8 +17,6 @@ import org.sonar.api.config.Configuration;
 import org.sonar.api.config.internal.ConfigurationBridge;
 import org.sonar.api.config.internal.MapSettings;
 
-import de.tgmz.sonar.plugins.xinfo.languages.Language;
-
 /**
  * Testcase with dummy DocumentBuilderFactory to force {@link XinfoRuntimeException}.
  */
@@ -29,11 +27,6 @@ public class ParserConfigurationProblemTest {
 	@Test(expected=XinfoRuntimeException.class)
 	public void testParserConfigurationProblem() throws XinfoException {
 		XinfoProviderFactory.getProvider(CONFIGURATION).getXinfo(null);	
-	}
-
-	@Test(expected=XinfoRuntimeException.class)
-	public void testPli() {
-		RuleFactory.getInstance().getRules(Language.PLI);
 	}
 
 	@BeforeClass
