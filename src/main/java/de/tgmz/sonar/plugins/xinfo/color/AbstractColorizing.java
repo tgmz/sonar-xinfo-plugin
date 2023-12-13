@@ -50,7 +50,7 @@ public abstract class AbstractColorizing implements IColorizing {
 		
 		List<String> readLines = IOUtils.readLines(file.inputStream(), charset);
 		
-		if (readLines.size() > limit) {
+		if (readLines.size() > limit && LOGGER.isInfoEnabled()) {
 			LOGGER.info("File {} containes {} lines. Syntax highlighting will be limited to {} lines"
 					, file.filename(), NF.get().format(readLines.size()), NF.get().format(this.limit));
 		}

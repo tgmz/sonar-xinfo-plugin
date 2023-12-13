@@ -83,12 +83,12 @@ public abstract class AbstractColorizer<T extends IColorizing> implements Sensor
 				}
 	
 				if (++ctr % 100 == 0) {
-					LOGGER.info("{} files processed, current is {}", ctr, inputFile.filename());
+					LOGGER.info("{} files processed, current is {}", ctr, inputFile);
 				}
 				
 				newHighlighting.save();
 			} catch (IOException e) {
-				LOGGER.error("Error creating highlighting on file " + inputFile.filename(), e);
+				LOGGER.error("Error creating highlighting on file " + inputFile, e);
 			}
 		}
 	}
