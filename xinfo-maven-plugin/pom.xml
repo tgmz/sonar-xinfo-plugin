@@ -1,6 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-
+<!--
+/*******************************************************************************
+  * Copyright (c) 10.03.2022 Thomas Zierer.
+  * All rights reserved. This program and the accompanying materials
+  * are made available under the terms of the Eclipse Public License v2.0
+  * which accompanies this distribution, and is available at
+  * http://www.eclipse.org/legal/epl-v20.html
+  *
+  * Contributors:
+  *    Thomas Zierer - initial API and implementation and/or initial documentation
+  *******************************************************************************/
+-->
 <project xmlns="http://maven.apache.org/POM/4.0.0"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
@@ -22,6 +32,7 @@
 		<maven.compiler.source>1.7</maven.compiler.source>
 		<maven.compiler.target>1.7</maven.compiler.target>
 		<maven.version>3.3.9</maven.version>
+		<jacoco.version>0.8.10</jacoco.version>
 	</properties>
 
 	<dependencies>
@@ -148,40 +159,152 @@
 			</plugin>
 		</plugins>
 	</build>
-
 	<profiles>
 		<profile>
-			<id>run-its</id>
+			<id>cc</id>
+			<properties>
+				<!-- Properties to enable jacoco code coverage analysis -->
+				<sonar.core.codeCoveragePlugin>jacoco</sonar.core.codeCoveragePlugin>
+				<sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
+				<sonar.jacoco.reportPaths>target/jacoco.exec</sonar.jacoco.reportPaths>
+			</properties>
 			<build>
+				<plugins>
+					<!-- Enabling use of jacoco -->
+					<plugin>
+						<groupId>org.jacoco</groupId>
+						<artifactId>jacoco-maven-plugin</artifactId>
+						<version>${jacoco.version}</version>
+						<executions>
+							<execution>
+								<id>prepare-agent</id>
+								<goals>
+									<goal>prepare-agent</goal>
+								</goals>
+							</execution>
+							<execution>
+								<id>report</id>
+								<phase>prepare-package</phase>
+								<goals>
+									<goal>report</goal>
+								</goals>
+							</execution>
+							<execution>
+								<id>post-unit-test</id>
+								<phase>test</phase>
+								<goals>
+									<goal>report</goal>
+								</goals>
+								<configuration>
+									<!-- Sets the path to the file which contains the execution data. -->
 
+									<dataFile>target/jacoco.exec</dataFile>
+									<!-- Sets the output directory for the code coverage report. -->
+									<outputDirectory>target/jacoco-ut</outputDirectory>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<profile>
+			<id>dc</id>
+			<properties>
+				<dependency-check.version>8.4.2</dependency-check.version>
+				<dependency-check.suppressionFile></dependency-check.suppressionFile>
+				<sonar.dependencyCheck.htmlReportPath>${project.build.directory}/dependency-check-report.html</sonar.dependencyCheck.htmlReportPath>
+			</properties>
+			<build>
 				<plugins>
 					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-invoker-plugin</artifactId>
-						<version>3.1.0</version>
+						<groupId>org.owasp</groupId>
+						<artifactId>dependency-check-maven</artifactId>
+						<version>${dependency-check.version}</version>
 						<configuration>
-							<debug>true</debug>
-							<cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>
-							<pomIncludes>
-								<pomInclude>*/pom.xml</pomInclude>
-							</pomIncludes>
-							<postBuildHookScript>verify</postBuildHookScript>
-							<localRepositoryPath>
-								${project.build.directory}/local-repo</localRepositoryPath>
-							<settingsFile>src/it/settings.xml</settingsFile>
-							<goals>
-								<goal>clean</goal>
-								<goal>test-compile</goal>
-							</goals>
+							<assemblyAnalyzerEnabled>false</assemblyAnalyzerEnabled>
+							<centralAnalyzerEnabled>false</centralAnalyzerEnabled>
+							<skipProvidedScope>false</skipProvidedScope>
+							<failOnError>true</failOnError>
+							<formats>
+								<format>HTML</format>
+							</formats>
+							<suppressionFiles>
+								<suppressionFile>project-suppression.xml</suppressionFile>
+							</suppressionFiles>
 						</configuration>
 						<executions>
 							<execution>
-								<id>integration-test</id>
+								<id>dependency-check</id>
+								<phase>package</phase>
 								<goals>
-									<goal>install</goal>
-									<goal>integration-test</goal>
-									<goal>verify</goal>
+									<goal>aggregate</goal>
 								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<profile>
+			<id>release-audit-trail</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.rat</groupId>
+						<artifactId>apache-rat-plugin</artifactId>
+						<version>0.13</version>
+						<executions>
+							<execution>
+								<id>rat-check</id>
+								<goals>
+									<goal>check</goal>
+								</goals>
+								<configuration>
+									<consoleOutput>true</consoleOutput>
+									<ignoreErrors>false</ignoreErrors>
+									<licenses>
+										<license implementation="org.apache.rat.analysis.license.SimplePatternBasedLicense">
+											<licenseFamilyCategory>TGMZ</licenseFamilyCategory>
+											<licenseFamilyName>TGMZ</licenseFamilyName>
+											<notes></notes>
+											<patterns>
+												<pattern>Thomas Zierer</pattern>
+											</patterns>
+										</license>
+									</licenses>
+									<licenseFamilies>
+										<licenseFamily implementation="org.apache.rat.license.SimpleLicenseFamily">
+											<familyName>TGMZ</familyName>
+										</licenseFamily>
+									</licenseFamilies>
+									<excludes combine.children="append">
+										<!-- Eclipse stuff -->
+										<exclude>**/.project</exclude>
+										<!-- z/OS stuff w/o comments -->
+										<exclude>**/*.pli</exclude>
+										<exclude>**/*.cbl</exclude>
+										<!-- Generated -->
+										<!-- Maven -->
+										<exclude>target/**</exclude>
+										<!-- Not distributed -->
+										<!-- Templates -->
+										<!-- Test resources -->
+										<exclude>testresources/**</exclude>
+										<exclude>src/test/resources/**</exclude>
+										<!-- IBM stuff -->
+										<exclude>ibm/**</exclude>
+										<exclude>src/main/dtd/dtcc.dtd</exclude>
+										<exclude>src/main/dtd/plicomp.dtd</exclude>
+										<!-- Sonarsource stuff -->
+										<exclude>src/main/xsd/sonar/sonar-generic-coverage.xsd</exclude>
+										<!-- Dummies -->
+										<exclude>src/main/resources/Dummy.txt</exclude>
+										<!-- Binaries -->
+										<!-- GitHub -->
+										<exclude>env.MAVEN_CACHE_FOLDER/**</exclude>
+									</excludes>
+								</configuration>
 							</execution>
 						</executions>
 					</plugin>
