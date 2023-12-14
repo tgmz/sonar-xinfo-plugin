@@ -29,7 +29,6 @@ import de.tgmz.sonar.plugins.xinfo.generated.debugtool.codecoverage.EXECUTED;
 import de.tgmz.sonar.plugins.xinfo.generated.debugtool.codecoverage.UNEXECUTED;
 import de.tgmz.sonar.plugins.xinfo.generated.sonar.codecoverage.Coverage;
 import de.tgmz.sonar.plugins.xinfo.generated.sonar.codecoverage.Coverage.File.LineToCover;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Marshaller;
@@ -107,7 +106,6 @@ public class Converter {
 		os.close();
 	}
 
-	@SuppressFBWarnings(value="XXE_DOCUMENT", justification="Not possible due to DocumentBuilderFactory settings")
 	private DTCODECOVERAGEFILE getDtcodecoveragefile(InputStream is)
 			throws JAXBException, SAXException, IOException {
 		DocumentBuilder documentBuilder = SecureDocumentBuilderFactory.getInstance().getDocumentBuilder();

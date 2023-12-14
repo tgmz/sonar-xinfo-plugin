@@ -32,7 +32,6 @@ import org.xml.sax.SAXException;
 
 import de.tgmz.sonar.plugins.xinfo.config.XinfoConfig;
 import de.tgmz.sonar.plugins.xinfo.generated.plicomp.PACKAGE;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Unmarshaller;
@@ -64,7 +63,6 @@ public abstract class AbstractXinfoProvider implements IXinfoProvider {
 		this.configuration = configuration;
 	}
 
-	@SuppressFBWarnings(value="XXE_DOCUMENT", justification="Not possible due to DocumentBuilderFactory settings")
 	public PACKAGE createXinfo(InputStream is) throws XinfoException {
 		PACKAGE p = null;
 		
