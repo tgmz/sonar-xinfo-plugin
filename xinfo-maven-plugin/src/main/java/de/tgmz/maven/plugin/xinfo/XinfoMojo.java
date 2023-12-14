@@ -54,6 +54,12 @@ public class XinfoMojo extends AbstractMojo {
 		try {
 			ruleTemplate = IOUtils.resourceToString("rule.txt", StandardCharsets.UTF_8, this.getClass().getClassLoader());
 			
+			//Replace license header by a "generated" message 
+			int idx = ruleTemplate.indexOf("package");
+			ruleTemplate = "//This file was gereated by " + this.getClass().getName() + ". Do not edit!"
+					+ System.lineSeparator()
+					+ ruleTemplate.substring(idx);
+			
 			File f = outputDirectory;
 
 			if (!f.exists()) {
@@ -87,7 +93,7 @@ public class XinfoMojo extends AbstractMojo {
 	
 	private void createRule(String key, String target, char sev, String name, String description) throws IOException {
 		if (rules.contains(key)) {
-			getLog().warn("Rule " + key +" already added");
+			getLog().info("Rule " + key +" already added, skipping");
 
 			return;
 		}

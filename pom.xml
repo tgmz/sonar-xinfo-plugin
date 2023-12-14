@@ -152,7 +152,7 @@
 			</build>
 		</profile>
 		<profile>
-			<id>release-audit-trail</id>
+			<id>release-audit-tool</id>
 			<build>
 				<plugins>
 					<plugin>
