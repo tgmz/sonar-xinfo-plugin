@@ -1,7 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--
 /*******************************************************************************
-  * Copyright (c) 10.03.2022 Thomas Zierer.
+  * Copyright (c) 25.03.2020 Thomas Zierer.
   * All rights reserved. This program and the accompanying materials
   * are made available under the terms of the Eclipse Public License v2.0
   * which accompanies this distribution, and is available at
@@ -10,6 +8,5 @@
   * Contributors:
   *    Thomas Zierer - initial API and implementation and/or initial documentation
   *******************************************************************************/
--->
-<suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
-</suppressions>
+@javax.annotation.ParametersAreNonnullByDefault
+package de.tgmz.sonar.plugins.xinfo.color.ccpp;
