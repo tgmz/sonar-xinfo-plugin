@@ -1,4 +1,14 @@
-package de.tgmz;
+/*******************************************************************************
+  * Copyright (c) 14.12.2016 Thomas Zierer.
+  * All rights reserved. This program and the accompanying materials
+  * are made available under the terms of the Eclipse Public License v2.0
+  * which accompanies this distribution, and is available at
+  * http://www.eclipse.org/legal/epl-v20.html
+  *
+  * Contributors:
+  *    Thomas Zierer - initial API and implementation and/or initial documentation
+  *******************************************************************************/
+package de.tgmz.maven.plugin.xinfo;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -64,34 +74,22 @@ public class XinfoMojo extends AbstractMojo {
 				generateCcpp();
 				break;
 			default:
-				break;
+				throw new MojoExecutionException("The language " + lang + " is not supported");
 			}
 			
 		} catch (IOException e) {
 			getLog().error(e);
 		}
 	}
-	private void saveRule(String key, String rule) throws IOException {
-		if (key != null && rule != null) {
-			File out = new File(outputDirectory, targetPackage.replace('.', File.separatorChar));
-		
-			if (!out.exists()) {
-				out.mkdirs();
-			}
-		
-			PrintWriter pw = new PrintWriter(new File(out, key + ".java"));
-			pw.write(rule);
-			pw.close();
-		}
+	private void createRule(String key, String target, char sev, String name) throws IOException {
+		createRule(key, target, sev, name, name);
 	}
-	private String createRule(String key, String target, char sev, String name) {
-		return createRule(key, target, sev, name, name);
-	}
-	private String createRule(String key, String target, char sev, String name, String description) {
+	
+	private void createRule(String key, String target, char sev, String name, String description) throws IOException {
 		if (rules.contains(key)) {
 			getLog().warn("Rule " + key +" already added");
 
-			return null;
+			return;
 		}
 		
 		rules.add(key);
@@ -116,8 +114,19 @@ public class XinfoMojo extends AbstractMojo {
 			priority = "Priority.BLOCKER";
 			break;
 		}
+
+		String rule = MessageFormat.format(ruleTemplate, key, name.substring(0, Math.min(name.length(), 200)), description, target, priority);
 		
-		return MessageFormat.format(ruleTemplate, key, name.substring(0, Math.min(name.length(), 200)), description, target, priority);
+		File out = new File(outputDirectory, targetPackage.replace('.', File.separatorChar));
+		
+		if (!out.exists()) {
+			out.mkdirs();
+		}
+	
+		PrintWriter pw = new PrintWriter(new File(out, key + ".java"));
+		pw.write(rule);
+		pw.close();
+
 	}
 	
 	private List<String> getSections(String documentation, String msgPattern) {
@@ -180,23 +189,13 @@ public class XinfoMojo extends AbstractMojo {
 			String description = msg.substring(desc + "Explanation ".length(), suffix);
 			description = description.replace("\"", "");
 			
-			String rule = createRule(key, targetPackage, sev, name, description);
-			
-			saveRule(key, rule);
+			createRule(key, targetPackage, sev, name, description);
 		}
 		
 		// Undocumented
-		String key = "IBM2671I";
-		String rule = createRule(key, targetPackage, 'W', "The variable var is passed as argument number count to entry entry. The corresponding parameter has the ASSIGNABLE attribute, and hence the variable could be modified despite having the NONASSIGNABLE attribute.");
-		saveRule(key, rule);
-		
-		key = "IBM2847I";
-		rule = createRule(key, targetPackage, 'I', "Source in RETURN statement has a MAXLENGTH of lenght which is greater than the length of length in the corresponding RETURNS attribute");
-		saveRule(key, rule);
-
-		key = "IBM2848I";
-		rule = createRule(key, targetPackage, 'I', "ADD of FIXED DEC(p0,q0) and FIXED DEC(p1,q1) with a result precision and scale of (p2,q2) might overflow.");
-		saveRule(key, rule);
+		createRule("IBM2671I", targetPackage, 'W', "The variable var is passed as argument number count to entry entry. The corresponding parameter has the ASSIGNABLE attribute, and hence the variable could be modified despite having the NONASSIGNABLE attribute.");
+		createRule("IBM2847I", targetPackage, 'I', "Source in RETURN statement has a MAXLENGTH of lenght which is greater than the length of length in the corresponding RETURNS attribute");
+		createRule("IBM2848I", targetPackage, 'I', "ADD of FIXED DEC(p0,q0) and FIXED DEC(p1,q1) with a result precision and scale of (p2,q2) might overflow.");
 		
 		ibmPliMessagesAndCodes.close();
 	}
@@ -220,9 +219,7 @@ public class XinfoMojo extends AbstractMojo {
 				char sev = msg.charAt(10);
 				String name = msg.substring(16).trim().replace("\"", "");
 				
-				String rule = createRule(key, targetPackage, sev, name);
-				
-				saveRule(key, rule);
+				createRule(key, targetPackage, sev, name);
 			}
 		}
 	}
@@ -262,10 +259,10 @@ public class XinfoMojo extends AbstractMojo {
 		
 		for (String s0 : l) {
 			if (!(s0.startsWith("Appendix F. High Level Assembler messages")	// Copyright
-					|| s0.contains(" • ")				// Überschrift
+					|| s0.contains(" • ")				// Heading
 					|| s0.contains("High Level Assembler for z/OS & z/VM & z/VSE: Programmer's Guide"))) {	// Footer
 				try {
-					Integer.parseInt(s0.trim());			// Seitenzahl?
+					Integer.parseInt(s0.trim());			// Page?
 					
 					continue;
 				} catch (NumberFormatException e) {
@@ -283,9 +280,7 @@ public class XinfoMojo extends AbstractMojo {
 			char sev = msg.charAt(7);
 			String name = msg.substring(9).trim().replace("\"", "");
 			
-			String rule = createRule(key, targetPackage, sev, name);
-			
-			saveRule(key, rule);
+			createRule(key, targetPackage, sev, name);
 		}
 		
 		asmp1021.close();
@@ -345,11 +340,15 @@ public class XinfoMojo extends AbstractMojo {
 			char sev = 'I';
 			String name = msg.substring(8).trim().replace("\"", "").replace("\\", "");
 			
-			String rule = createRule(key, targetPackage, sev, name);
-			
-			saveRule(key, rule);
+			createRule(key, targetPackage, sev, name);
 		}
 		
 		cbcdg01.close();
+	}
+	public void setDocument(File document) {
+		this.document = document;
+	}
+	public void setLang(String lang) {
+		this.lang = lang;
 	}
 }
