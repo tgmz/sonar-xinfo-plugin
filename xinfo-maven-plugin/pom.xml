@@ -26,6 +26,7 @@
 	<packaging>maven-plugin</packaging>
 
 	<name>xinfo-maven-plugin Maven Plugin</name>
+	<description>This maven plugin generates the Sonar @Rule-annotated classes from IBM's compiler documentations.</description>
 
 	<prerequisites>
 		<maven>${maven.version}</maven>
