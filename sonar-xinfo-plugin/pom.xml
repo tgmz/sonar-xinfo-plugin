@@ -13,20 +13,23 @@
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
+	
+	<parent>
+		<groupId>de.tgmz</groupId>
+		<artifactId>sonar-xinfo</artifactId>
+		<version>1.0.0-SNAPSHOT</version>
+	</parent>
 
-	<groupId>de.tgmz.sonar.plugins.xinfo</groupId>
 	<artifactId>sonar-xinfo-plugin</artifactId>
-	<packaging>sonar-plugin</packaging>
 	<version>2.0.0-SNAPSHOT</version>
+	<packaging>sonar-plugin</packaging>
 
 	<name>Xinfo Plugin for SonarQube</name>
 	<description>Xinfo plugin for SonarQube</description>
 
 	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<tycho.version>4.0.4</tycho.version>
 		<jdk.min.version>1.8</jdk.min.version>
-		<jacoco.version>0.8.10</jacoco.version>
 		<maven.build.timestamp.format>yyyyMMdd</maven.build.timestamp.format>
 	</properties>
 
@@ -496,199 +499,4 @@
 			</plugin>
 		</plugins>
 	</reporting>
-
-	<licenses>
-		<license>
-			<name>Eclipse Public License v2.0</name>
-		</license>
-	</licenses>
-
-	<ciManagement>
-		<system>GitHub</system>
-		<url>https://github.com/tgmz/sonar-xinfo-plugin/actions</url>
-	</ciManagement>
-
-	<scm>
-		<developerConnection>scm:git:https://github.com/tgmz/sonar-xinfo-plugin.git</developerConnection>
-		<url>https://github.com/tgmz/sonar-xinfo-plugin.git</url>
-		<connection>scm:git:https://github.com/tgmz/sonar-xinfo-plugin.git</connection>
-	</scm>
-
-	<developers>
-		<developer>
-			<id>tgmz</id>
-			<name>Thomas Zierer</name>
-			<email>thomas.zierer@muenchen-mail.de</email>
-			<roles>
-				<role>architect</role>
-				<role>developer</role>
-			</roles>
-		</developer>
-	</developers>
-
-	<organization>
-		<name>Thomas Zierer</name>
-		<url>https://github.com/tgmz/sonar-xinfo-plugin.git</url>
-	</organization>
-
-	<inceptionYear>2016</inceptionYear>
-
-	<profiles>
-		<profile>
-			<id>cc</id>
-			<properties>
-				<!-- Properties to enable jacoco code coverage analysis -->
-				<sonar.core.codeCoveragePlugin>jacoco</sonar.core.codeCoveragePlugin>
-				<sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
-				<sonar.jacoco.reportPaths>target/jacoco.exec</sonar.jacoco.reportPaths>
-			</properties>
-			<build>
-				<plugins>
-					<!-- Enabling use of jacoco -->
-					<plugin>
-						<groupId>org.jacoco</groupId>
-						<artifactId>jacoco-maven-plugin</artifactId>
-						<version>${jacoco.version}</version>
-						<executions>
-							<execution>
-								<id>prepare-agent</id>
-								<goals>
-									<goal>prepare-agent</goal>
-								</goals>
-							</execution>
-							<execution>
-								<id>report</id>
-								<phase>prepare-package</phase>
-								<goals>
-									<goal>report</goal>
-								</goals>
-							</execution>
-							<execution>
-								<id>post-unit-test</id>
-								<phase>test</phase>
-								<goals>
-									<goal>report</goal>
-								</goals>
-								<configuration>
-									<!-- Sets the path to the file which contains the execution data. -->
-
-									<dataFile>target/jacoco.exec</dataFile>
-									<!-- Sets the output directory for the code coverage report. -->
-									<outputDirectory>target/jacoco-ut</outputDirectory>
-									<excludes>
-										<exclude>
-											de/tgmz/sonar/plugins/xinfo/Create*Rules.class,
-											de/tgmz/sonar/plugins/xinfo/generated/**/*.class</exclude>
-									</excludes>
-								</configuration>
-							</execution>
-						</executions>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-		<profile>
-			<id>dc</id>
-			<properties>
-				<dependency-check.version>8.4.2</dependency-check.version>
-				<dependency-check.suppressionFile></dependency-check.suppressionFile>
-				<sonar.dependencyCheck.htmlReportPath>${project.build.directory}/dependency-check-report.html</sonar.dependencyCheck.htmlReportPath>
-			</properties>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.owasp</groupId>
-						<artifactId>dependency-check-maven</artifactId>
-						<version>${dependency-check.version}</version>
-						<configuration>
-							<assemblyAnalyzerEnabled>false</assemblyAnalyzerEnabled>
-							<centralAnalyzerEnabled>false</centralAnalyzerEnabled>
-							<skipProvidedScope>false</skipProvidedScope>
-							<failOnError>true</failOnError>
-							<formats>
-								<format>HTML</format>
-							</formats>
-							<suppressionFiles>
-								<suppressionFile>project-suppression.xml</suppressionFile>
-							</suppressionFiles>
-						</configuration>
-						<executions>
-							<execution>
-								<id>dependency-check</id>
-								<phase>package</phase>
-								<goals>
-									<goal>aggregate</goal>
-								</goals>
-							</execution>
-						</executions>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-		<profile>
-			<id>release-audit-trail</id>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.apache.rat</groupId>
-						<artifactId>apache-rat-plugin</artifactId>
-						<version>0.13</version>
-						<executions>
-							<execution>
-								<id>rat-check</id>
-								<goals>
-									<goal>check</goal>
-								</goals>
-								<configuration>
-									<consoleOutput>true</consoleOutput>
-									<ignoreErrors>false</ignoreErrors>
-									<licenses>
-										<license implementation="org.apache.rat.analysis.license.SimplePatternBasedLicense">
-											<licenseFamilyCategory>TGMZ</licenseFamilyCategory>
-											<licenseFamilyName>TGMZ</licenseFamilyName>
-											<notes></notes>
-											<patterns>
-												<pattern>Thomas Zierer</pattern>
-											</patterns>
-										</license>
-									</licenses>
-									<licenseFamilies>
-										<licenseFamily implementation="org.apache.rat.license.SimpleLicenseFamily">
-											<familyName>TGMZ</familyName>
-										</licenseFamily>
-									</licenseFamilies>
-									<excludes combine.children="append">
-										<!-- Eclipse stuff -->
-										<exclude>**/.project</exclude>
-										<!-- z/OS stuff w/o comments -->
-										<exclude>**/*.pli</exclude>
-										<exclude>**/*.cbl</exclude>
-										<!-- Generated -->
-										<!-- Maven -->
-										<exclude>target/**</exclude>
-										<!-- Not distributed -->
-										<!-- Templates -->
-										<!-- Test resources -->
-										<exclude>testresources/**</exclude>
-										<exclude>src/test/resources/**</exclude>
-										<!-- IBM stuff -->
-										<exclude>ibm/**</exclude>
-										<exclude>src/main/dtd/dtcc.dtd</exclude>
-										<exclude>src/main/dtd/plicomp.dtd</exclude>
-										<!-- Sonarsource stuff -->
-										<exclude>src/main/xsd/sonar/sonar-generic-coverage.xsd</exclude>
-										<!-- Dummies -->
-										<exclude>src/main/resources/Dummy.txt</exclude>
-										<!-- Binaries -->
-										<!-- GitHub -->
-										<exclude>env.MAVEN_CACHE_FOLDER/**</exclude>
-									</excludes>
-								</configuration>
-							</execution>
-						</executions>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-	</profiles>
 </project>
