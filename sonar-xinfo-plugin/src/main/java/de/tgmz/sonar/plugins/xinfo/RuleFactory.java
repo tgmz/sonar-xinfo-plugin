@@ -17,7 +17,6 @@ import org.slf4j.LoggerFactory;
 import org.sonar.check.Rule;
 
 import de.tgmz.sonar.plugins.xinfo.languages.Language;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ClassInfoList;
 import io.github.classgraph.ScanResult;
@@ -42,7 +41,6 @@ public final class RuleFactory {
 		return instance;
 	}
 
-	@SuppressFBWarnings(value="XXE_DOCUMENT", justification="Not possible due to DocumentBuilderFactory settings")
 	public List<Class<?>> getRules(Language l) {
 		String pkg = "de.tgmz.sonar.plugins.xinfo.rules.generated." + l.getKey();
 		
