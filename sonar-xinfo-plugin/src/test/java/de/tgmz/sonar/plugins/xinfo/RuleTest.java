@@ -41,10 +41,10 @@ public class RuleTest {
 		assertNotNull(find(msg));
 	}
 	
-	private Class find(String s) {
+	private Class<?> find(String s) {
 		Iterator<Class<?>> it = RuleFactory.getInstance().getRules(Language.PLI).iterator();
 		
-		Class r = null;
+		Class<?> r = null;
 		
 		do {
 			r = it.next();
