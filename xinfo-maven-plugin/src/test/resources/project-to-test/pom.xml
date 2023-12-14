@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>de.tgmz</groupId>
+	<artifactId>xinfo-maven-plugin</artifactId>
+	<version>1.0.0-SNAPSHOT</version>
+	<packaging>jar</packaging>
+	<name>Test MyMojo</name>
+
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>xinfo-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>test-pli</id>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<!-- Specify the MyMojo parameter -->
+							<outputDirectory>target/test-harness/project-to-test</outputDirectory>
+							<targetPackage>de.tgmz.xinfo.rules.pli</targetPackage>
+							<document>${project.basedir}/ibm/pli/Messages and Codes.pdf</document>
+							<lang>pli</lang>
+						</configuration>
+					</execution>
+					<execution>
+						<id>test-asm</id>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<!-- Specify the MyMojo parameter -->
+							<outputDirectory>target/test-harness/project-to-test</outputDirectory>
+							<targetPackage>de.tgmz.xinfo.rules.asm</targetPackage>
+							<document>${project.basedir}/ibm/Assembler/asmp1021.pdf</document>
+							<lang>asm</lang>
+						</configuration>
+					</execution>
+					<execution>
+						<id>test-cobol</id>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<!-- Specify the MyMojo parameter -->
+							<outputDirectory>target/test-harness/project-to-test</outputDirectory>
+							<targetPackage>de.tgmz.xinfo.rules.cbl</targetPackage>
+							<document>${project.basedir}/ibm/cobol/ErrMsg.txt</document>
+							<lang>cobol</lang>
+						</configuration>
+					</execution>
+					<execution>
+						<id>test-ccpp</id>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<!-- Specify the MyMojo parameter -->
+							<outputDirectory>target/test-harness/project-to-test</outputDirectory>
+							<targetPackage>de.tgmz.xinfo.rules.ccpp</targetPackage>
+							<document>${project.basedir}/ibm/ccpp/cbcdg01_v2r4.pdf</document>
+							<lang>ccpp</lang>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+</project>
