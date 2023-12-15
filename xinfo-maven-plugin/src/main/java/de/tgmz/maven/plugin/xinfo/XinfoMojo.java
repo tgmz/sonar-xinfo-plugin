@@ -12,11 +12,15 @@ package de.tgmz.maven.plugin.xinfo;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PrintWriter;
 import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -60,12 +64,6 @@ public class XinfoMojo extends AbstractMojo {
 					+ System.lineSeparator()
 					+ ruleTemplate.substring(idx);
 			
-			File f = outputDirectory;
-
-			if (!f.exists()) {
-				f.mkdirs();
-			}
-			
 			switch (lang) {
 			case "pli":
 				generatePli();
@@ -104,35 +102,34 @@ public class XinfoMojo extends AbstractMojo {
 		
 		switch (sev) {
 		case 'I':
-			priority = "Priority.INFO";
+			priority = "INFO";
 			break;
 		case 'W':
-			priority = "Priority.MINOR";
+			priority = "MINOR";
 			break;
 		case 'E':
-			priority = "Priority.MAJOR";
+			priority = "MAJOR";
 			break;
 		case 'S':
-			priority = "Priority.CRITICAL";
+			priority = "CRITICAL";
 			break;
 		case 'U':
 		default:
-			priority = "Priority.BLOCKER";
+			priority = "BLOCKER";
 			break;
 		}
 
 		String rule = MessageFormat.format(ruleTemplate, key, name.substring(0, Math.min(name.length(), 200)), description, target, priority);
 		
-		File out = new File(outputDirectory, targetPackage.replace('.', File.separatorChar));
+		Path dir = Paths.get(outputDirectory.getCanonicalPath(), targetPackage.replace('.', File.separatorChar));
 		
-		if (!out.exists()) {
-			out.mkdirs();
-		}
-	
-		PrintWriter pw = new PrintWriter(new File(out, key + ".java"));
-		pw.write(rule);
-		pw.close();
-
+		Files.createDirectories(dir);
+		
+		Path f = Paths.get(dir.toString(), key + ".java");
+		
+		Files.writeString(f, rule, StandardOpenOption.CREATE, StandardOpenOption.WRITE);
+		
+		getLog().debug("Wrote rule " + key + " to " + f);
 	}
 	
 	private List<String> getSections(String documentation, String msgPattern) {
