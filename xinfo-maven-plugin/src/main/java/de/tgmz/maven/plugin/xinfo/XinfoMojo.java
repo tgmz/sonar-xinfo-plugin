@@ -12,18 +12,16 @@ package de.tgmz.maven.plugin.xinfo;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.text.MessageFormat;
-import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -31,6 +29,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
@@ -41,6 +41,7 @@ import org.apache.pdfbox.util.PDFTextStripper;
 
 @Mojo(name = "generate", defaultPhase = LifecyclePhase.GENERATE_SOURCES)
 public class XinfoMojo extends AbstractMojo {
+	private static final String IBM_COPYRIGTH = "© Copyright IBM Corp.";
 	private String ruleTemplate;
 	private Set<String> rules = new HashSet<>();
 			
@@ -52,6 +53,7 @@ public class XinfoMojo extends AbstractMojo {
 	private File document;
 	@Parameter(defaultValue = "asm", property = "lang", required = true)
 	private String lang;
+	private int num;
 
 	@Override
 	public void execute() throws MojoExecutionException {
@@ -84,124 +86,42 @@ public class XinfoMojo extends AbstractMojo {
 		} catch (IOException e) {
 			getLog().error(e);
 		}
-	}
-	private void createRule(String key, String target, char sev, String name) throws IOException {
-		createRule(key, target, sev, name, name);
-	}
-	
-	private void createRule(String key, String target, char sev, String name, String description) throws IOException {
-		if (rules.contains(key)) {
-			getLog().info("Rule " + key +" already added, skipping");
-
-			return;
-		}
 		
-		rules.add(key);
+		getLog().info(num + " rules written for language " + lang);
 		
-		String priority;
-		
-		switch (sev) {
-		case 'I':
-			priority = "INFO";
-			break;
-		case 'W':
-			priority = "MINOR";
-			break;
-		case 'E':
-			priority = "MAJOR";
-			break;
-		case 'S':
-			priority = "CRITICAL";
-			break;
-		case 'U':
-		default:
-			priority = "BLOCKER";
-			break;
-		}
-
-		String rule = MessageFormat.format(ruleTemplate, key, name.substring(0, Math.min(name.length(), 200)), description, target, priority);
-		
-		Path dir = Paths.get(outputDirectory.getCanonicalPath(), targetPackage.replace('.', File.separatorChar));
-		
-		Files.createDirectories(dir);
-		
-		Path f = Paths.get(dir.toString(), key + ".java");
-		
-		Files.writeString(f, rule, StandardOpenOption.CREATE, StandardOpenOption.WRITE);
-		
-		getLog().debug("Wrote rule " + key + " to " + f);
+		num = 0;
 	}
 	
-	private List<String> getSections(String documentation, String msgPattern) {
-		List<String> result = new LinkedList<>();
-		
-		Pattern p = Pattern.compile(msgPattern);
-		
-		Matcher m = p.matcher(documentation);
-		
-		m.find();
-		int sta = m.start();
-		
-		while (m.find()) {
-			int end = m.start();
-			result.add(documentation.substring(sta, end));
-			
-			sta = end;
-		}
-
-		return result;
-	}
 	private void generatePli() throws IOException {
-		PDDocument ibmPliMessagesAndCodes = PDDocument.load(document);
+		String s = convertPdf(document
+				, new String[] {"Bibliography", "Chapter 1. Compiler Informational Messages"}
+				, "Chapter 7. Condition codes"
+				, "Enterprise PL/I for z/OS: Enterprise PL/I for z/OS Messages and Codes"
+				, IBM_COPYRIGTH);
 		
-		PDFTextStripper pdfts = new PDFTextStripper();
-		
-		String ibmPliMessagesAndCodesAsText = pdfts.getText(ibmPliMessagesAndCodes);
-		
-		List<String> l = IOUtils.readLines(new StringReader(ibmPliMessagesAndCodesAsText));
-		
-		StringBuilder sb = new StringBuilder();
-		
-		for (String s0 : l) {
-			if (!(s0.startsWith("© Copyright IBM Corp.")	// Copyright
-					|| s0.contains(" • ")					// Header
-					|| s0.contains(".....") 				// Contents
-					|| s0.contains("Enterprise PL/I for z/OS"))) {	// Footer
-				try {
-					Integer.parseInt(s0.trim());			// Page?
-					
-					continue;
-				} catch (NumberFormatException e) {
-					// Okay
-				}
-				sb.append(s0);
-				sb.append(' ');
-			}
-		}
-		
-		String s = sb.toString();
-		
-		for (String msg : getSections(s, "IBM\\d{4}I\\s[IWESU]")) {
-			String key = msg.substring(0, 8);
-			char sev = msg.charAt(9);
-			
-			int desc = msg.indexOf("Explanation ");
-			int suffix = msg.indexOf("Codes Chapter");
-			
-			String name = msg.substring(11, desc);
-			String description = msg.substring(desc + "Explanation ".length(), suffix);
-			description = description.replace("\"", "");
-			
-			createRule(key, targetPackage, sev, name, description);
-		}
-		
-		// Undocumented
-		createRule("IBM2671I", targetPackage, 'W', "The variable var is passed as argument number count to entry entry. The corresponding parameter has the ASSIGNABLE attribute, and hence the variable could be modified despite having the NONASSIGNABLE attribute.");
-		createRule("IBM2847I", targetPackage, 'I', "Source in RETURN statement has a MAXLENGTH of lenght which is greater than the length of length in the corresponding RETURNS attribute");
-		createRule("IBM2848I", targetPackage, 'I', "ADD of FIXED DEC(p0,q0) and FIXED DEC(p1,q1) with a result precision and scale of (p2,q2) might overflow.");
-		
-		ibmPliMessagesAndCodes.close();
+		createRulesFromString(s, "^IBM\\d{4}I\\s[IWESU]\\s", 9);
+		createRulesFromString(s, "^IBM\\d{4}\\s", 7);	//Code Generation Messages (5000-5999)
 	}
+	private void generateAssembler() throws IOException {
+		String s = convertPdf(document
+				, new String[] {"Appendix F. High Level Assembler messages", "Message not known"}
+				, "Appendix G. User interface macros"
+				, IBM_COPYRIGTH
+				, "High Level Assembler for z/OS & z/VM & z/VSE: Programmer's Guide"
+				, "•");
+		
+		createRulesFromString(s, "^ASMA\\d{3}[INWESCU]\\s", 7);
+	}
+	private void generateCcpp() throws IOException {
+		String s = convertPdf(document
+				, new String[] {"CCN0000"}
+				, "Appendix A. Accessibility"
+				, IBM_COPYRIGTH
+				, "z/OS: z/OS XL C/C++ Messages");
+		
+		createRulesFromString(s, "^CCN\\d{4}", 7);
+	}
+	
 	private void generateCobol() throws IOException {
 		try(InputStream is = new FileInputStream(document)) {
 			List<String> l = IOUtils.readLines(is, StandardCharsets.UTF_8);
@@ -220,134 +140,165 @@ public class XinfoMojo extends AbstractMojo {
 			for (String msg : getSections(s, "IGYXX\\d{4}\\-[IWESU]")) {
 				String key = msg.substring(0, 9);
 				char sev = msg.charAt(10);
-				String name = msg.substring(16).trim().replace("\"", "");
 				
-				createRule(key, targetPackage, sev, name);
+				String name;
+				String desc;
+				
+				int idx = msg.indexOf('.');
+				
+				if (idx > 0) {
+					name = msg.substring(16, idx).trim();
+					desc = msg.substring(16).trim();
+				} else {
+					name = msg.substring(16).trim();
+					desc = name;
+				}
+				
+				writeRule(key, targetPackage, sev, name, desc);
 			}
 		}
 	}
-	private void generateAssembler() throws IOException {
-		PDDocument asmp1021 = PDDocument.load(document);
+	/**
+	 * Converts a pdf to a string, cutting out some lines.
+	 */
+	private String convertPdf(File doc, String[] from, String to, String... exclude) throws IOException {
+		PDDocument ibmMessagesAndCodes = PDDocument.load(doc);
 		
 		PDFTextStripper pdfts = new PDFTextStripper();
 		
-		List<String> l0 = IOUtils.readLines(new StringReader(pdfts.getText(asmp1021)));
+		String s = pdfts.getText(ibmMessagesAndCodes);
+		
+		int idx;
+		
+		for (String delim : from) {
+			idx = s.indexOf(delim);
+			s = s.substring(idx);
+		}
+		
+		idx = s.indexOf(to);
+		s = s.substring(0, idx);
 
-		// Cut out relevant part of the "Appendix F" section
-		int i = 0;
+		ibmMessagesAndCodes.close();
 		
-		for (; i < l0.size(); i++) {
-			if (l0.get(i).startsWith("Appendix F. High Level Assembler messages")) {
-				break;
-			}
-		}
+		Iterator<String> iterator = s.lines().iterator();
 		
-		for (; i < l0.size(); i++) {
-			if ("Messages".equals(l0.get(i))) {
-				break;
-			}
-		}
-
-		int j = i;
-
-		for (; j < l0.size(); j++) {
-			if (l0.get(j).startsWith("Appendix G. User interface macros")) {
-				break;
-			}
-		}
+		StringBuilder result = new StringBuilder();
 		
-		List<String> l = new ArrayList<>(l0.subList(i, j));
-		
-		StringBuilder sb = new StringBuilder();
-		
-		for (String s0 : l) {
-			if (!(s0.startsWith("Appendix F. High Level Assembler messages")	// Copyright
-					|| s0.contains(" • ")				// Heading
-					|| s0.contains("High Level Assembler for z/OS & z/VM & z/VSE: Programmer's Guide"))) {	// Footer
-				try {
-					Integer.parseInt(s0.trim());			// Page?
-					
-					continue;
-				} catch (NumberFormatException e) {
-					// Okay
-				}
-				sb.append(s0);
-				sb.append(' ');
-			}
-		}
-		
-		String s = sb.toString();
-		
-		for (String msg : getSections(s, "ASMA\\d{3}[IWESU]")) {
-			String key = msg.substring(0, 7);
-			char sev = msg.charAt(7);
-			String name = msg.substring(9).trim().replace("\"", "");
+		while (iterator.hasNext()) {
+			String l = iterator.next();
 			
-			createRule(key, targetPackage, sev, name);
+			if (!containsAny(l, exclude)) {
+				result.append(l);
+				result.append(System.lineSeparator());
+			}
 		}
-		
-		asmp1021.close();
+		return result.toString();
 	}
-	private void generateCcpp() throws IOException {
-		PDDocument cbcdg01 = PDDocument.load(document);
-		
-		PDFTextStripper pdfts = new PDFTextStripper();
-		
-		List<String> l0 = IOUtils.readLines(new StringReader(pdfts.getText(cbcdg01)));
-
-		// Cut out relevant part of the "Appendix F" section
-		int i = 0;
-		
-		for (; i < l0.size(); i++) {
-			if (l0.get(i).startsWith("Chapter 2. z/OS XL C/C++ compiler return codes and messages")) {
-				break;
-			}
-		}
-		
-		for (; i < l0.size(); i++) {
-			if ("Compiler messages".equals(l0.get(i))) {
-				break;
-			}
-		}
-
-		int j = i;
-
-		for (; j < l0.size(); j++) {
-			if (l0.get(j).startsWith("Chapter 3. Utility messages")) {
-				break;
-			}
-		}
-		
-		List<String> l = new ArrayList<>(l0.subList(i, j));
-		
-		StringBuilder sb = new StringBuilder();
-		
-		for (String s0 : l) {
-			if (!s0.startsWith("z/OS: z/OS XL C/C++ Messages")) { // Copyright
-				try {
-					Integer.parseInt(s0.trim());			// Page?
-					
-					continue;
-				} catch (NumberFormatException e) {
-					// Okay
-				}
-				sb.append(s0);
-				sb.append(' ');
-			}
-		}
-		
-		String s = sb.toString();
-		
-		for (String msg : getSections(s, "CCN\\d{4}")) {
-			String key = msg.substring(0, 7);
-			char sev = 'I';
-			String name = msg.substring(8).trim().replace("\"", "").replace("\\", "");
+	
+	private void createRulesFromString(String s, String split, int splitLength) throws IOException {
+		for (String msg : getSections(s, split)) {
+			String key = msg.substring(0, splitLength).trim();
+			char sev = msg.charAt(splitLength);
 			
-			createRule(key, targetPackage, sev, name);
+			if (StringUtils.containsNone(String.valueOf(sev), "INWESU")) {
+				sev = 'I';
+			}
+			
+			String name;
+			String description;
+			
+			int explanation = msg.indexOf("Explanation");
+			
+			if (explanation > -1) {
+				name = msg.substring(splitLength + 1, explanation);
+				description = msg.substring(explanation);
+			} else {
+				name = msg.substring(splitLength + 1);
+				description = name;
+			}
+			
+			name = name.replace(System.lineSeparator(), " ").trim();
+			description = description.replace(System.lineSeparator(), " ").trim();
+			
+			writeRule(key, targetPackage, sev, name, description);
+		}
+	}
+	private List<String> getSections(String documentation, String msgPattern) {
+		List<String> result = new LinkedList<>();
+		
+		Pattern p = Pattern.compile(msgPattern, Pattern.MULTILINE);
+		
+		Matcher m = p.matcher(documentation);
+		
+		m.find();
+		int sta = m.start();
+		
+		while (m.find()) {
+			int end = m.start();
+			result.add(documentation.substring(sta, end));
+			
+			sta = end;
+		}
+
+		return result;
+	}
+	private void writeRule(String key, String target, char sev, String name, String description) throws IOException {
+		if (rules.contains(key)) {
+			getLog().info("Rule " + key +" already added, skipping");
+
+			return;
 		}
 		
-		cbcdg01.close();
+		rules.add(key);
+		
+		String priority;
+		
+		switch (sev) {
+		case 'I':
+		case 'N':
+			priority = "INFO";
+			break;
+		case 'W':
+			priority = "MINOR";
+			break;
+		case 'E':
+			priority = "MAJOR";
+			break;
+		case 'S':
+			priority = "CRITICAL";
+			break;
+		case 'U':
+		default:
+			priority = "BLOCKER";
+			break;
+		}
+		
+		String escapedName = StringEscapeUtils.escapeJava(name);
+		String escapedDesc = StringEscapeUtils.escapeJava(description);
+		
+		String rule = MessageFormat.format(ruleTemplate, key, escapedName.substring(0, Math.min(escapedName.length(), 200)), escapedDesc, target, priority);
+		
+		Path dir = Paths.get(outputDirectory.getCanonicalPath(), targetPackage.replace('.', File.separatorChar));
+		
+		Files.createDirectories(dir);
+		
+		Path f = Paths.get(dir.toString(), key + ".java");
+		
+		Files.writeString(f, rule, StandardOpenOption.CREATE, StandardOpenOption.WRITE);
+		
+		++num;
 	}
+	
+	private static boolean containsAny(String line, String... contain) {
+		for (String p : contain) {
+			if (line.contains(p)) {
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
 	public void setDocument(File document) {
 		this.document = document;
 	}

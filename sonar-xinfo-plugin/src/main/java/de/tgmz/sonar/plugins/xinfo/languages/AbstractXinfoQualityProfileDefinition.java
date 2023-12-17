@@ -27,7 +27,7 @@ public abstract class AbstractXinfoQualityProfileDefinition implements BuiltInQu
 
 	@Override
 	public void define(Context context) {
-	    NewBuiltInQualityProfile profile = context.createBuiltInQualityProfile("Xinfo Rules", lang.getKey());
+	    NewBuiltInQualityProfile profile = context.createBuiltInQualityProfile("XINFO way", lang.getKey());
 	    profile.setDefault(false);
 	    
 		RuleFactory.getInstance().getRules(lang).forEach(s -> profile.activateRule(lang.getRepoKey(), s.getSimpleName()));

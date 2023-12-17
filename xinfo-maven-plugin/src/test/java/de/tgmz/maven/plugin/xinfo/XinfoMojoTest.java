@@ -67,10 +67,10 @@ public class XinfoMojoTest {
 	@Parameters(name = "{index}: Check for language [{0}]")
 	public static Collection<Object[]> data() {
 		Object[][] data = new Object[][] {
-				{ "asm", "ibm/Assembler/asmp1021.pdf" },
-				{ "cobol", "ibm/cobol/ErrMsg.txt" },
-				{ "ccpp", "ibm/ccpp/cbcdg01_v2r4.pdf" },
-				{ "pli", "ibm/pli/Messages and Codes.pdf" },
+				{ "cobol", "../ibm/cobol/ErrMsg.txt" },
+				{ "asm", "../ibm/Assembler/asmp1021.pdf" },
+				{ "ccpp", "../ibm/ccpp/cbcdg01_v2r4.pdf" },
+				{ "pli", "../ibm/pli/Messages and Codes.pdf" },
 		};
 		return Arrays.asList(data);
 	}
