@@ -41,7 +41,7 @@ import org.apache.pdfbox.util.PDFTextStripper;
 
 @Mojo(name = "generate", defaultPhase = LifecyclePhase.GENERATE_SOURCES)
 public class XinfoMojo extends AbstractMojo {
-	private static final String IBM_COPYRIGTH = "© Copyright IBM Corp.";
+	private static final String IBM_COPYRIGHT = "© Copyright IBM Corp.";
 	private String ruleTemplate;
 	private Set<String> rules = new HashSet<>();
 			
@@ -97,7 +97,7 @@ public class XinfoMojo extends AbstractMojo {
 				, new String[] {"Bibliography", "Chapter 1. Compiler Informational Messages"}
 				, "Chapter 7. Condition codes"
 				, "Enterprise PL/I for z/OS: Enterprise PL/I for z/OS Messages and Codes"
-				, IBM_COPYRIGTH);
+				, IBM_COPYRIGHT);
 		
 		createRulesFromString(s, "^IBM\\d{4}I\\s[IWESU]\\s", 9);
 		createRulesFromString(s, "^IBM\\d{4}\\s", 7);	//Code Generation Messages (5000-5999)
@@ -106,20 +106,23 @@ public class XinfoMojo extends AbstractMojo {
 		String s = convertPdf(document
 				, new String[] {"Appendix F. High Level Assembler messages", "Message not known"}
 				, "Appendix G. User interface macros"
-				, IBM_COPYRIGTH
+				, IBM_COPYRIGHT
 				, "High Level Assembler for z/OS & z/VM & z/VSE: Programmer's Guide"
 				, "•");
 		
 		createRulesFromString(s, "^ASMA\\d{3}[INWESCU]\\s", 7);
+		createRulesFromString(s, "^ASMACMS\\d{3}E\\s", 10);	//ASMAHL Command Error Messages (CMS)
 	}
 	private void generateCcpp() throws IOException {
 		String s = convertPdf(document
 				, new String[] {"CCN0000"}
 				, "Appendix A. Accessibility"
-				, IBM_COPYRIGTH
+				, IBM_COPYRIGHT
 				, "z/OS: z/OS XL C/C++ Messages");
 		
-		createRulesFromString(s, "^CCN\\d{4}", 7);
+		createRulesFromString(s, "^CCN\\d{4}\\s", 7);
+		createRulesFromString(s, "^EDC\\d{4}\\s\\d{2}\\s", 10);	//DSECT utility messages
+		createRulesFromString(s, "^CDA\\d{4}\\s", 7);			//CDAHLASM & CDADBGLD utility messages
 	}
 	
 	private void generateCobol() throws IOException {
@@ -197,7 +200,7 @@ public class XinfoMojo extends AbstractMojo {
 	
 	private void createRulesFromString(String s, String split, int splitLength) throws IOException {
 		for (String msg : getSections(s, split)) {
-			String key = msg.substring(0, splitLength).trim();
+			String key = msg.substring(0, splitLength).trim().replace(" ", "_");
 			char sev = msg.charAt(splitLength);
 			
 			if (StringUtils.containsNone(String.valueOf(sev), "INWESU")) {
