@@ -93,36 +93,32 @@ public class XinfoMojo extends AbstractMojo {
 	}
 	
 	private void generatePli() throws IOException {
-		String s = convertPdf(document
-				, new String[] {"Bibliography", "Chapter 1. Compiler Informational Messages"}
-				, "Chapter 7. Condition codes"
-				, "Enterprise PL/I for z/OS: Enterprise PL/I for z/OS Messages and Codes"
-				, IBM_COPYRIGHT);
+		String s = stripPdf(document
+				, 9
+				, 185
+				, IBM_COPYRIGHT
+				, "Enterprise PL/I for z/OS: Enterprise PL/I for z/OS Messages and Codes");
 		
-		createRulesFromString(s, "^IBM\\d{4}I\\s[IWESU]\\s", 9);
-		createRulesFromString(s, "^IBM\\d{4}\\s", 7);	//Code Generation Messages (5000-5999)
+		createRulesFromString(s, "(^IBM\\d{4}I\\s[IWESU]\\s)|(^IBM\\d{4}\\s)");
 	}
 	private void generateAssembler() throws IOException {
-		String s = convertPdf(document
-				, new String[] {"Appendix F. High Level Assembler messages", "Message not known"}
-				, "Appendix G. User interface macros"
+		String s = stripPdf(document
+				, 322
+				, 48
 				, IBM_COPYRIGHT
 				, "High Level Assembler for z/OS & z/VM & z/VSE: Programmer's Guide"
 				, "•");
 		
-		createRulesFromString(s, "^ASMA\\d{3}[INWESCU]\\s", 7);
-		createRulesFromString(s, "^ASMACMS\\d{3}E\\s", 10);	//ASMAHL Command Error Messages (CMS)
+		createRulesFromString(s, "(^ASMA\\d{3}[INWESCU]\\s)|(^ASMACMS\\d{3}E\\s)");
 	}
 	private void generateCcpp() throws IOException {
-		String s = convertPdf(document
-				, new String[] {"CCN0000"}
-				, "Appendix A. Accessibility"
+		String s = stripPdf(document
+				, 15
+				, 341
 				, IBM_COPYRIGHT
 				, "z/OS: z/OS XL C/C++ Messages");
 		
-		createRulesFromString(s, "^CCN\\d{4}\\s", 7);
-		createRulesFromString(s, "^EDC\\d{4}\\s\\d{2}\\s", 10);	//DSECT utility messages
-		createRulesFromString(s, "^CDA\\d{4}\\s", 7);			//CDAHLASM & CDADBGLD utility messages
+		createRulesFromString(s, "(^CCN\\d{4}\\s)|(EDC\\d{4}\\s\\d{2}\\s)|(^CDA\\d{4}\\s)");
 	}
 	
 	private void generateCobol() throws IOException {
@@ -163,24 +159,27 @@ public class XinfoMojo extends AbstractMojo {
 	}
 	/**
 	 * Converts a pdf to a string, cutting out some lines.
+	 * @param doc IBM documentation
+	 * @param fromPage strip all pages before
+	 * @param numPages number of pages to convert
+	 * @param exclude Strings to exclude from result (headers etc.)
+	 * @return the converted document as string
+	 * @throws IOException if the documentation cannot be read
 	 */
-	private String convertPdf(File doc, String[] from, String to, String... exclude) throws IOException {
+	private String stripPdf(File doc, int fromPage, int numPages, String... exclude) throws IOException {
 		PDDocument ibmMessagesAndCodes = PDDocument.load(doc);
+		
+		for (int i = 0; i < fromPage; ++i) {
+			ibmMessagesAndCodes.removePage(0);
+		}
+		
+		while (ibmMessagesAndCodes.removePage(numPages))
+			;
 		
 		PDFTextStripper pdfts = new PDFTextStripper();
 		
 		String s = pdfts.getText(ibmMessagesAndCodes);
 		
-		int idx;
-		
-		for (String delim : from) {
-			idx = s.indexOf(delim);
-			s = s.substring(idx);
-		}
-		
-		idx = s.indexOf(to);
-		s = s.substring(0, idx);
-
 		ibmMessagesAndCodes.close();
 		
 		Iterator<String> iterator = s.lines().iterator();
@@ -195,13 +194,22 @@ public class XinfoMojo extends AbstractMojo {
 				result.append(System.lineSeparator());
 			}
 		}
+		
 		return result.toString();
 	}
 	
-	private void createRulesFromString(String s, String split, int splitLength) throws IOException {
+	private void createRulesFromString(String s, String split) throws IOException {
+		Pattern p = Pattern.compile(split, Pattern.MULTILINE);
+		
 		for (String msg : getSections(s, split)) {
-			String key = msg.substring(0, splitLength).trim().replace(" ", "_");
-			char sev = msg.charAt(splitLength);
+			Matcher m = p.matcher(msg);
+			
+			m.find();
+			
+			int keyEnd = m.end();
+			
+			String key = msg.substring(0, keyEnd).trim().replace(" ", "_");
+			char sev = msg.charAt(keyEnd - 2);
 			
 			if (StringUtils.containsNone(String.valueOf(sev), "INWESU")) {
 				sev = 'I';
@@ -213,10 +221,10 @@ public class XinfoMojo extends AbstractMojo {
 			int explanation = msg.indexOf("Explanation");
 			
 			if (explanation > -1) {
-				name = msg.substring(splitLength + 1, explanation);
+				name = msg.substring(keyEnd, explanation);
 				description = msg.substring(explanation);
 			} else {
-				name = msg.substring(splitLength + 1);
+				name = msg.substring(keyEnd);
 				description = name;
 			}
 			
@@ -242,6 +250,8 @@ public class XinfoMojo extends AbstractMojo {
 			
 			sta = end;
 		}
+		
+		result.add(documentation.substring(sta));
 
 		return result;
 	}
