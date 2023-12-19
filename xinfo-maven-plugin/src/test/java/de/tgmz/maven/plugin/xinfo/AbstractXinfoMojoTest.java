@@ -14,26 +14,23 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
-import java.util.Arrays;
-import java.util.Collection;
 
+import org.apache.maven.plugin.testing.MojoRule;
 import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.Test.None;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.ClassRule;
 
-@RunWith(Parameterized.class)
-public class XinfoMojoTest extends AbstractXinfoMojoTest {
-	private String lang;
-	private String doc;
-	
-	public XinfoMojoTest(String lang, String doc) {
-		super();
-		this.lang = lang;
-		this.doc = doc;
-	}
+public abstract class AbstractXinfoMojoTest {
+	static XinfoMojo myMojo;
+	@ClassRule
+	public static MojoRule rule = new MojoRule() {
+		@Override
+		protected void before() throws Throwable {
+		}
+
+		@Override
+		protected void after() {
+		}
+	};
 	
 	@BeforeClass
 	public static void setupOnce() throws Exception {
@@ -42,23 +39,5 @@ public class XinfoMojoTest extends AbstractXinfoMojoTest {
 
 		myMojo = (XinfoMojo) rule.lookupConfiguredMojo(pom, "generate");
 		assertNotNull(myMojo);
-	}
-
-	@Test(expected = None.class)
-	public void testGenerate() throws Exception {
-		myMojo.setDocument(new File(doc));
-		myMojo.setLang(lang);
-		myMojo.execute();
-	}
-	
-	@Parameters(name = "{index}: Check for language [{0}]")
-	public static Collection<Object[]> data() {
-		Object[][] data = new Object[][] {
-				{ "cobol", "../ibm/cobol/ErrMsg.txt" },
-				{ "asm", "../ibm/Assembler/asmp1021.pdf" },
-				{ "ccpp", "../ibm/ccpp/cbcdg01_v2r4.pdf" },
-				{ "pli", "../ibm/pli/Messages and Codes.pdf" },
-		};
-		return Arrays.asList(data);
 	}
 }
