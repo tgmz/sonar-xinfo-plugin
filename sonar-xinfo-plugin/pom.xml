@@ -275,20 +275,6 @@
 				</executions>
 			</plugin>
 			<plugin>
-				<!-- UTF-8 bundles are not supported by Java, so they must be converted 
-					during build -->
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>native2ascii-maven-plugin</artifactId>
-				<version>1.0-beta-1</version>
-				<executions>
-					<execution>
-						<goals>
-							<goal>native2ascii</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
 				<artifactId>maven-resources-plugin</artifactId>
 				<version>3.1.0</version>
 				<executions>
@@ -318,111 +304,6 @@
 			<plugins>
 				<!--This plugin's configuration is used to store Eclipse m2e settings 
 					only. It has no influence on the Maven build itself. -->
-				<plugin>
-					<groupId>org.eclipse.m2e</groupId>
-					<artifactId>lifecycle-mapping</artifactId>
-					<version>1.0.0</version>
-					<configuration>
-						<lifecycleMappingMetadata>
-							<pluginExecutions>
-								<pluginExecution>
-									<pluginExecutionFilter>
-										<groupId>org.codehaus.mojo</groupId>
-										<artifactId>
-											native2ascii-maven-plugin
-										</artifactId>
-										<versionRange>
-											[1.0-beta-1,)
-										</versionRange>
-										<goals>
-											<goal>native2ascii</goal>
-										</goals>
-									</pluginExecutionFilter>
-									<action>
-										<ignore></ignore>
-									</action>
-								</pluginExecution>
-								<pluginExecution>
-									<pluginExecutionFilter>
-										<groupId>
-											org.apache.maven.plugins
-										</groupId>
-										<artifactId>
-											maven-compiler-plugin
-										</artifactId>
-										<versionRange>
-											[3.6.0,)
-										</versionRange>
-										<goals>
-											<goal>compile</goal>
-											<goal>testCompile</goal>
-										</goals>
-									</pluginExecutionFilter>
-									<action>
-										<ignore></ignore>
-									</action>
-								</pluginExecution>
-								<pluginExecution>
-									<pluginExecutionFilter>
-										<groupId>
-											org.codehaus.mojo
-										</groupId>
-										<artifactId>
-											jaxb2-maven-plugin
-										</artifactId>
-										<versionRange>
-											[2.3,)
-										</versionRange>
-										<goals>
-											<goal>xjc</goal>
-										</goals>
-									</pluginExecutionFilter>
-									<action>
-										<ignore></ignore>
-									</action>
-								</pluginExecution>
-								<pluginExecution>
-									<pluginExecutionFilter>
-										<groupId>
-											org.sonarsource.sonar-packaging-maven-plugin
-										</groupId>
-										<artifactId>
-											sonar-packaging-maven-plugin
-										</artifactId>
-										<versionRange>
-											[1.16,)
-										</versionRange>
-										<goals>
-											<goal>check</goal>
-										</goals>
-									</pluginExecutionFilter>
-									<action>
-										<ignore></ignore>
-									</action>
-								</pluginExecution>
-								<pluginExecution>
-									<pluginExecutionFilter>
-										<groupId>
-											org.codehaus.mojo
-										</groupId>
-										<artifactId>
-											exec-maven-plugin
-										</artifactId>
-										<versionRange>
-											[3.0.0,)
-										</versionRange>
-										<goals>
-											<goal>java</goal>
-										</goals>
-									</pluginExecutionFilter>
-									<action>
-										<ignore></ignore>
-									</action>
-								</pluginExecution>
-							</pluginExecutions>
-						</lifecycleMappingMetadata>
-					</configuration>
-				</plugin>
 			</plugins>
 		</pluginManagement>
 	</build>
