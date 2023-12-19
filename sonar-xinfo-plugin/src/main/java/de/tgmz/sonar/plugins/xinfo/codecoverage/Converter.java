@@ -38,13 +38,16 @@ import jakarta.xml.bind.Unmarshaller;
  * Transforms a Debug Tool code Coverage out into a Sonarqube Code Coverage Input.
  */
 public class Converter {
-	private static final Converter instance = new Converter();
+    private static class SingletonHelper {
+        private static final Converter INSTANCE = new Converter();
+    }
+
 	private static final de.tgmz.sonar.plugins.xinfo.generated.sonar.codecoverage.ObjectFactory OF 
 						= new de.tgmz.sonar.plugins.xinfo.generated.sonar.codecoverage.ObjectFactory();
 	private JAXBContext jaxbContext;
 	
 	public static Converter getInstance() {
-		return instance;
+		return SingletonHelper.INSTANCE;
 	}
 	
 	public void convert(File root, String ext, InputStream is, OutputStream os) throws ConverterException {

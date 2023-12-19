@@ -26,19 +26,16 @@ import io.github.classgraph.ScanResult;
  */
 public final class RuleFactory {
 	private static final Logger LOGGER = LoggerFactory.getLogger(RuleFactory.class);
-	private static RuleFactory instance;
+
+    private static class SingletonHelper {
+        private static final RuleFactory INSTANCE = new RuleFactory();
+    }
 
 	private RuleFactory() {
 	}
 
-	public static synchronized RuleFactory getInstance() {
-		if (instance == null) {
-			LOGGER.debug("Create new Factory instance");
-			
-			instance = new RuleFactory();
-		}
-
-		return instance;
+	public static RuleFactory getInstance() {
+		return SingletonHelper.INSTANCE;
 	}
 
 	public List<Class<?>> getRules(Language l) {
