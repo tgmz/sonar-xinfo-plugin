@@ -113,7 +113,7 @@
 						<!-- Specify the MyMojo parameter -->
 							<outputDirectory>${project.build.directory}/generated-sources/xinfo</outputDirectory>
 							<targetPackage>de.tgmz.sonar.plugins.xinfo.rules.generated.pli</targetPackage>
-							<document>${project.basedir}/ibm/pli/Messages and Codes.pdf</document>
+							<document>${project.basedir}/../ibm/pli/Messages and Codes.pdf</document>
 							<lang>pli</lang>
 						</configuration>
 					</execution>
@@ -126,7 +126,7 @@
 						<!-- Specify the MyMojo parameter -->
 							<outputDirectory>${project.build.directory}/generated-sources/xinfo</outputDirectory>
 							<targetPackage>de.tgmz.sonar.plugins.xinfo.rules.generated.asm</targetPackage>
-							<document>${project.basedir}/ibm/Assembler/asmp1021.pdf</document>
+							<document>${project.basedir}/../ibm/Assembler/asmp1021.pdf</document>
 							<lang>asm</lang>
 						</configuration>
 					</execution>
@@ -139,7 +139,7 @@
 						<!-- Specify the MyMojo parameter -->
 							<outputDirectory>${project.build.directory}/generated-sources/xinfo</outputDirectory>
 							<targetPackage>de.tgmz.sonar.plugins.xinfo.rules.generated.cbl</targetPackage>
-							<document>${project.basedir}/ibm/cobol/ErrMsg.txt</document>
+							<document>${project.basedir}/../ibm/cobol/ErrMsg.txt</document>
 							<lang>cobol</lang>
 						</configuration>
 					</execution>
@@ -152,7 +152,7 @@
 						<!-- Specify the MyMojo parameter -->
 							<outputDirectory>${project.build.directory}/generated-sources/xinfo</outputDirectory>
 							<targetPackage>de.tgmz.sonar.plugins.xinfo.rules.generated.ccpp</targetPackage>
-							<document>${project.basedir}/ibm/ccpp/cbcdg01_v2r4.pdf</document>
+							<document>${project.basedir}/../ibm/ccpp/cbcdg01_v2r4.pdf</document>
 							<lang>ccpp</lang>
 						</configuration>
 					</execution>

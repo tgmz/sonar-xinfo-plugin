@@ -1,5 +1,6 @@
 <JobCard>
-//* Tailor this job to your installation and it will print all COBOL messages to SYSPRINT
+//* Tailor this job to your installation and 
+//* it will print all COBOL messages to SYSPRINT
 //ECOB   EXEC PGM=IGYCRCTL,REGION=0M
 //STEPLIB  DD DISP=SHR,DSNAME=<HLQ.SIGYCOMP>
 //SYSUT1   DD UNIT=SYSALLDA,SPACE=(CYL,(1,10))
