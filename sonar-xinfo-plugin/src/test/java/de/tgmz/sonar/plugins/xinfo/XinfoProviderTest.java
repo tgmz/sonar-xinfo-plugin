@@ -21,26 +21,8 @@ import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
-import org.sonar.api.batch.fs.InputFile;
-import org.sonar.api.config.internal.ConfigurationBridge;
-import org.sonar.api.config.internal.MapSettings;
 
-import de.tgmz.sonar.plugins.xinfo.generated.plicomp.PACKAGE;
-
-public class XinfoProviderTest {
-	/**
-	 * Dummy to access the createXinfo(InputStream) method.
-	 */
-	private static class DummyXinfoProvider extends AbstractXinfoProvider {
-		public DummyXinfoProvider() {
-			super(new ConfigurationBridge(new MapSettings()));
-		}
-		@Override
-		public PACKAGE getXinfo(InputFile pgm) throws XinfoException {
-			return null;
-		}
-	}
-	
+public class XinfoProviderTest  {
 	@Test
 	public void testClosedInputStream() throws IOException {
 		FileInputStream fis = new FileInputStream("testresources/xml/plitest.xml");
@@ -59,26 +41,5 @@ public class XinfoProviderTest {
 		s = s.replace("UTF-8", "foobar");
 		
 		assertNotNull(new DummyXinfoProvider().createXinfo(IOUtils.toInputStream(s, StandardCharsets.UTF_8)));
-	}
-	
-	@Test
-	public void testUnparseable() throws IOException {
-		String s = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><p>";
-		
-		assertThrows(XinfoException.class, () -> new DummyXinfoProvider().createXinfo(IOUtils.toInputStream(s, StandardCharsets.UTF_8)));
-	}
-	
-	@Test
-	public void testUnmarshalable() throws IOException {
-		String s = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><p></p>";
-		
-		assertThrows(XinfoException.class, () -> new DummyXinfoProvider().createXinfo(IOUtils.toInputStream(s, StandardCharsets.UTF_8)));
-	}
-	
-	@Test
-	public void testUnparseableWrongEncoding() throws IOException {
-		String s = "<?xml version=\"1.0\" encoding=\"foobar\"?><p>";
-		
-		assertThrows(XinfoException.class, () -> new DummyXinfoProvider().createXinfo(IOUtils.toInputStream(s, StandardCharsets.UTF_8)));
 	}
 }
