@@ -12,8 +12,6 @@ package de.tgmz.sonar.plugins.xinfo.sensors;
 
 import java.util.Iterator;
 
-import javax.annotation.Nullable;
-
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,7 +42,13 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 		InputFile inputFile;
 		int line;
 		String ruleKey;
-		String message;		
+		String message;
+		Severity severity;
+		@Override
+		public String toString() {
+			return "Issue [inputFile=" + inputFile + ", line=" + line + ", ruleKey=" + ruleKey + ", message=" + message
+					+ ", severity=" + severity + "]";
+		}
 	}
 	private static final Logger LOGGER = LoggerFactory.getLogger(AbstractXinfoIssuesLoader.class);
 	protected final FileSystem fileSystem;
@@ -97,32 +101,7 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 			Issue issue = computeIssue(m, file);
 				
 			if (issue != null) {
-				Severity severity = null;
-					
-				String ruleKey = issue.ruleKey;
-					
-				if (lang == Language.CCPP) {
-					// The original rule key does not contain the severity. The severity is added in 
-					// XinfoFileProvider.getXinfoFromEvent() and is processed here.
-					switch (ruleKey.charAt(7)) {
-					case 'I':
-						severity = Severity.LOW;
-						break;
-					case 'W':
-						severity = Severity.MEDIUM;
-						break;
-					case 'E':
-					case 'S':
-					case 'U':
-					default:
-						severity = Severity.HIGH;
-						break;
-					}
-					
-					ruleKey = ruleKey.substring(0, 7);
-				}
-				
-				saveIssue(issue.inputFile, issue.line, ruleKey, issue.message, severity);
+				saveIssue(issue);
 			}
 		}
 	}
@@ -140,17 +119,21 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 		result.ruleKey = m.getMSGNUMBER();
 		
 		if (lang == Language.COBOL) {
+			// Sample COBOL: "IGYPS2145-E"
 			// Chars at 3 and 4 indicate the compile phase which issued the message
 			// In ErrMsg these chars are replaced by "XX"
-			result.ruleKey = result.ruleKey.substring(0, 3) + "XX" + result.ruleKey.substring(5, 9);	// remove severity
-		}
+			int idx = result.ruleKey.length();
 			
-		if (lang == Language.PLI) {
-			result.ruleKey = result.ruleKey.substring(0, 8);	// remove severity
-		}
+			result.severity = computeSeverity(result.ruleKey.charAt(idx - 1));
+			result.ruleKey = result.ruleKey.substring(0, 3) + "XX" + result.ruleKey.substring(5, idx - 2);
+		} else {
+			// Sample PL/I: "IBM1316I E"
+			// Sample HLA: "ASMA057E"
+			// Sample C/C++: "CCN3078W"
+			int idx = result.ruleKey.length();
 			
-		if (lang == Language.ASSEMBLER) {
-			result.ruleKey = result.ruleKey.substring(0, 7);	// remove severity
+			result.severity = computeSeverity(result.ruleKey.charAt(idx - 1));
+			result.ruleKey = result.ruleKey.substring(0, idx - 1).trim();
 		}
 			
 		if (XinfoUtil.isMainFile(msgFile, lang)) {
@@ -163,32 +146,46 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 		return result;
 	}
 
-	private void saveIssue(final InputFile inputFile, int line, String ruleKeyString, final String message, @Nullable Severity severity) {
-		LOGGER.debug("Save issue {} for file {} on line {}", ruleKeyString, inputFile, line);
+	private void saveIssue(final Issue issue) {
+		LOGGER.debug("Save issue {}", issue);
 		
-		RuleKey ruleKey = RuleKey.of(lang.getRepoKey(), ruleKeyString);
+		RuleKey ruleKey = RuleKey.of(lang.getRepoKey(), issue.ruleKey);
 
 		NewIssue newIssue = context.newIssue().forRule(ruleKey);
 		
-		if (severity != null) {
-			newIssue.overrideImpact(SoftwareQuality.RELIABILITY, severity);
+		if (issue.severity != null) {
+			newIssue.overrideImpact(SoftwareQuality.RELIABILITY, issue.severity);
 		}
 		
-		NewIssueLocation primaryLocation = newIssue.newLocation().on(inputFile).message(message);
+		NewIssueLocation primaryLocation = newIssue.newLocation().on(issue.inputFile).message(issue.message);
 		
-		int lineToSave = line;
+		int lineToSave = issue.line;
 		
 		if (lineToSave > 0) {
-			int maxLine = inputFile.lines();
+			int maxLine = issue.inputFile.lines();
 			if (lineToSave > maxLine) {
-				LOGGER.info("Linenumber {} for {} is outside range. It was reduced to {}", lineToSave, inputFile, maxLine);
+				LOGGER.info("Linenumber for issue {} is outside range. It was reduced to {}", issue, maxLine);
 				
-				lineToSave = inputFile.lines();
+				lineToSave = issue.inputFile.lines();
 			}
 			
-			primaryLocation.at(inputFile.selectLine(lineToSave));
+			primaryLocation.at(issue.inputFile.selectLine(lineToSave));
 		}
 		
 		newIssue.at(primaryLocation).save();
+	}
+	private static Severity computeSeverity(char c) {
+		switch (c) {
+		case 'I':
+			return Severity.LOW;
+		case 'W':
+			return Severity.MEDIUM;
+		case 'E':
+		case 'S':
+		case 'U':
+		default:
+			return Severity.HIGH;
+		}
+
 	}
 }

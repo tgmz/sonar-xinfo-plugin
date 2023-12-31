@@ -64,6 +64,15 @@
 
 	<inceptionYear>2016</inceptionYear>
 
+	<dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.13.2</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
 	<profiles>
 		<profile>
 			<id>cc</id>
@@ -116,7 +125,7 @@
 		<profile>
 			<id>dc</id>
 			<properties>
-				<dependency-check.version>8.4.2</dependency-check.version>
+				<dependency-check.version>9.0.7</dependency-check.version>
 				<dependency-check.suppressionFile></dependency-check.suppressionFile>
 				<sonar.dependencyCheck.htmlReportPath>${project.build.directory}/dependency-check-report.html</sonar.dependencyCheck.htmlReportPath>
 			</properties>
@@ -185,20 +194,16 @@
 									</licenseFamilies>
 									<excludes combine.children="append">
 										<!-- Eclipse stuff -->
-										<exclude>**/.project</exclude>
 										<!-- z/OS stuff w/o comments -->
-										<exclude>**/*.pli</exclude>
-										<exclude>**/*.cbl</exclude>
 										<!-- Generated -->
 										<!-- Maven -->
-										<exclude>target/**</exclude>
 										<!-- Not distributed -->
 										<!-- Templates -->
 										<!-- Test resources -->
 										<exclude>testresources/**</exclude>
-										<exclude>src/test/resources/**</exclude>
+										<exclude>src/test/resources/</exclude>
 										<!-- IBM stuff -->
-										<exclude>ibm/**</exclude>
+										<exclude>ibm/cobol/**</exclude>
 										<exclude>src/main/dtd/dtcc.dtd</exclude>
 										<exclude>src/main/dtd/plicomp.dtd</exclude>
 										<!-- Sonarsource stuff -->

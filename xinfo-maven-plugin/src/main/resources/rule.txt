@@ -14,7 +14,8 @@ import org.sonar.check.Rule;
 import org.sonar.check.Priority;
 
 @Rule(key = "{0}"
-	, priority = {4}
+	, priority = Priority.{4}
+	, tags = '{'"xinfo"'}'
 	, name = "{1}"
 	, description = "{2}")
 public class {0} '{'
