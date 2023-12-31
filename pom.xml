@@ -138,7 +138,10 @@
 						<configuration>
 							<assemblyAnalyzerEnabled>false</assemblyAnalyzerEnabled>
 							<centralAnalyzerEnabled>false</centralAnalyzerEnabled>
-							<skipProvidedScope>false</skipProvidedScope>
+							<!-- Make sure xinfo plugins are shipped w/o vulnerabilities -->
+							<failBuildOnCVSS>0</failBuildOnCVSS>
+							<!-- Vulnerabilities in provided dependencies are not our business :-) -->
+							<skipProvidedScope>true</skipProvidedScope>
 							<failOnError>true</failOnError>
 							<formats>
 								<format>HTML</format>
@@ -161,7 +164,7 @@
 			</build>
 		</profile>
 		<profile>
-			<id>release-audit-tool</id>
+			<id>rat</id>
 			<build>
 				<plugins>
 					<plugin>
