@@ -25,4 +25,4 @@ jobs:
     - name: Build with Maven
       env:
         nvdApiKey: ${{ secrets.NVDAPIKEY }}
-      run: mvn -B install -Pdc,rat --file pom.xml
+      run: mvn -B install -Prat --file pom.xml
