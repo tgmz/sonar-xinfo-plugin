@@ -96,7 +96,7 @@
 			<plugin>
 				<groupId>de.tgmz</groupId>
 				<artifactId>xinfo-maven-plugin</artifactId>
-				<version>1.0.0-SNAPSHOT</version>
+				<version>1.1.0-SNAPSHOT</version>
 				<executions>
 					<execution>
 						<id>xinfo-pli</id>
@@ -108,6 +108,7 @@
 							<outputDirectory>${project.build.directory}/generated-sources/xinfo</outputDirectory>
 							<targetPackage>de.tgmz.sonar.plugins.xinfo.rules.generated.pli</targetPackage>
 							<document>${project.basedir}/../ibm/pli/Messages and Codes.pdf</document>
+							<sysuexit>${project.basedir}/../ibm/pli/SYSUEXIT</sysuexit>
 							<lang>pli</lang>
 						</configuration>
 					</execution>
@@ -405,25 +406,6 @@
 										</versionRange>
 										<goals>
 											<goal>check</goal>
-										</goals>
-									</pluginExecutionFilter>
-									<action>
-										<ignore></ignore>
-									</action>
-								</pluginExecution>
-								<pluginExecution>
-									<pluginExecutionFilter>
-										<groupId>
-											org.codehaus.mojo
-										</groupId>
-										<artifactId>
-											exec-maven-plugin
-										</artifactId>
-										<versionRange>
-											[3.0.0,)
-										</versionRange>
-										<goals>
-											<goal>java</goal>
 										</goals>
 									</pluginExecutionFilter>
 									<action>

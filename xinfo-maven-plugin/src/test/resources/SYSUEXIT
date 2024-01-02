@@ -1,0 +1,9 @@
+  Fac Id   Msg No   Severity   Suppress   Comment
++--------+--------+----------+----------+--------------------------------
+  'IBM'     1042       -1          1      String spans multiple lines
+  'IBM'     1044       -1          1      FIXED BIN 7 mapped to 1 byte
+  'IBM'     1047        8          0      Order inhibits optimization
+  'IBM'     1052       -1          1      Nodescriptor with * extent arg
+  'IBM'     1059        0          0      Select without OTHERWISE
+  'IBM'     1169        0          1      Precision of result determined
+  'IBM'     1091        4          0      FIXED BIN precision less than 
