@@ -24,7 +24,9 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -42,17 +44,24 @@ import org.apache.pdfbox.util.PDFTextStripper;
 @Mojo(name = "generate", defaultPhase = LifecyclePhase.GENERATE_SOURCES)
 public class XinfoMojo extends AbstractMojo {
 	private static final String IBM_COPYRIGHT = "© Copyright IBM Corp.";
+	private static class Sysuexit {
+		boolean suppress;
+		int severity;
+	}
 	private String ruleTemplate;
 	private Set<String> rules = new HashSet<>();
+	private Map<String, Sysuexit> ibmuexit = new TreeMap<>();
 			
 	@Parameter(defaultValue = "${project.build.directory}", property = "outputDir", required = true)
 	private File outputDirectory;
 	@Parameter(defaultValue = "de.tgmz.xinfo.rules", property = "targetPackage", required = true)
 	private String targetPackage;
-	@Parameter(defaultValue = "../ibm/Assembler/asmp1021.pdf", property = "document", required = true)
+	@Parameter(property = "document", required = true)
 	private File document;
-	@Parameter(defaultValue = "asm", property = "lang", required = true)
+	@Parameter(property = "lang", required = true)
 	private String lang;
+	@Parameter(property = "sysuexit", required = false)
+	private File sysuexit;
 	private int num;
 
 	@Override
@@ -100,6 +109,14 @@ public class XinfoMojo extends AbstractMojo {
 	}
 	
 	private void generatePli() throws IOException {
+		if (sysuexit != null && sysuexit.exists() && sysuexit.isFile()) {
+			initExit();
+		} else {
+			getLog().info("SYSUEXIT file not provided or not found. Default severities apply");
+			
+			ibmuexit = new TreeMap<>();
+		}
+		
 		String s = stripPdf(document
 				, 9
 				, 185
@@ -267,33 +284,25 @@ public class XinfoMojo extends AbstractMojo {
 	}
 	private void writeRule(String key, String target, char sev, String name, String description) throws IOException {
 		if (rules.contains(key)) {
-			getLog().warn("Rule " + key +" already added, skipping");
+			getLog().warn("Rule " + key + " already added, skipping");
 
 			return;
 		}
 		
-		rules.add(key);
+		Sysuexit se = ibmuexit.get(key);
 		
 		String priority;
 		
-		switch (sev) {
-		case 'I':
-		case 'N':
-			priority = "INFO";
-			break;
-		case 'W':
-			priority = "MINOR";
-			break;
-		case 'E':
-			priority = "MAJOR";
-			break;
-		case 'S':
-			priority = "CRITICAL";
-			break;
-		case 'U':
-		default:
-			priority = "BLOCKER";
-			break;
+		if (se != null) {
+			if (se.suppress) {
+				getLog().debug("Rule " + key + " suppressed");
+				return;
+			} else {
+				priority = computeSeverity(sev, se.severity);
+				getLog().debug("Severity for rule " + key + " rewritten to " + priority);
+			}
+		} else {
+			priority = computeSeverity(sev, -1);
 		}
 		
 		String escapedName = StringEscapeUtils.escapeJava(name);
@@ -321,11 +330,75 @@ public class XinfoMojo extends AbstractMojo {
 		
 		return false;
 	}
+	private void initExit() {
+		try (InputStream is = new FileInputStream(sysuexit)) {
+			getLog().info("Applying SYSUEXIT from " + sysuexit);
+			for (String s : IOUtils.readLines(is, StandardCharsets.UTF_8)) {
+				if (s.substring(2, 7).equals("'IBM'")) {
+					Sysuexit se = new Sysuexit();
+					
+					se.suppress = s.charAt(35) == '1';
+					se.severity = Integer.valueOf(s.substring(23, 25).strip());
+					
+					ibmuexit.put("IBM" + s.substring(12, 16) + "I", se);
+				}
+			}
+		} catch (IOException e) {
+			getLog().info("SYSUXIT not found. Default severities apply");
+			
+			ibmuexit = new TreeMap<>();
+		}
+	}
+	private String computeSeverity(char sev, int overrule) {
+		char c;
+		
+		switch (overrule) {
+		case 0:
+			c = 'I';
+			break;
+		case 4:
+			c = 'W';
+			break;
+		case 8:
+			c = 'E';
+			break;
+		case 12:
+			c = 'S';
+			break;
+		case 16:
+			c = 'U';
+			break;
+		case -1:
+		default:
+			c = sev;
+			break;
+		}
+		
+		switch (c) {
+		case 'I':
+		case 'N':
+			return("INFO");
+		case 'W':
+			return("MINOR");
+		case 'E':
+			return("MAJOR");
+		case 'S':
+			return("CRITICAL");
+		case 'U':
+		default:
+			return("BLOCKER");
+		}
+		
+	}
 	
 	public void setDocument(File document) {
 		this.document = document;
 	}
 	public void setLang(String lang) {
 		this.lang = lang;
+	}
+
+	public void setSysuexit(File sysuexit) {
+		this.sysuexit = sysuexit;
 	}
 }

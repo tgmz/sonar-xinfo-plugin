@@ -28,11 +28,13 @@ import org.junit.runners.Parameterized.Parameters;
 public class XinfoMojoTest extends AbstractXinfoMojoTest {
 	private String lang;
 	private String doc;
+	private String sysuexit;
 	
-	public XinfoMojoTest(String lang, String doc) {
+	public XinfoMojoTest(String lang, String doc, String sysuexit) {
 		super();
 		this.lang = lang;
 		this.doc = doc;
+		this.sysuexit = sysuexit;
 	}
 	
 	@BeforeClass
@@ -48,16 +50,18 @@ public class XinfoMojoTest extends AbstractXinfoMojoTest {
 	public void testGenerate() throws Exception {
 		myMojo.setDocument(new File(doc));
 		myMojo.setLang(lang);
+		myMojo.setSysuexit(sysuexit != null ? new File(sysuexit) : null);
 		myMojo.execute();
 	}
 	
 	@Parameters(name = "{index}: Check for language [{0}]")
 	public static Collection<Object[]> data() {
 		Object[][] data = new Object[][] {
-				{ "cobol", "../ibm/cobol/ErrMsg.txt" },
-				{ "asm", "../ibm/Assembler/asmp1021.pdf" },
-				{ "ccpp", "../ibm/ccpp/cbcdg01_v2r4.pdf" },
-				{ "pli", "../ibm/pli/Messages and Codes.pdf" },
+				{ "cobol", "../ibm/cobol/ErrMsg.txt", null },
+				{ "asm", "../ibm/Assembler/asmp1021.pdf", null },
+				{ "ccpp", "../ibm/ccpp/cbcdg01_v2r4.pdf", null },
+				{ "pli", "../ibm/pli/Messages and Codes.pdf", "src/test/resources/SYSUEXIT" },
+				{ "pli", "../ibm/pli/Messages and Codes.pdf", "src/test/resources" },
 		};
 		return Arrays.asList(data);
 	}

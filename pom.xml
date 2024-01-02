@@ -208,6 +208,7 @@
 										<exclude>src/test/resources/</exclude>
 										<!-- IBM stuff -->
 										<exclude>ibm/cobol/**</exclude>
+										<exclude>ibm/pli/SYSUEXIT</exclude>
 										<exclude>src/main/dtd/dtcc.dtd</exclude>
 										<exclude>src/main/dtd/plicomp.dtd</exclude>
 										<!-- Sonarsource stuff -->
