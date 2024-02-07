@@ -24,6 +24,7 @@ public final class XinfoConfig {
 	public static final String XINFO_ROOT = "sonar.xinfo.root.xinfo";
 	public static final String XINFO_CPD_OFF = "sonar.xinfo.cpd.off";
 	public static final String XINFO_ENCODING = "sonar.xinfo.encoding";
+	public static final String XINFO_LOG_THRESHOLD = "sonar.xinfo.log.threshold";
 	public static final String CATEGORY = "Xinfo";
 
 	private XinfoConfig() {
@@ -47,6 +48,10 @@ public final class XinfoConfig {
 			, PropertyDefinition.builder(XINFO_ENCODING)
 				.name("EncodingXinfo")
 				.description("XINFO encoding")
+				.category(CATEGORY).build()
+			, PropertyDefinition.builder(XINFO_LOG_THRESHOLD)
+				.name("LogThresholdXinfo")
+				.description("XINFO log threshold")
 				.category(CATEGORY).build()
 		);
 	}

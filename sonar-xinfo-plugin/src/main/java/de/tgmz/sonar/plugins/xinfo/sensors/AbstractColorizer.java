@@ -55,6 +55,8 @@ public abstract class AbstractColorizer<T extends IColorizing> implements Sensor
 	public void execute(final SensorContext context) {
 	    FileSystem fs = context.fileSystem();
 	    
+	    int threshold = context.config().getInt(XinfoConfig.XINFO_LOG_THRESHOLD).orElse(100);
+	    
 		int ctr = 0;
 		
 	    for (InputFile inputFile : fs.inputFiles(fs.predicates().hasLanguage(lang.getKey()))) {
@@ -82,7 +84,7 @@ public abstract class AbstractColorizer<T extends IColorizing> implements Sensor
 					newHighlighting.highlight(newRange, hd.getType());
 				}
 	
-				if (++ctr % 100 == 0) {
+				if (++ctr % threshold == 0) {
 					LOGGER.info("{} files processed, current is {}", ctr, inputFile);
 				}
 				

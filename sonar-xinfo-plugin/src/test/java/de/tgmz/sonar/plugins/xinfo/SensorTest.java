@@ -54,6 +54,7 @@ public class SensorTest {
 	public static void setupOnce() throws IOException {
 		MapSettings ms = new MapSettings();
 		ms.setProperty(XinfoConfig.XINFO_ROOT, LOC + File.separator +"xml");
+		ms.setProperty(XinfoConfig.XINFO_LOG_THRESHOLD, "1");
 		
 		File baseDir = new File(LOC);
 		
