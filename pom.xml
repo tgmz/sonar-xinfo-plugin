@@ -80,7 +80,7 @@
 				<!-- Properties to enable jacoco code coverage analysis -->
 				<sonar.core.codeCoveragePlugin>jacoco</sonar.core.codeCoveragePlugin>
 				<sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
-				<sonar.jacoco.reportPaths>target/jacoco.exec</sonar.jacoco.reportPaths>
+				<sonar.coverage.jacoco.xmlReportPaths>${project.build.directory}/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
 			</properties>
 			<build>
 				<plugins>
@@ -98,23 +98,14 @@
 							</execution>
 							<execution>
 								<id>report</id>
-								<phase>prepare-package</phase>
 								<goals>
 									<goal>report</goal>
 								</goals>
-							</execution>
-							<execution>
-								<id>post-unit-test</id>
 								<phase>test</phase>
-								<goals>
-									<goal>report</goal>
-								</goals>
 								<configuration>
-									<!-- Sets the path to the file which contains the execution data. -->
-
-									<dataFile>target/jacoco.exec</dataFile>
-									<!-- Sets the output directory for the code coverage report. -->
-									<outputDirectory>target/jacoco-ut</outputDirectory>
+									<formats>
+										<format>XML</format>
+									</formats>
 								</configuration>
 							</execution>
 						</executions>
