@@ -28,6 +28,7 @@ import org.sonar.api.rule.RuleKey;
 
 import de.tgmz.sonar.plugins.xinfo.XinfoException;
 import de.tgmz.sonar.plugins.xinfo.XinfoProviderFactory;
+import de.tgmz.sonar.plugins.xinfo.config.XinfoConfig;
 import de.tgmz.sonar.plugins.xinfo.generated.plicomp.MESSAGE;
 import de.tgmz.sonar.plugins.xinfo.generated.plicomp.PACKAGE;
 import de.tgmz.sonar.plugins.xinfo.languages.Language;
@@ -72,6 +73,8 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 
 		this.context = aContext;
 		
+	    int threshold = context.config().getInt(XinfoConfig.XINFO_LOG_THRESHOLD).orElse(100);
+	    
 		Iterator<InputFile> fileIterator = fileSystem.inputFiles(fileSystem.predicates().hasLanguage(lang.getKey())).iterator();
 
 		int ctr = 0;
@@ -90,7 +93,7 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 				
 			createFindings(p, inputFile);
 			
-			if (++ctr % 100 == 0) {
+			if (++ctr % threshold == 0) {
 				LOGGER.info("{} files processed, current is {}", ctr, inputFile);
 			}
 		}
