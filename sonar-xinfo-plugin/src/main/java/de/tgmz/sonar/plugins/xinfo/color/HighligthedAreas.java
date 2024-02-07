@@ -18,21 +18,21 @@ import java.util.List;
  * Highlighted areas.
  */
 public class HighligthedAreas {
-	private List<ColorizingData> areas;
+	private List<ColorizingData> colorizings;
 
 	public HighligthedAreas() {
-		areas = new LinkedList<>();
+		colorizings = new LinkedList<>();
 	}
-	public List<ColorizingData> getAreas() {
-		return areas;
+	public List<ColorizingData> getColorizings() {
+		return colorizings;
 	}
 	public void add(ColorizingData t) {
-		for (Iterator<ColorizingData> iterator = areas.iterator(); iterator.hasNext();) {
+		for (Iterator<ColorizingData> iterator = colorizings.iterator(); iterator.hasNext();) {
 			if (iterator.next().overlap(t)) {
 				return;
 			}
 		}
 		
-		areas.add(t);
+		colorizings.add(t);
 	}
 }

@@ -60,39 +60,43 @@ public abstract class AbstractColorizer<T extends IColorizing> implements Sensor
 		int ctr = 0;
 		
 	    for (InputFile inputFile : fs.inputFiles(fs.predicates().hasLanguage(lang.getKey()))) {
-			NewHighlighting newHighlighting = context.newHighlighting().onFile(inputFile);
-			
 			try {
-				int limit = Math.max(DEFAULT_LINES_LIMIT, context.config().getInt(XinfoConfig.COLORIZING_LIMIT).orElse(Integer.valueOf(5000)));
-				String charset = context.config().get(XinfoConfig.XINFO_ENCODING).orElse(System.getProperty("file.encoding"));
+				highlightFile(inputFile, context);
 				
-				IColorizing ph = getColorizing(inputFile, Charset.forName(charset), limit);
-	
-				for (Iterator<ColorizingData> iterator = ph.getAreas().getAreas().iterator(); iterator.hasNext();) {
-					ColorizingData hd = iterator.next();
-
-					TextRange newRange;
-					try {
-						//CHECKSTYLE DISABLE LineLength for 1 line
-						newRange = inputFile.newRange(hd.getStartLineNumber(), hd.getStartOffset(), hd.getEndLineNumber(), hd.getEndOffset());
-					} catch (IllegalArgumentException e) {
-						LOGGER.error("Invalid text range {}", hd);
-						
-						continue;
-					}
-				
-					newHighlighting.highlight(newRange, hd.getType());
-				}
-	
 				if (++ctr % threshold == 0) {
 					LOGGER.info("{} files processed, current is {}", ctr, inputFile);
 				}
 				
-				newHighlighting.save();
 			} catch (IOException e) {
 				LOGGER.error("Error creating highlighting on file " + inputFile, e);
 			}
 		}
+	}
+
+	private void highlightFile(final InputFile inputFile, final SensorContext context) throws IOException {
+		NewHighlighting newHighlighting = context.newHighlighting().onFile(inputFile);
+		
+		int limit = Math.max(DEFAULT_LINES_LIMIT, context.config().getInt(XinfoConfig.COLORIZING_LIMIT).orElse(Integer.valueOf(5000)));
+		String charset = context.config().get(XinfoConfig.XINFO_ENCODING).orElse(System.getProperty("file.encoding"));
+
+		IColorizing colorozing = getColorizing(inputFile, Charset.forName(charset), limit);
+
+		for (Iterator<ColorizingData> iterator = colorozing.getAreas().getColorizings().iterator(); iterator.hasNext();) {
+			ColorizingData cd = iterator.next();
+
+			TextRange newRange;
+			try {
+				newRange = inputFile.newRange(cd.getStartLineNumber(), cd.getStartOffset(), cd.getEndLineNumber(), cd.getEndOffset());
+			} catch (IllegalArgumentException e) {
+				LOGGER.error("Invalid text range {}", cd);
+				
+				continue;
+			}
+		
+			newHighlighting.highlight(newRange, cd.getType());
+		}
+
+		newHighlighting.save();
 	}
 	
 	/**
