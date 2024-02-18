@@ -15,14 +15,14 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.sonar.api.utils.log.Logger;
-import org.sonar.api.utils.log.Loggers;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Factory for secure DocumentBuilders.
  */
 public final class SecureDocumentBuilderFactory {
-	private static final Logger LOGGER = Loggers.get(SecureDocumentBuilderFactory.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(SecureDocumentBuilderFactory.class);
 	private DocumentBuilder documentBuilder;
 	private static SecureDocumentBuilderFactory instance;
 

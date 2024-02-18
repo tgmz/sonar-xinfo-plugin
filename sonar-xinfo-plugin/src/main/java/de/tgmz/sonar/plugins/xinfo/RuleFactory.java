@@ -12,8 +12,8 @@ package de.tgmz.sonar.plugins.xinfo;
 
 import java.util.List;
 
-import org.sonar.api.utils.log.Logger;
-import org.sonar.api.utils.log.Loggers;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sonar.check.Rule;
 
 import de.tgmz.sonar.plugins.xinfo.languages.Language;
@@ -25,7 +25,7 @@ import io.github.classgraph.ScanResult;
  * Factory for creating the sonar rules for a {@link Language}
  */
 public final class RuleFactory {
-	private static final Logger LOGGER = Loggers.get(RuleFactory.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(RuleFactory.class);
 	private static RuleFactory instance;
 
 	private RuleFactory() {
