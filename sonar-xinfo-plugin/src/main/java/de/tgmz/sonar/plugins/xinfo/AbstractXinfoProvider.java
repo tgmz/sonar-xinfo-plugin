@@ -24,8 +24,8 @@ import javax.xml.parsers.DocumentBuilder;
 
 import org.apache.commons.io.IOUtils;
 import org.sonar.api.config.Configuration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.sonar.api.utils.log.Logger;
+import org.sonar.api.utils.log.Loggers;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -40,7 +40,7 @@ import jakarta.xml.bind.Unmarshaller;
  * Fundamental implementation of a XinfoProvider.
  */
 public abstract class AbstractXinfoProvider implements IXinfoProvider {
-	private static final Logger LOGGER = LoggerFactory.getLogger(AbstractXinfoProvider.class);
+	private static final Logger LOGGER = Loggers.get(AbstractXinfoProvider.class);
 	private static final String PROLOGUE = "<?xml version='1.0' encoding='IBM-01141'?>\n<!DOCTYPE plicomp SYSTEM 'plicomp.dtd'>\n";
 	private DocumentBuilder documentBuilder;
 	private Unmarshaller unmarshaller;

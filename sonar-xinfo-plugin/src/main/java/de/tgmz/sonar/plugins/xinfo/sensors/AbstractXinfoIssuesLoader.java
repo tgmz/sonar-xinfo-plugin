@@ -13,18 +13,17 @@ package de.tgmz.sonar.plugins.xinfo.sensors;
 import java.util.Iterator;
 
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.batch.fs.InputFile;
+import org.sonar.api.batch.rule.Severity;
 import org.sonar.api.batch.sensor.Sensor;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.SensorDescriptor;
 import org.sonar.api.batch.sensor.issue.NewIssue;
 import org.sonar.api.batch.sensor.issue.NewIssueLocation;
-import org.sonar.api.issue.impact.Severity;
-import org.sonar.api.issue.impact.SoftwareQuality;
 import org.sonar.api.rule.RuleKey;
+import org.sonar.api.utils.log.Logger;
+import org.sonar.api.utils.log.Loggers;
 
 import de.tgmz.sonar.plugins.xinfo.XinfoException;
 import de.tgmz.sonar.plugins.xinfo.XinfoProviderFactory;
@@ -51,7 +50,7 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 					+ ", severity=" + severity + "]";
 		}
 	}
-	private static final Logger LOGGER = LoggerFactory.getLogger(AbstractXinfoIssuesLoader.class);
+	private static final Logger LOGGER = Loggers.get(AbstractXinfoIssuesLoader.class);
 	protected final FileSystem fileSystem;
 	protected SensorContext context;
 	private Language lang;
@@ -156,10 +155,6 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 
 		NewIssue newIssue = context.newIssue().forRule(ruleKey);
 		
-		if (issue.severity != null) {
-			newIssue.overrideImpact(SoftwareQuality.RELIABILITY, issue.severity);
-		}
-		
 		NewIssueLocation primaryLocation = newIssue.newLocation().on(issue.inputFile).message(issue.message);
 		
 		int lineToSave = issue.line;
@@ -180,14 +175,16 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 	private static Severity computeSeverity(char c) {
 		switch (c) {
 		case 'I':
-			return Severity.LOW;
+			return Severity.INFO;
 		case 'W':
-			return Severity.MEDIUM;
+			return Severity.MINOR;
 		case 'E':
+			return Severity.MAJOR;
 		case 'S':
+			return Severity.CRITICAL;
 		case 'U':
 		default:
-			return Severity.HIGH;
+			return Severity.BLOCKER;
 		}
 
 	}
