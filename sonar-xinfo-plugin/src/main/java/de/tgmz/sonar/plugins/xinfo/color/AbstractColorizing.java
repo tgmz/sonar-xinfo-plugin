@@ -14,19 +14,25 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.text.NumberFormat;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.IOUtils;
-import org.sonar.api.batch.fs.InputFile;
-import org.sonar.api.batch.sensor.highlighting.TypeOfText;
+import org.apache.commons.lang.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.sonar.api.batch.fs.InputFile;
+import org.sonar.api.batch.sensor.highlighting.TypeOfText;
 
 /**
  * Common functions for Syntax highlighting.
  */
 public abstract class AbstractColorizing implements IColorizing {
+    public static final ThreadLocal<NumberFormat> NF = ThreadLocal.withInitial(NumberFormat::getNumberInstance);
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(AbstractColorizing.class);
 
 	/** The areas to colorize. */
@@ -34,8 +40,6 @@ public abstract class AbstractColorizing implements IColorizing {
 	private String[] content;
 	private int limit;
 	
-    public static final ThreadLocal<NumberFormat> NF = ThreadLocal.withInitial(NumberFormat::getNumberInstance);
-
 	/**
 	 * Creates the areas of a file to color.
 	 * @param file the file to color
@@ -89,6 +93,36 @@ public abstract class AbstractColorizing implements IColorizing {
 			}
 		}
 	}
+	
+	protected void colorizeTokens(Pattern pattern, Map<TypeOfText, List<String>> colorTokens, int left, int right) {
+		for (int i = 0; i < Math.min(getLimit(), getContent().length); ++i) {
+			Matcher m = pattern.matcher(getContent()[i]);
+	
+			while (m.find()) {
+				String token = getContent()[i].substring(m.start(), m.end());
+		
+				if (m.end() <= left || m.start() >= right) {
+					continue;
+				}
+				
+				colorizeToken(colorTokens, i+1, m.start(), m.end(), token);
+			}
+		}
+	}
+	
+	private void colorizeToken(Map<TypeOfText, List<String>> colorTokens, int lineNumber, int startOffset, int endOffset, String token) {
+		if (NumberUtils.isNumber(token)) {
+			getAreas().add(new ColorizingData(lineNumber, startOffset, lineNumber, endOffset, token, TypeOfText.CONSTANT));
+		} else {
+			for (Entry<TypeOfText, List<String>> entry : colorTokens.entrySet()) {
+				if (entry.getValue().contains(token.toUpperCase(Locale.ROOT))) {
+					getAreas().add(new ColorizingData(lineNumber, startOffset, lineNumber, endOffset, token, entry.getKey()));
+				
+					break;
+				}
+			}
+		}
+	}
 
 	protected String[] getContent() {
 		return content;
@@ -96,5 +130,13 @@ public abstract class AbstractColorizing implements IColorizing {
 
 	protected int getLimit() {
 		return limit;
+	}
+
+	protected static ThreadLocal<NumberFormat> getNf() {
+		return NF;
+	}
+
+	protected static Logger getLogger() {
+		return LOGGER;
 	}
 }

@@ -13,17 +13,14 @@ package de.tgmz.sonar.plugins.xinfo.color.ccpp;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang.math.NumberUtils;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.sensor.highlighting.TypeOfText;
 
 import de.tgmz.sonar.plugins.xinfo.color.AbstractColorizing;
-import de.tgmz.sonar.plugins.xinfo.color.ColorizingData;
 
 /**
  * Syntax highlighting for PL/I files.
@@ -66,25 +63,6 @@ public class CCPPColorizing extends AbstractColorizing {
 		//Not yet implemented
 		
 		//Reserved words
-		for (int i = 0; i < Math.min(getLimit(), getContent().length); ++i) {
-			Matcher m = CCPP_WORD_PATTERN.matcher(getContent()[i]);
-		
-			while (m.find()) {
-				String token = getContent()[i].substring(m.start(), m.end());
-			
-				colorizeToken(i+1, m.start(), m.end(), token);
-			}
-		}
+		colorizeTokens(CCPP_WORD_PATTERN,  Collections.singletonMap(TypeOfText.KEYWORD, CCPP_KEYWORDS), -1, Integer.MAX_VALUE);
 	}
-	
-	private void colorizeToken(int lineNumber, int startOffset, int endOffset, String token) {
-		if (CCPP_KEYWORDS.contains(token.toUpperCase(Locale.ROOT))) {			
-			getAreas().add(new ColorizingData(lineNumber, startOffset, lineNumber, endOffset, token, TypeOfText.KEYWORD));
-		} else {
-			if (NumberUtils.isNumber(token)) {
-				getAreas().add(new ColorizingData(lineNumber, startOffset, lineNumber, endOffset, token, TypeOfText.CONSTANT));
-			}
-		}
-	}
-
 }

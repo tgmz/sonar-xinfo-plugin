@@ -13,12 +13,11 @@ package de.tgmz.sonar.plugins.xinfo.color.cobol;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang.math.NumberUtils;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.sensor.highlighting.TypeOfText;
 
@@ -58,30 +57,7 @@ public class CobolColorizing extends AbstractColorizing {
 		//Not yet implemented
 		
 		//Reserved words
-		for (int i = 0; i < Math.min(getLimit(), getContent().length); ++i) {
-			// Split the text by word characters and highlight keywords and numeric constants
-			Matcher m = COBOL_WORD_PATTERN.matcher(getContent()[i]);
-		
-			while (m.find()) {
-				String token = getContent()[i].substring(m.start(), m.end());
-				
-				if (m.end() <= 7 || m.start() >= 71) {
-					continue;
-				}
-			
-				colorizeToken(i+1, m.start(), m.end(), token);
-			}
-		}
-	}
-	
-	private void colorizeToken(int lineNumber, int startOffset, int endOffset, String token) {
-		if (KEYWORDS.contains(token.toUpperCase(Locale.ROOT))) {			
-			getAreas().add(new ColorizingData(lineNumber, startOffset, lineNumber, endOffset, token, TypeOfText.KEYWORD));
-		} else {
-			if (NumberUtils.isNumber(token)) {
-				getAreas().add(new ColorizingData(lineNumber, startOffset, lineNumber, endOffset, token, TypeOfText.CONSTANT));
-			}
-		}
+		colorizeTokens(COBOL_WORD_PATTERN, Collections.singletonMap(TypeOfText.KEYWORD, KEYWORDS), 7, 71);
 	}
 	
 	private void colorizeComments() {
