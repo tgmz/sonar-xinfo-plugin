@@ -22,10 +22,10 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.math.NumberUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.sensor.highlighting.TypeOfText;
+import org.sonar.api.utils.log.Logger;
+import org.sonar.api.utils.log.Loggers;
 
 /**
  * Common functions for Syntax highlighting.
@@ -33,7 +33,7 @@ import org.sonar.api.batch.sensor.highlighting.TypeOfText;
 public abstract class AbstractColorizing implements IColorizing {
     public static final ThreadLocal<NumberFormat> NF = ThreadLocal.withInitial(NumberFormat::getNumberInstance);
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(AbstractColorizing.class);
+	private static final Logger LOGGER = Loggers.get(AbstractColorizing.class);
 
 	/** The areas to colorize. */
 	private HighligthedAreas areas;
@@ -54,7 +54,7 @@ public abstract class AbstractColorizing implements IColorizing {
 		
 		List<String> readLines = IOUtils.readLines(file.inputStream(), charset);
 		
-		if (readLines.size() > limit && LOGGER.isInfoEnabled()) {
+		if (readLines.size() > limit) {
 			LOGGER.info("File {} containes {} lines. Syntax highlighting will be limited to {} lines"
 					, file.filename(), NF.get().format(readLines.size()), NF.get().format(this.limit));
 		}

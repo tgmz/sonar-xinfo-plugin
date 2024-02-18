@@ -28,8 +28,8 @@ import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.apache.commons.io.filefilter.WildcardFileFilter;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.config.Configuration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.sonar.api.utils.log.Logger;
+import org.sonar.api.utils.log.Loggers;
 
 import de.tgmz.sonar.plugins.xinfo.config.XinfoConfig;
 import de.tgmz.sonar.plugins.xinfo.generated.plicomp.FILE;
@@ -41,7 +41,7 @@ import de.tgmz.sonar.plugins.xinfo.generated.plicomp.PACKAGE;
  * Searches the filesystem for a suitable xinfo.xml file and parses it.
  */
 public class XinfoFileProvider extends AbstractXinfoProvider {
-	private static final Logger LOGGER = LoggerFactory.getLogger(XinfoFileProvider.class);
+	private static final Logger LOGGER = Loggers.get(XinfoFileProvider.class);
 	
 	public XinfoFileProvider(Configuration configuration) {
 		super(configuration);

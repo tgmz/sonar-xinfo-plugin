@@ -21,8 +21,8 @@ import org.sonar.api.batch.sensor.Sensor;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.SensorDescriptor;
 import org.sonar.api.batch.sensor.highlighting.NewHighlighting;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.sonar.api.utils.log.Logger;
+import org.sonar.api.utils.log.Loggers;
 
 import de.tgmz.sonar.plugins.xinfo.color.ColorizingData;
 import de.tgmz.sonar.plugins.xinfo.color.IColorizing;
@@ -35,7 +35,7 @@ import de.tgmz.sonar.plugins.xinfo.languages.Language;
  * @param <T> the colorizing scheme to use
  */
 public abstract class AbstractColorizer<T extends IColorizing> implements Sensor {
-	private static final Logger LOGGER = LoggerFactory.getLogger(AbstractColorizer.class);
+	private static final Logger LOGGER = Loggers.get(AbstractColorizer.class);
 	private static final int DEFAULT_LINES_LIMIT = 5000;
 	
 	private Language lang;
