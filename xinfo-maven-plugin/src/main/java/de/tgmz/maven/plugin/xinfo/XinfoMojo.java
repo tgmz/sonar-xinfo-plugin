@@ -295,11 +295,11 @@ public class XinfoMojo extends AbstractMojo {
 		
 		if (se != null) {
 			if (se.suppress) {
-				getLog().debug("Rule " + key + " suppressed");
+				getLog().debug("Rule " + key + " (" + name + ")" + " suppressed");
 				return;
 			} else {
 				priority = computeSeverity(sev, se.severity);
-				getLog().debug("Severity for rule " + key + " rewritten to " + priority);
+				getLog().debug("Severity for rule " + key + " (" + name + ")" + " rewritten to " + priority);
 			}
 		} else {
 			priority = computeSeverity(sev, -1);
