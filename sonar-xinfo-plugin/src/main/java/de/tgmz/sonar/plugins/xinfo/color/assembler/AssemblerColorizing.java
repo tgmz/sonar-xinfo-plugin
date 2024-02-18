@@ -14,11 +14,11 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang.math.NumberUtils;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.sensor.highlighting.TypeOfText;
 
@@ -72,30 +72,11 @@ public class AssemblerColorizing extends AbstractColorizing {
 		//Not yet implemented
 		
 		//Reserved words
-		for (int i = 0; i < getContent().length; ++i) {
-			// Split the text by word characters and highlight keywords and numeric constants
-			Matcher m = ASSEMBLER_WORD_PATTERN.matcher(getContent()[i]);
-			
-			while (m.find()) {
-				String token = getContent()[i].substring(m.start(), m.end());
-				
-				colorizeToken(i+1, m.start(), m.end(), token);
-			}
-		}
-	}
+		Map<TypeOfText, List<String>> colorTokens = new TreeMap<>();
+		colorTokens.put(TypeOfText.KEYWORD, INSTRUCTIONS);
+		colorTokens.put(TypeOfText.KEYWORD_LIGHT, BUILTIN);
 
-	private void colorizeToken(int lineNumber, int startOffset, int endOffset, String token) {
-		if (INSTRUCTIONS.contains(token.toUpperCase(Locale.ROOT))) {			
-			getAreas().add(new ColorizingData(lineNumber, startOffset, lineNumber, endOffset, token, TypeOfText.KEYWORD));
-		} else {
-			if (BUILTIN.contains(token.toUpperCase(Locale.ROOT))) {			
-				getAreas().add(new ColorizingData(lineNumber, startOffset, lineNumber, endOffset, token, TypeOfText.KEYWORD_LIGHT));
-			} else {
-				if (NumberUtils.isNumber(token)) {
-					getAreas().add(new ColorizingData(lineNumber, startOffset, lineNumber, endOffset, token, TypeOfText.CONSTANT));
-				}
-			}
-		}
+		colorizeTokens(ASSEMBLER_WORD_PATTERN, colorTokens, -1, Integer.MAX_VALUE);
 	}
 	
 	private void colorizeComments() {

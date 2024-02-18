@@ -14,16 +14,14 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
-import java.util.regex.Matcher;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang.math.NumberUtils;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.sensor.highlighting.TypeOfText;
 
 import de.tgmz.sonar.plugins.xinfo.color.AbstractColorizing;
-import de.tgmz.sonar.plugins.xinfo.color.ColorizingData;
 
 /**
  * Syntax highlighting for PL/I files.
@@ -74,33 +72,10 @@ public class PliColorizing extends AbstractColorizing {
 		//Not yet implemented
 		
 		//Reserved words
-		for (int i = 0; i < Math.min(getLimit(), getContent().length); ++i) {
-			Matcher m = PLI_WORD_PATTERN.matcher(getContent()[i]);
-		
-			while (m.find()) {
-				String token = getContent()[i].substring(m.start(), m.end());
-			
-				if (m.start() >= 71) {
-					continue;
-				}
-			
-				colorizeToken(i+1, m.start(), m.end(), token);
-			}
-		}
-	}
-	
-	private void colorizeToken(int lineNumber, int startOffset, int endOffset, String token) {
-		if (PLI_KEYWORDS.contains(token.toUpperCase(Locale.ROOT))) {			
-			getAreas().add(new ColorizingData(lineNumber, startOffset, lineNumber, endOffset, token, TypeOfText.KEYWORD));
-		} else {
-			if (PLI_BUILTIN.contains(token.toUpperCase(Locale.ROOT))) {			
-				getAreas().add(new ColorizingData(lineNumber, startOffset, lineNumber, endOffset, token, TypeOfText.KEYWORD_LIGHT));
-			} else {
-				if (NumberUtils.isNumber(token)) {
-					getAreas().add(new ColorizingData(lineNumber, startOffset, lineNumber, endOffset, token, TypeOfText.CONSTANT));
-				}
-			}
-		}
-	}
+		Map<TypeOfText, List<String>> colorTokens = new TreeMap<>();
+		colorTokens.put(TypeOfText.KEYWORD, PLI_KEYWORDS);
+		colorTokens.put(TypeOfText.KEYWORD_LIGHT, PLI_BUILTIN);
 
+		colorizeTokens(PLI_WORD_PATTERN, colorTokens, -1, 71);
+	}
 }
