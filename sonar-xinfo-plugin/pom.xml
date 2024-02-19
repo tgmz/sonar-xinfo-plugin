@@ -36,7 +36,7 @@
 		<dependency>
     		<groupId>org.sonarsource.api.plugin</groupId>
     		<artifactId>sonar-plugin-api</artifactId>
-			<version>10.4.0.2064</version>
+			<version>10.2.0.1908</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>

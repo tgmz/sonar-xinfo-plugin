@@ -10,7 +10,9 @@
   *******************************************************************************/
 package de.tgmz.sonar.plugins.xinfo.sensors;
 
+import java.util.Arrays;
 import java.util.Iterator;
+import java.util.Optional;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -29,6 +31,8 @@ import org.sonar.api.rule.RuleKey;
 import de.tgmz.sonar.plugins.xinfo.XinfoException;
 import de.tgmz.sonar.plugins.xinfo.XinfoProviderFactory;
 import de.tgmz.sonar.plugins.xinfo.config.XinfoConfig;
+import de.tgmz.sonar.plugins.xinfo.generated.plicomp.FILE;
+import de.tgmz.sonar.plugins.xinfo.generated.plicomp.FILEREFERENCETABLE;
 import de.tgmz.sonar.plugins.xinfo.generated.plicomp.MESSAGE;
 import de.tgmz.sonar.plugins.xinfo.generated.plicomp.PACKAGE;
 import de.tgmz.sonar.plugins.xinfo.languages.Language;
@@ -99,9 +103,9 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 		}
 	}
 
-	private void createFindings(PACKAGE p, InputFile file) {
+	private void createFindings(PACKAGE p, InputFile inputFile) {
 		for (MESSAGE m : p.getMESSAGE()) {
-			Issue issue = computeIssue(m, file);
+			Issue issue = computeIssue(m, p.getFILEREFERENCETABLE(), inputFile);
 				
 			if (issue != null) {
 				saveIssue(issue);
@@ -109,41 +113,66 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 		}
 	}
 	
-	private Issue computeIssue(MESSAGE m, InputFile inputFile) {
+	private Issue computeIssue(MESSAGE m, FILEREFERENCETABLE frt, InputFile inputFile) {
 		String msgFile = m.getMSGFILE();
 		
 		if (StringUtils.isEmpty(msgFile)) {
 			return null;
 		}
 		
-		Issue result = new Issue();
+		String message = m.getMSGTEXT();
+		String ruleKey = m.getMSGNUMBER();
 		
-		result.message = m.getMSGTEXT();
-		result.ruleKey = m.getMSGNUMBER();
+		int idx = ruleKey.length();
+		char sev = ruleKey.charAt(idx - 1);
 		
-		if (lang == Language.COBOL) {
-			// Sample COBOL: "IGYPS2145-E"
-			// Chars at 3 and 4 indicate the compile phase which issued the message
-			// In ErrMsg these chars are replaced by "XX"
-			int idx = result.ruleKey.length();
-			
-			result.severity = computeSeverity(result.ruleKey.charAt(idx - 1));
-			result.ruleKey = result.ruleKey.substring(0, 3) + "XX" + result.ruleKey.substring(5, idx - 2);
-		} else {
-			// Sample PL/I: "IBM1316I E"
-			// Sample HLA: "ASMA057E"
-			// Sample C/C++: "CCN3078W"
-			int idx = result.ruleKey.length();
-			
-			result.severity = computeSeverity(result.ruleKey.charAt(idx - 1));
-			result.ruleKey = result.ruleKey.substring(0, idx - 1).trim();
-		}
-			
+		Severity severity = computeSeverity(sev);
+		
+		ruleKey = lang == Language.COBOL ? 
+					// Sample COBOL: "IGYPS2145-E"
+					// Chars at 3 and 4 indicate the compile phase which issued the message
+					// In ErrMsg these chars are replaced by "XX"
+				ruleKey.substring(0, 3) + "XX" + ruleKey.substring(5, idx - 2) :
+					// Sample PL/I: "IBM1316I E"
+					// Sample HLA: "ASMA057E"
+					// Sample C/C++: "CCN3078W"
+				ruleKey.substring(0, idx - 1).trim();
+
+		Issue result = null;
+		
 		if (XinfoUtil.isMainFile(msgFile, lang)) {
+			result = new Issue();
+			
+			result.ruleKey = ruleKey;
+			result.severity = severity;
+			result.message = message;
 			result.line = Integer.parseInt(m.getMSGLINE());
 			result.inputFile = inputFile;
 		} else {
-			result = null;
+			Optional<String> optional = context.config().get(XinfoConfig.XINFO_INCLUDE_LEVEL);
+			
+			if (optional.isPresent()) {
+				String[] levels = optional.get().split(",");
+				
+				if (Arrays.asList(levels).contains(String.valueOf(sev))) {
+					try {
+						FILE includeFile = XinfoUtil.computeFilefromFileNumber(frt, m.getMSGFILE());
+						String includedFromLine = XinfoUtil.computeIncludedFromLine(frt, includeFile, lang);
+						
+						result = new Issue();
+							
+						result.ruleKey = ruleKey;
+						result.severity = severity;
+						result.message = message;
+						result.line = Integer.parseInt(includedFromLine);
+						result.inputFile = inputFile;
+							
+						LOGGER.debug("Message {} refers to file {}. It was moved to file {}", m.getMSGNUMBER(), includeFile.getFILENAME(), inputFile);
+					} catch (XinfoException e) {
+						LOGGER.warn("Cannot get main file for message {} in file {}", m.getMSGNUMBER(), inputFile);
+					}
+				}
+			}
 		}
 		
 		return result;

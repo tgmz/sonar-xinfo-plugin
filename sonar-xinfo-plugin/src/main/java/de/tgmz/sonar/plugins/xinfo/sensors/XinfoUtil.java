@@ -41,7 +41,7 @@ public final class XinfoUtil {
 
 	public static String computeIncludedFromLine(FILEREFERENCETABLE filereferencetable, FILE f, Language lang) throws XinfoException {
 		if (f.getINCLUDEDFROMFILE() == null || f.getINCLUDEDONLINE() == null) {
-			return null;
+			throw new XinfoException("Cannot compute line number");
 		}
 		
 		if ("1".equals(f.getINCLUDEDFROMFILE())) {
