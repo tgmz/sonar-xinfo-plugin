@@ -55,6 +55,7 @@ public class SensorTest {
 		MapSettings ms = new MapSettings();
 		ms.setProperty(XinfoConfig.XINFO_ROOT, LOC + File.separator +"xml");
 		ms.setProperty(XinfoConfig.XINFO_LOG_THRESHOLD, "1");
+		ms.setProperty(XinfoConfig.XINFO_INCLUDE_LEVEL, "I,W,E,S,U");
 		
 		File baseDir = new File(LOC);
 		
