@@ -12,8 +12,7 @@
 package de.tgmz.sonar.plugins.xinfo;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNotEquals;
 
 import org.junit.Test;
 
@@ -88,12 +87,12 @@ public class XinfoUtilTest {
 	
 	@Test
 	public void testMainFile() throws XinfoException  {
-		assertTrue(XinfoUtil.isMainFile("0", Language.PLI));
+		assertEquals("0", XinfoUtil.getMainFileNumber(Language.PLI));
 		
-		assertTrue(XinfoUtil.isMainFile("1", Language.COBOL));
+		assertEquals("1", XinfoUtil.getMainFileNumber(Language.COBOL));
 		
-		assertFalse(XinfoUtil.isMainFile("1", Language.PLI));
+		assertNotEquals("1", XinfoUtil.getMainFileNumber(Language.PLI));
 		
-		assertFalse(XinfoUtil.isMainFile("2", Language.COBOL));
+		assertNotEquals("2", XinfoUtil.getMainFileNumber(Language.COBOL));
 	}
 }

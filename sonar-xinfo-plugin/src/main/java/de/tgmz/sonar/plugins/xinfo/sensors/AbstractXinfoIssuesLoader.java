@@ -140,7 +140,7 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 
 		Issue result = null;
 		
-		if (XinfoUtil.isMainFile(msgFile, lang)) {
+		if (msgFile.equals(XinfoUtil.getMainFileNumber(lang))) {
 			result = new Issue();
 			
 			result.ruleKey = ruleKey;

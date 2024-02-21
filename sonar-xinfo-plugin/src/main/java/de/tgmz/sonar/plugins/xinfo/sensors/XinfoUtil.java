@@ -59,8 +59,7 @@ public final class XinfoUtil {
 		}
 	}
 	
-	public static boolean isMainFile(String fileNumber, Language lang) {
-		return ("0".equals(fileNumber) && lang == Language.PLI)			// PL/I main file 
-			|| ("1".equals(fileNumber) && lang != Language.PLI);		// Non-PL/I main file
- 	}
+	public static String getMainFileNumber(Language lang) {
+		return lang == Language.PLI ? "0" : "1";	// Crazy but that that's how it is
+	}
 }
