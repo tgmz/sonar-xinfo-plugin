@@ -115,9 +115,15 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 	
 	private Issue computeIssue(MESSAGE m, FILEREFERENCETABLE frt, InputFile inputFile) {
 		String msgFile = m.getMSGFILE();
+		String msgLine = m.getMSGLINE();
 		
+		// For MACRO or preprocessor messages, MSGFILE and MSGLINE may be null
 		if (StringUtils.isEmpty(msgFile)) {
-			return null;
+			msgFile = XinfoUtil.getMainFileNumber(lang);
+		}
+		
+		if (StringUtils.isEmpty(msgLine)) {
+			msgLine = "1";
 		}
 		
 		String message = m.getMSGTEXT();
@@ -146,7 +152,7 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 			result.ruleKey = ruleKey;
 			result.severity = severity;
 			result.message = message;
-			result.line = Integer.parseInt(m.getMSGLINE());
+			result.line = Integer.parseInt(msgLine);
 			result.inputFile = inputFile;
 		} else {
 			Optional<String> optional = context.config().get(XinfoConfig.XINFO_INCLUDE_LEVEL);
@@ -156,7 +162,7 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 				
 				if (Arrays.asList(levels).contains(String.valueOf(sev))) {
 					try {
-						FILE includeFile = XinfoUtil.computeFilefromFileNumber(frt, m.getMSGFILE());
+						FILE includeFile = XinfoUtil.computeFilefromFileNumber(frt, msgFile);
 						String includedFromLine = XinfoUtil.computeIncludedFromLine(frt, includeFile, lang);
 						
 						result = new Issue();
