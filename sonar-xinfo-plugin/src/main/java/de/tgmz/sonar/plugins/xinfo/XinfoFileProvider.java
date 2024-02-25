@@ -38,7 +38,7 @@ import de.tgmz.sonar.plugins.xinfo.generated.plicomp.PACKAGE;
 
 /**
  * Provides programinformations by walking through the filesystem. 
- * Searches the filesystem for a suitable xinfo.xml file and parses it.
+ * Searches the filesystem for a suitable xinfo.xml|events file and parses it.
  */
 public class XinfoFileProvider extends AbstractXinfoProvider {
 	private static final Logger LOGGER = LoggerFactory.getLogger(XinfoFileProvider.class);
@@ -53,7 +53,7 @@ public class XinfoFileProvider extends AbstractXinfoProvider {
 
 		String compOutput = FilenameUtils.removeExtension(pgm.filename());
 		
-		String compOutputRoot = getConfiguration().get(XinfoConfig.XINFO_ROOT).orElse("xml");
+		String compOutputRoot = getConfiguration().get(XinfoConfig.XINFO_ROOT).orElse("xinfo");
 		
 		Path p = Paths.get(compOutputRoot == null ? "" : compOutputRoot).toAbsolutePath();
 		

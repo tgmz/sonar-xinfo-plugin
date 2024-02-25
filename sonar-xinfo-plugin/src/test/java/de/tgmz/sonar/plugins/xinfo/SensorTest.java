@@ -53,7 +53,7 @@ public class SensorTest {
 	@BeforeClass
 	public static void setupOnce() throws IOException {
 		MapSettings ms = new MapSettings();
-		ms.setProperty(XinfoConfig.XINFO_ROOT, LOC + File.separator +"xml");
+		ms.setProperty(XinfoConfig.XINFO_ROOT, LOC + File.separator +"xinfo");
 		ms.setProperty(XinfoConfig.XINFO_LOG_THRESHOLD, "1");
 		ms.setProperty(XinfoConfig.XINFO_INCLUDE_LEVEL, "I,W,E,S,U");
 		
@@ -76,12 +76,12 @@ public class SensorTest {
 		
 		sensorDescriptor = new DefaultSensorDescriptor();
 		
-		IOUtils.copy(new FileInputStream(new File("testresources/xml/broken.xml.txt")), new FileOutputStream(new File("testresources/xml/plitest6.xml")));
+		IOUtils.copy(new FileInputStream(new File("testresources/xinfo/broken.xml.txt")), new FileOutputStream(new File("testresources/xinfo/plitest6.xml")));
 	}
 	
 	@AfterClass
 	public static void teardownOnce() throws IOException {
-		new File("testresources/xml/plitest6.xml").delete();
+		new File("testresources/xinfo/plitest6.xml").delete();
 	}
 	
 	@Test(expected = Test.None.class)

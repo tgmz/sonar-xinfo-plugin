@@ -46,7 +46,7 @@ Usage
 
 * Setup the compiler to generate its output in XML or EVENTS format (e.g. PL/I: XINFO(XML), or C++: /CXX EVENTS)
 * Store sources and XINFO-output somewhere on the filesystem.
-* Use the properties sonar.sources to tell the sonar-scanner where to look for the sources and sonar.xinfo.root.xinfo to tell the plugin where to look for the XINFO-files. Make sure that pgm.pli|asm|cbl|c|cpp corresponds with pgm.xml
+* Use the properties sonar.sources to tell the sonar-scanner where to look for the sources and sonar.xinfo.root.xinfo to tell the plugin where to look for the XINFO-files. Make sure that pgm.pli|asm|cbl|c|cpp corresponds with pgm.xml|event
  
 * Analyze your sources with SonarQube using Sonar-scanner:
 

@@ -39,7 +39,7 @@ import de.tgmz.sonar.plugins.xinfo.languages.Language;
 
 /**
  * This Sensor loads the results of an analysis performed by 
- * "real" mainframe compiler. Results are provided as an xml file
+ * "real" mainframe compiler. Results are provided as an xml or events file
  * correspond to the rules defined in "&lt;language&gt;-rules.xml".
  */
 public abstract class AbstractXinfoIssuesLoader implements Sensor {

@@ -25,7 +25,7 @@ import org.junit.Test;
 public class XinfoProviderTest  {
 	@Test
 	public void testClosedInputStream() throws IOException {
-		FileInputStream fis = new FileInputStream("testresources/xml/plitest.xml");
+		FileInputStream fis = new FileInputStream("testresources/xinfo/plitest.xml");
 		fis.close();
 		
 		assertThrows(XinfoException.class, () -> new DummyXinfoProvider().createXinfo(fis));
@@ -34,7 +34,7 @@ public class XinfoProviderTest  {
 	@Test
 	public void testWrongEncoding() throws XinfoException, IOException {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream(); 
-		IOUtils.copy(new FileInputStream("testresources/xml/plitest.xml"), baos);
+		IOUtils.copy(new FileInputStream("testresources/xinfo/plitest.xml"), baos);
 		
 		String s = new String(baos.toByteArray(), StandardCharsets.UTF_8);
 		
