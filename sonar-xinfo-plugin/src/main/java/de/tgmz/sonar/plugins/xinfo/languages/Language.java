@@ -22,16 +22,15 @@ import org.sonar.api.server.rule.RulesDefinition.NewRepository;
  * Defines the supported languages.
  */
 public enum Language {
-	PLI("pli", "PL/I", "pli,pl1", "pli-rules.xml", "xinfo-pli", "Xinfo PL/I"),
-	COBOL("cbl", "Cobol", "cbl,cob", "cobol-rules.xml", "xinfo-cbl", "Xinfo COBOL"),
-	ASSEMBLER("asm", "Assembler", "asm", "assembler-rules.xml", "xinfo-asm", "Xinfo Assembler"),
-	CCPP("ccpp", "C/C++", "c,cpp", "ccpp-rules.xml", "xinfo-ccpp", "Xinfo C/C++"),
+	PLI("pli", "PL/I", "pli,pl1", "xinfo-pli", "Xinfo PL/I"),
+	COBOL("cbl", "Cobol", "cbl,cob", "xinfo-cbl", "Xinfo COBOL"),
+	ASSEMBLER("asm", "Assembler", "asm", "xinfo-asm", "Xinfo Assembler"),
+	CCPP("ccpp", "C/C++", "c,cpp", "xinfo-ccpp", "Xinfo C/C++"),
 	;
 	
 	private String key;
 	private String name;
 	private List<String> defaultFileSuffixes;
-	private String rulesDefinition;
 	private String repoKey;
 	private String repoName;
 	
@@ -40,15 +39,13 @@ public enum Language {
 	 * @param key the language key used by Sonars {@link RulesProfile}
 	 * @param name the language name used by Sonars {@link RulesProfile}
 	 * @param defaultFileSuffixes List of comma-separated file suffixes
-	 * @param rulesDefinition name of the rules-definitions file
 	 * @param repoKey key for the {@link NewRepository}
 	 * @param repoName name for the {@link NewRepository}
 	 */
-	private Language(String key, String name, String defaultFileSuffixes, String rulesDefinition, String repoKey, String repoName) {
+	private Language(String key, String name, String defaultFileSuffixes, String repoKey, String repoName) {
 		this.key = key;
 		this.name = name;
 		this.defaultFileSuffixes = Arrays.asList(defaultFileSuffixes.split(","));
-		this.rulesDefinition = rulesDefinition;
 		this.repoKey = repoKey;
 		this.repoName = repoName;
 	}
@@ -85,10 +82,6 @@ public enum Language {
 
 	public List<String> getDefaultFileSuffixes() {
 		return defaultFileSuffixes;
-	}
-
-	public String getRulesDefinition() {
-		return rulesDefinition;
 	}
 
 	public String getRepoKey() {
