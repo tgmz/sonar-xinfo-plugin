@@ -18,7 +18,7 @@
 
 	<groupId>de.tgmz</groupId>
 	<artifactId>sonar-xinfo</artifactId>
-	<version>2.0.2-SNAPSHOT</version>
+	<version>2.1.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>xinfo-plugins</name>
