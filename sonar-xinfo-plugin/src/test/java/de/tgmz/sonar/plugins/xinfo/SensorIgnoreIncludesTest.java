@@ -44,7 +44,7 @@ public class SensorIgnoreIncludesTest {
 		sensorContext = SensorContextTester.create(baseDir);
 		((SensorContextTester) sensorContext).setSettings(ms);
 		
-		((SensorContextTester) sensorContext).fileSystem().add(SonarTestFileUtil.create(LOC, "plitest4.pli", Language.PLI));
+		((SensorContextTester) sensorContext).fileSystem().add(SonarTestFileUtil.create(LOC, "plitst4.pli", Language.PLI));
 		
 		sensorDescriptor = new DefaultSensorDescriptor();
 	}

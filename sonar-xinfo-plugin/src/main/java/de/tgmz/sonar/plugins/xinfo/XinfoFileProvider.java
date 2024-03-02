@@ -65,7 +65,7 @@ public class XinfoFileProvider extends AbstractXinfoProvider {
 				if ("xml".equals(FilenameUtils.getExtension(next.getName()))) {
 					result = createXinfo(is);
 				} else {
-					result = getXinfoFromEvent(is);
+					result = createXinfoFromEvent(is);
 				}
 			} catch (IOException e) {
 				LOGGER.error("Exception parsing {}", compOutput, e);
