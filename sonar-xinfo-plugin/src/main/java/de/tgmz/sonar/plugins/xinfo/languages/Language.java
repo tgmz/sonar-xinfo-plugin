@@ -10,7 +10,6 @@
   *******************************************************************************/
 package de.tgmz.sonar.plugins.xinfo.languages;
 
-import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
@@ -60,10 +59,10 @@ public enum Language {
 		throw new IllegalArgumentException("No language for key [" + key + "]");
 	}
 
-	public static Language getByExtension(File f) {
+	public static Language getByExtension(String f) {
 		for (Language l : values()) {
 			for (String ext : l.defaultFileSuffixes) {
-				if (ext.equals(FilenameUtils.getExtension(f.getName()))) {
+				if (ext.equals(FilenameUtils.getExtension(f))) {
 					return l;
 				}
 			}

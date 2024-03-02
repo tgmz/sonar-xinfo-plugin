@@ -71,17 +71,17 @@ public class SensorTest {
 		});
 		
 		for (File f : testresources) {
-			((SensorContextTester) sensorContext).fileSystem().add(SonarTestFileUtil.create(LOC, f.getName(), Language.getByExtension(f)));
+			((SensorContextTester) sensorContext).fileSystem().add(SonarTestFileUtil.create(LOC, f.getName(), Language.getByExtension(f.getName())));
 		}
 		
 		sensorDescriptor = new DefaultSensorDescriptor();
 		
-		IOUtils.copy(new FileInputStream(new File("testresources/xinfo/broken.xml.txt")), new FileOutputStream(new File("testresources/xinfo/plitest6.xml")));
+		IOUtils.copy(new FileInputStream(new File("testresources/xinfo/broken.xml.txt")), new FileOutputStream(new File("testresources/xinfo/plitst6.xml")));
 	}
 	
 	@AfterClass
 	public static void teardownOnce() throws IOException {
-		new File("testresources/xinfo/plitest6.xml").delete();
+		new File("testresources/xinfo/plitst6.xml").delete();
 	}
 	
 	@Test(expected = Test.None.class)

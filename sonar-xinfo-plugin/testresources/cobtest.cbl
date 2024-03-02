@@ -1,9 +1,15 @@
-        Identification Division.
-        Program-ID. COBTEST.
-        WORKING-STORAGE SECTION.
-        1 Abbruch-Code      pic 9(04) binary value 0.
-        Procedure Division
-      * Print Hello world        
-DISP        Display "Hallo Welt!".
-		    Write saldo-betr.
+      ****************************************************************
+      **           I D          D I V I S I O N                    ***
+      ****************************************************************
+       Identification Division.
+       Program-id.    HELLOW.
+      ****************************************************************
+      **           D A T A      D I V I S I O N                    ***
+      ****************************************************************
+       Data Division.
+       Working-Storage Section.
+
+       Procedure Division.
+            DISPLAY 'MINIMALISM'
             STOP RUN.
+       End program HELLOW.
