@@ -224,6 +224,14 @@
 				<configuration>
 					<reuseForks>false</reuseForks>
 					<redirectTestOutputToFile>false</redirectTestOutputToFile>
+					<systemPropertyVariables>
+						<sonar.xinfo.otf.user>${sonar.xinfo.otf.user}</sonar.xinfo.otf.user>
+						<sonar.xinfo.otf.server>${sonar.xinfo.otf.server}</sonar.xinfo.otf.server>
+						<sonar.xinfo.otf.port>${sonar.xinfo.otf.port}</sonar.xinfo.otf.port>
+						<sonar.xinfo.otf.pass>${sonar.xinfo.otf.pass}</sonar.xinfo.otf.pass>
+						<sonar.xinfo.otf.timeout>${sonar.xinfo.otf.timeout}</sonar.xinfo.otf.timeout>
+						<sonar.xinfo.otf.jobcard>${sonar.xinfo.otf.jobcard}</sonar.xinfo.otf.jobcard>
+					</systemPropertyVariables>
 				</configuration>
 			</plugin>
 			<plugin>
