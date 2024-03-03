@@ -1,0 +1,24 @@
+{0}                        	
+//*******************************************************************************
+//* Copyright (c) 03.03.2024 Thomas Zierer.
+//* All rights reserved. This program and the accompanying materials
+//* are made available under the terms of the Eclipse Public License v2.0
+//* which accompanies this distribution, and is available at
+//* http://www.eclipse.org/legal/epl-v20.html
+//*
+//* Contributors:
+//*    Thomas Zierer - initial API and implementation and/or initial documentation
+//*******************************************************************************/
+//        SET MBR={1}
+//        SET COMP='',NOCOMPILE''
+//        SET DB2=
+//        SET CICS=
+//STP0001 EXEC PROC=ELAXFPL1                                     	
+//SYSIN    DD *,DLM=@@
+{2}
+@@
+//SYSXMLSD DD DISP=(NEW,CATLG,DELETE),                           	
+//         DSN={3},
+//         UNIT=VIO,SPACE=(CYL,(1,1)),
+//         DCB=(RECFM=VBA,LRECL=16383,BLKSIZE=0)
+//

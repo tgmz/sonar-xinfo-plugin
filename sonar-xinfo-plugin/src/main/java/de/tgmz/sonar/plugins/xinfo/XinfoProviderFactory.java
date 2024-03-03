@@ -10,7 +10,12 @@
   *******************************************************************************/
 package de.tgmz.sonar.plugins.xinfo;
 
+import java.util.Optional;
+
 import org.sonar.api.config.Configuration;
+
+import de.tgmz.sonar.plugins.xinfo.config.XinfoConfig;
+import de.tgmz.sonar.plugins.xinfo.ftp.XinfoOnTheFlyProvider;
 
 /**
  * Singleton factory for the XinfoProvider to use.
@@ -24,7 +29,12 @@ public final class XinfoProviderFactory {
 	
 	public static synchronized IXinfoProvider getProvider(Configuration configuration) {
 		if (provider == null) {
-			provider = new XinfoFileProvider(configuration);
+			Optional<Boolean> o = configuration.getBoolean(XinfoConfig.XINFO_OTF);
+			if (o.isPresent() && o.get().booleanValue()) { 
+				provider = new XinfoOnTheFlyProvider(configuration);
+			} else {
+				provider = new XinfoFileProvider(configuration);
+			}
 		}
 		
 		return provider;
