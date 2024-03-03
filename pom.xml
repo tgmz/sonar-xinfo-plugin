@@ -175,16 +175,24 @@
 									<licenses>
 										<license implementation="org.apache.rat.analysis.license.SimplePatternBasedLicense">
 											<licenseFamilyCategory>TGMZ</licenseFamilyCategory>
-											<licenseFamilyName>TGMZ</licenseFamilyName>
+											<licenseFamilyName>this</licenseFamilyName>
 											<notes></notes>
 											<patterns>
 												<pattern>Thomas Zierer</pattern>
 											</patterns>
 										</license>
+										<license implementation="org.apache.rat.analysis.license.SimplePatternBasedLicense">
+											<licenseFamilyCategory>IBM</licenseFamilyCategory>
+											<licenseFamilyName>this</licenseFamilyName>
+											<notes></notes>
+											<patterns>
+												<pattern>Property of IBM</pattern>
+											</patterns>
+										</license>
 									</licenses>
 									<licenseFamilies>
 										<licenseFamily implementation="org.apache.rat.license.SimpleLicenseFamily">
-											<familyName>TGMZ</familyName>
+											<familyName>this</familyName>
 										</licenseFamily>
 									</licenseFamilies>
 									<excludes combine.children="append">
