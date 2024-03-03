@@ -1,0 +1,39 @@
+{0}                        	
+//*******************************************************************************
+//* Copyright (c) 03.03.2024 Thomas Zierer.
+//* All rights reserved. This program and the accompanying materials
+//* are made available under the terms of the Eclipse Public License v2.0
+//* which accompanies this distribution, and is available at
+//* http://www.eclipse.org/legal/epl-v20.html
+//*
+//* Contributors:
+//*    Thomas Zierer - initial API and implementation and/or initial documentation
+//*******************************************************************************/
+//        SET MBR={1}
+//        SET COMP=
+//        SET DB2=
+//        SET CICS=
+//* 
+//* Copy input to a temporary member and use this form ASMA90 input
+//* Calling ASMA90 with SYSIN DD * is troublesome
+//*
+//STP0001  EXEC PGM=IEBGENER
+//SYSPRINT DD SYSOUT=*
+//SYSUT1   DD *,DLM=@@
+{2}
+@@
+//SYSUT2   DD DSN=&TEMPSRC(&MBR),
+//         DISP=(NEW,PASS),
+//         UNIT=VIO,
+//         SPACE=(CYL,(1,1,1)),
+//         DCB=(RECFM=FB,LRECL=80,BLKSIZE=0)
+//SYSIN    DD DUMMY
+//*
+//STP0000 EXEC PROC=ELAXFASM
+//SYSIN    DD DISP=(OLD,PASS,DELETE),DSN=*.STP0001.SYSUT2
+//SYSLIB   DD DISP=SHR,DSN=&IXM..MACLIB
+//SYSXMLSD DD DISP=(NEW,CATLG,DELETE),                           	
+//         DSN={3},
+//         UNIT=VIO,SPACE=(CYL,(1,1)),
+//         DCB=(RECFM=VBA,LRECL=16383,BLKSIZE=0)
+//
