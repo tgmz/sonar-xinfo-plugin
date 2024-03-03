@@ -26,6 +26,13 @@ public final class XinfoConfig {
 	public static final String XINFO_ENCODING = "sonar.xinfo.encoding";
 	public static final String XINFO_LOG_THRESHOLD = "sonar.xinfo.log.threshold";
 	public static final String XINFO_INCLUDE_LEVEL = "sonar.xinfo.include.levels";
+	public static final String XINFO_OTF = "sonar.xinfo.otf";
+	public static final String XINFO_OTF_JOBCARD = "sonar.xinfo.otf.jobcard";
+	public static final String XINFO_OTF_SERVER = "sonar.xinfo.otf.server";
+	public static final String XINFO_OTF_PORT = "sonar.xinfo.otf.port";
+	public static final String XINFO_OTF_USER = "sonar.xinfo.otf.user";
+	public static final String XINFO_OTF_PASS = "sonar.xinfo.otf.pass";
+	public static final String XINFO_OTF_TIMEOUT = "sonar.xinfo.otf.timeout";
 	public static final String CATEGORY = "Xinfo";
 
 	private XinfoConfig() {
@@ -57,6 +64,37 @@ public final class XinfoConfig {
 			, PropertyDefinition.builder(XINFO_INCLUDE_LEVEL)
 				.name("IncludeLevelXinfo")
 				.description("XINFO include level. Comma separated list of levels, e.g. \'E,S,U\'")
+				.category(CATEGORY).build()
+			, PropertyDefinition.builder(XINFO_OTF)
+				.name("XinfoOtf")
+				.description("XINFO on-the-fly")
+				.defaultValue("false")
+				.category(CATEGORY).build()
+			, PropertyDefinition.builder(XINFO_OTF_JOBCARD)
+				.name("OtfJobCard")
+				.description("XINFO on-the-fly jobcard")
+				.category(CATEGORY).build()
+			, PropertyDefinition.builder(XINFO_OTF_PASS)
+				.name("OtfPass")
+				.description("XINFO on-the-fly password")
+				.category(CATEGORY).build()
+			, PropertyDefinition.builder(XINFO_OTF_SERVER)
+				.name("OtfServer")
+				.description("XINFO on-the-fly server")
+				.category(CATEGORY).build()
+			, PropertyDefinition.builder(XINFO_OTF_PORT)
+				.name("OtfTimeout")
+				.description("XINFO on-the-fly server port")
+				.defaultValue("21")
+				.category(CATEGORY).build()
+			, PropertyDefinition.builder(XINFO_OTF_USER)
+				.name("OtfUser")
+				.description("XINFO on-the-fly user")
+				.category(CATEGORY).build()
+			, PropertyDefinition.builder(XINFO_OTF_TIMEOUT)
+				.name("OtfTimeout")
+				.description("XINFO timeout to wait for the job to finish in seconds")
+				.defaultValue("10")
 				.category(CATEGORY).build()
 		);
 	}
