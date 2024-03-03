@@ -29,4 +29,7 @@ jobs:
     - name: Build with Maven
       env:
         nvdApiKey: ${{ secrets.NVDAPIKEY }}
-      run: mvn -B install -Pdc,rat --file pom.xml
+# Run with z/OS on-the-fly test case
+#      run: mvn -B install -Pdc,rat --file pom.xml -Dsonar.xinfo.otf.jobcard="${{ secrets.OTF_JOBCARD }}" -Dsonar.xinfo.otf.port=${{ secrets.OTF_PORT }} -Dsonar.xinfo.otf.pass=${{ secrets.OTF_PASS }} -Dsonar.xinfo.otf.user=${{ secrets.OTF_USER }} -Dsonar.xinfo.otf.server=${{ secrets.OTF_SERVER }} -Dsonar.xinfo.otf.timeout=${{ secrets.OTF_TIMEOUT }}
+
+      run: mvn -B install -Pdc,rat --file pom.xml -Dtest=!*SensorOnTheFlyTest 
