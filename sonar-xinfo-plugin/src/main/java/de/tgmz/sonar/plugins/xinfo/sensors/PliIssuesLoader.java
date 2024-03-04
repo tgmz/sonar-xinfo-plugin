@@ -10,6 +10,8 @@
   *******************************************************************************/
 package de.tgmz.sonar.plugins.xinfo.sensors;
 
+import java.util.Collections;
+
 import org.sonar.api.batch.fs.FileSystem;
 
 import de.tgmz.sonar.plugins.xinfo.languages.Language;
@@ -20,6 +22,6 @@ import de.tgmz.sonar.plugins.xinfo.languages.Language;
 public class PliIssuesLoader extends AbstractXinfoIssuesLoader {
 
 	public PliIssuesLoader(final FileSystem fileSystem) {
-		super(fileSystem, Language.PLI);
+		super(fileSystem, Collections.singletonList(Language.PLI));
 	}
 }

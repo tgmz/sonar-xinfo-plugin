@@ -10,11 +10,13 @@
   *******************************************************************************/
 package de.tgmz.sonar.plugins.xinfo.languages;
 
+import java.util.Collections;
+
 /**
  * Default Quality profile for the projects having files of language "Assembler"
  */
 public final class AssemblerQualityProfileDefinition extends AbstractXinfoQualityProfileDefinition {
 	public AssemblerQualityProfileDefinition() {
-		super (Language.ASSEMBLER);
+		super (Collections.singletonList(Language.ASSEMBLER));
 	}
 }

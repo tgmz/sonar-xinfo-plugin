@@ -42,7 +42,7 @@ public final class RuleFactory {
 	}
 
 	public List<Class<?>> getRules(Language l) {
-		String pkg = "de.tgmz.sonar.plugins.xinfo.rules.generated." + l.getKey();
+		String pkg = "de.tgmz.sonar.plugins.xinfo.rules.generated." + l.getRuleKey();
 		
 		LOGGER.info("Get rules for {} from package {}", l, pkg);
 

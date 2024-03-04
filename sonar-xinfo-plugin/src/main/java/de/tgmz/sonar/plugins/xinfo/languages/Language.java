@@ -24,7 +24,8 @@ public enum Language {
 	PLI("pli", "PL/I", "pli,pl1", "xinfo-pli", "Xinfo PL/I"),
 	COBOL("cbl", "Cobol", "cbl,cob", "xinfo-cbl", "Xinfo COBOL"),
 	ASSEMBLER("asm", "Assembler", "asm", "xinfo-asm", "Xinfo Assembler"),
-	CCPP("ccpp", "C/C++", "c,cpp", "xinfo-ccpp", "Xinfo C/C++"),
+	C("c", "C", "c", "xinfo-c", "Xinfo C", "ccpp"),
+	CPP("cpp", "C++", "cpp", "xinfo-cpp", "Xinfo C++", "ccpp"),
 	;
 	
 	private String key;
@@ -32,6 +33,7 @@ public enum Language {
 	private List<String> defaultFileSuffixes;
 	private String repoKey;
 	private String repoName;
+	private String ruleKey;
 	
 	/**
 	 * CTOR.
@@ -40,15 +42,26 @@ public enum Language {
 	 * @param defaultFileSuffixes List of comma-separated file suffixes
 	 * @param repoKey key for the {@link NewRepository}
 	 * @param repoName name for the {@link NewRepository}
+	 * @param ruleKey name for the package to load rules from}
 	 */
+	private Language(String key, String name, String defaultFileSuffixes, String repoKey, String repoName, String ruleKey) {
+		this.key = key;
+		this.name = name;
+		this.defaultFileSuffixes = Arrays.asList(defaultFileSuffixes.split(","));
+		this.repoKey = repoKey;
+		this.repoName = repoName;
+		this.ruleKey = ruleKey;
+	}
+
 	private Language(String key, String name, String defaultFileSuffixes, String repoKey, String repoName) {
 		this.key = key;
 		this.name = name;
 		this.defaultFileSuffixes = Arrays.asList(defaultFileSuffixes.split(","));
 		this.repoKey = repoKey;
 		this.repoName = repoName;
+		this.ruleKey = key;
 	}
-
+	
 	public static Language getByKey(String key) {
 		for (Language l : values()) {
 			if (key.equals(l.key)) {
@@ -89,5 +102,9 @@ public enum Language {
 
 	public String getRepoName() {
 		return repoName;
+	}
+
+	public String getRuleKey() {
+		return ruleKey;
 	}
 }

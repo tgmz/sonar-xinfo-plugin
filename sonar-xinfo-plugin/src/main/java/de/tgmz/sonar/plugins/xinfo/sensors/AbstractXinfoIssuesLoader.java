@@ -11,7 +11,10 @@
 package de.tgmz.sonar.plugins.xinfo.sensors;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Optional;
 
 import org.apache.commons.lang.StringUtils;
@@ -58,17 +61,26 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 	private static final Logger LOGGER = LoggerFactory.getLogger(AbstractXinfoIssuesLoader.class);
 	protected final FileSystem fileSystem;
 	protected SensorContext context;
-	private Language lang;
+	private List<Language> languages;
 	
-	protected AbstractXinfoIssuesLoader(final FileSystem fileSystem, Language lang) {
+	protected AbstractXinfoIssuesLoader(final FileSystem fileSystem, List<Language> languages) {
 		this.fileSystem = fileSystem;
-		this.lang = lang;
+		this.languages = languages;
 	}
 
 	@Override
 	public void describe(final SensorDescriptor descriptor) {
-		descriptor.name(lang.getName() + " Issues Loader Sensor");
-		descriptor.onlyOnLanguage(lang.getKey());
+		StringBuilder s = new StringBuilder();
+		List<String> onlyOnLanguages = new LinkedList<>();
+		
+		languages.forEach(n -> {
+			s.append(n.getName() + " "); 
+			onlyOnLanguages.add(n.getKey());
+		});
+		
+		descriptor.name(s.toString() + "Issues Loader Sensor");
+		descriptor.onlyOnLanguages(onlyOnLanguages.toArray(new String[languages.size()]));
+		
 	}
 	
 	@Override
@@ -78,8 +90,12 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 		this.context = aContext;
 		
 	    int threshold = context.config().getInt(XinfoConfig.XINFO_LOG_THRESHOLD).orElse(100);
+
+		Collection<String> c = new LinkedList<>();
+		
+		languages.forEach(n -> c.add(n.getKey()));
 	    
-		Iterator<InputFile> fileIterator = fileSystem.inputFiles(fileSystem.predicates().hasLanguage(lang.getKey())).iterator();
+		Iterator<InputFile> fileIterator = fileSystem.inputFiles(fileSystem.predicates().hasLanguages(c)).iterator();
 
 		int ctr = 0;
 		
@@ -95,7 +111,7 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 				continue;
 			}
 				
-			createFindings(p, inputFile);
+			createFindings(p, inputFile, Language.getByKey(inputFile.language()));
 			
 			if (++ctr % threshold == 0) {
 				LOGGER.info("{} files processed, current is {}", ctr, inputFile);
@@ -103,17 +119,17 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 		}
 	}
 
-	private void createFindings(PACKAGE p, InputFile inputFile) {
+	private void createFindings(PACKAGE p, InputFile inputFile, Language lang) {
 		for (MESSAGE m : p.getMESSAGE()) {
-			Issue issue = computeIssue(m, p.getFILEREFERENCETABLE(), inputFile);
+			Issue issue = computeIssue(m, p.getFILEREFERENCETABLE(), inputFile, lang);
 				
 			if (issue != null) {
-				saveIssue(issue);
+				saveIssue(issue, lang);
 			}
 		}
 	}
 	
-	private Issue computeIssue(MESSAGE m, FILEREFERENCETABLE frt, InputFile inputFile) {
+	private Issue computeIssue(MESSAGE m, FILEREFERENCETABLE frt, InputFile inputFile, Language lang) {
 		String msgFile = m.getMSGFILE();
 		String msgLine = m.getMSGLINE();
 		
@@ -184,7 +200,7 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 		return result;
 	}
 
-	private void saveIssue(final Issue issue) {
+	private void saveIssue(final Issue issue, Language lang) {
 		LOGGER.debug("Save issue {}", issue);
 		
 		RuleKey ruleKey = RuleKey.of(lang.getRepoKey(), issue.ruleKey);

@@ -1,0 +1,49 @@
+//*********************************************************************
+//* Licensed materials - Property of IBM                              *
+//* 5724-T07 Copyright IBM Corp. 2003, 2020                           *
+//* All rights reserved                                               *
+//* US Government users restricted rights  -  Use, duplication or     *
+//* disclosure restricted by GSA ADP schedule contract with IBM Corp. *
+//*                                                                   *
+//* z/OS Explorer Extensions                                          *
+//* Procedure for compiling C programs.                               *
+//*                                                                   *
+//*                                                                   *
+//* Customize this procedure to match your site requirements.         *
+//* Do not change procedure or step names however, unless you         *
+//* reflect those changes on all clients.                             *
+//*                                                                   *
+//* Note(s):                                                          *
+//*                                                                   *
+//* 1. SYSIN, SYSLIN, OPTION, and SYSLIN DD cards will be provided    *
+//*    by the generated code.                                         *
+//*                                                                   *
+//* 1. The parameter 'EVENTS' is required for error feedback          *
+//*    and population of the task list.                               *
+//*                                                                   *
+//* 2. The parameter 'OPTFILE(DD:OPTION)' is required for options     *
+//*    that are passed from the client to be added properly.          *
+//*                                                                   *
+//*********************************************************************
+//ELAXFCPC PROC INCL=ELAXF
+//*
+//         INCLUDE MEMBER=&INCL                HLQ definitions
+//*
+//C        EXEC PGM=CCNDRVR,COND=(4,LT),REGION=0M,
+//            PARM='/EVENTS,OPTFILE(DD:OPTION)'
+//STEPLIB  DD DISP=SHR,DSN=&CEE..SCEERUN       LE
+//         DD DISP=SHR,DSN=&CEE..SCEERUN2      LE
+//         DD DISP=SHR,DSN=&CCN..SCCNCMP       C/C++
+//SYSIN    DD DUMMY                            provided by caller
+//SYSLIB   DD DUMMY                            provided by caller
+//OPTION   DD DUMMY                            provided by caller
+//SYSLIN   DD DUMMY                            provided by caller
+//SYSCPRT  DD SYSOUT=*
+//SYSUT1   DD UNIT=SYSALLDA,SPACE=(CYL,(1,5))
+//SYSUT2   DD UNIT=SYSALLDA,SPACE=(CYL,(1,5))
+//SYSUT3   DD UNIT=SYSALLDA,SPACE=(CYL,(1,5))
+//SYSUT4   DD UNIT=SYSALLDA,SPACE=(CYL,(1,5))
+//SYSUT5   DD UNIT=SYSALLDA,SPACE=(CYL,(1,5))
+//SYSUT6   DD UNIT=SYSALLDA,SPACE=(CYL,(1,5))
+//SYSUT7   DD UNIT=SYSALLDA,SPACE=(CYL,(1,5))
+//*

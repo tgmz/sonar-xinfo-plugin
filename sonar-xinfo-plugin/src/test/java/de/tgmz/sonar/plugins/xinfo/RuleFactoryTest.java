@@ -42,7 +42,7 @@ public class RuleFactoryTest {
 	@Parameters(name = "{index}: Check for language [{0}]")
 	public static Collection<Object[]> data() {
 		Object[][] data = new Object[][] {
-				{ Language.PLI }, { Language.ASSEMBLER }, { Language.COBOL }, { Language.CCPP },
+				{ Language.PLI }, { Language.ASSEMBLER }, { Language.COBOL }, { Language.C }, { Language.CPP },
 		};
 		return Arrays.asList(data);
 	}

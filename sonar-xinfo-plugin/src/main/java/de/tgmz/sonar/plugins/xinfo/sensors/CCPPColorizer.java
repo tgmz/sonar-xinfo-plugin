@@ -12,6 +12,7 @@ package de.tgmz.sonar.plugins.xinfo.sensors;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.Arrays;
 
 import org.sonar.api.batch.fs.InputFile;
 
@@ -24,7 +25,7 @@ import de.tgmz.sonar.plugins.xinfo.languages.Language;
 public class CCPPColorizer extends AbstractColorizer<CCPPColorizing> {
 
 	public CCPPColorizer() {
-		super(Language.CCPP);
+		super(Arrays.asList(Language.C, Language.CPP));
 	}
 
 	@Override
