@@ -12,6 +12,7 @@ package de.tgmz.sonar.plugins.xinfo.sensors;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.Collections;
 
 import org.sonar.api.batch.fs.InputFile;
 
@@ -24,7 +25,7 @@ import de.tgmz.sonar.plugins.xinfo.languages.Language;
 public class PliColorizer extends AbstractColorizer<PliColorizing> {
 
 	public PliColorizer() {
-		super(Language.PLI);
+		super(Collections.singletonList(Language.PLI));
 	}
 
 	@Override

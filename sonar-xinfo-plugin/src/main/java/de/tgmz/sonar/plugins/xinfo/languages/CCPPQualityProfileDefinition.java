@@ -10,11 +10,13 @@
   *******************************************************************************/
 package de.tgmz.sonar.plugins.xinfo.languages;
 
+import java.util.Arrays;
+
 /**
  * Default Quality profile for the projects having files of language "Cobol"
  */
 public final class CCPPQualityProfileDefinition extends AbstractXinfoQualityProfileDefinition {
 	public CCPPQualityProfileDefinition() {
-		super (Language.CCPP);
+		super(Arrays.asList(Language.C, Language.CPP));
 	}
 }

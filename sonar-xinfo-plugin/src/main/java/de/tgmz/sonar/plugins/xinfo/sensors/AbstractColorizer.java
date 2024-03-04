@@ -12,8 +12,13 @@ package de.tgmz.sonar.plugins.xinfo.sensors;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.Collection;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.TextRange;
@@ -21,8 +26,6 @@ import org.sonar.api.batch.sensor.Sensor;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.SensorDescriptor;
 import org.sonar.api.batch.sensor.highlighting.NewHighlighting;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import de.tgmz.sonar.plugins.xinfo.color.ColorizingData;
 import de.tgmz.sonar.plugins.xinfo.color.IColorizing;
@@ -38,17 +41,26 @@ public abstract class AbstractColorizer<T extends IColorizing> implements Sensor
 	private static final Logger LOGGER = LoggerFactory.getLogger(AbstractColorizer.class);
 	private static final int DEFAULT_LINES_LIMIT = 5000;
 	
-	private Language lang;
+	private List<Language> languages;
 
-	protected AbstractColorizer(Language lang) {
+	protected AbstractColorizer(List<Language> languages) {
 		super();
-		this.lang = lang;
+		this.languages = languages;
 	}
 
 	@Override
 	public void describe(final SensorDescriptor descriptor) {
-		descriptor.name(lang.getName() + " Colorizer Sensor");
-		descriptor.onlyOnLanguage(lang.getKey());
+		StringBuilder s = new StringBuilder();
+		List<String> onlyOnLanguages = new LinkedList<>();
+		
+		languages.forEach(n -> {
+			s.append(n.getName() + " "); 
+			onlyOnLanguages.add(n.getKey());
+		});
+		
+		
+		descriptor.name(s.toString() + "Colorizer Sensor");
+		descriptor.onlyOnLanguages(onlyOnLanguages.toArray(new String[languages.size()]));
 	}
 	
 	@Override
@@ -59,7 +71,11 @@ public abstract class AbstractColorizer<T extends IColorizing> implements Sensor
 	    
 		int ctr = 0;
 		
-	    for (InputFile inputFile : fs.inputFiles(fs.predicates().hasLanguage(lang.getKey()))) {
+		Collection<String> c = new LinkedList<>();
+		
+		languages.forEach(n -> c.add(n.getKey()));
+		
+	    for (InputFile inputFile : fs.inputFiles(fs.predicates().hasLanguages(c))) {
 			try {
 				highlightFile(inputFile, context);
 				

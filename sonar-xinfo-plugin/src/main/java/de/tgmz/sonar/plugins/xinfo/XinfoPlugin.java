@@ -14,8 +14,9 @@ import org.sonar.api.Plugin;
 
 import de.tgmz.sonar.plugins.xinfo.languages.AssemblerLanguage;
 import de.tgmz.sonar.plugins.xinfo.languages.AssemblerQualityProfileDefinition;
-import de.tgmz.sonar.plugins.xinfo.languages.CCPPLanguage;
 import de.tgmz.sonar.plugins.xinfo.languages.CCPPQualityProfileDefinition;
+import de.tgmz.sonar.plugins.xinfo.languages.CLanguage;
+import de.tgmz.sonar.plugins.xinfo.languages.CPPLanguage;
 import de.tgmz.sonar.plugins.xinfo.languages.CobolLanguage;
 import de.tgmz.sonar.plugins.xinfo.languages.CobolQualityProfileDefinition;
 import de.tgmz.sonar.plugins.xinfo.languages.PliLanguage;
@@ -46,7 +47,8 @@ public class XinfoPlugin implements Plugin {
     context.addExtensions(PliLanguage.class, PliQualityProfileDefinition.class);
     context.addExtensions(CobolLanguage.class, CobolQualityProfileDefinition.class);
     context.addExtensions(AssemblerLanguage.class, AssemblerQualityProfileDefinition.class);
-    context.addExtensions(CCPPLanguage.class, CCPPQualityProfileDefinition.class);
+    context.addExtensions(CLanguage.class, CCPPQualityProfileDefinition.class);
+    context.addExtension(CPPLanguage.class);
 
     // tutorial on measures
 

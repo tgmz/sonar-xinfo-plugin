@@ -10,6 +10,8 @@
   *******************************************************************************/
 package de.tgmz.sonar.plugins.xinfo.languages;
 
+import java.util.List;
+
 import org.sonar.api.server.profile.BuiltInQualityProfilesDefinition;
 
 import de.tgmz.sonar.plugins.xinfo.RuleFactory;
@@ -18,20 +20,22 @@ import de.tgmz.sonar.plugins.xinfo.RuleFactory;
  * Default quality profile for the projects having files of a supported language.
  */
 public abstract class AbstractXinfoQualityProfileDefinition implements BuiltInQualityProfilesDefinition {
-	private Language lang;
+	private List<Language> languages;
 
-	protected AbstractXinfoQualityProfileDefinition(Language lang) {
+	protected AbstractXinfoQualityProfileDefinition(List<Language> languages) {
 		super();
-		this.lang = lang;
+		this.languages = languages;
 	}
 
 	@Override
 	public void define(Context context) {
-	    NewBuiltInQualityProfile profile = context.createBuiltInQualityProfile("Xinfo Rules", lang.getKey());
-	    profile.setDefault(false);
+		for (Language lang : languages) {
+			NewBuiltInQualityProfile profile = context.createBuiltInQualityProfile("Xinfo Rules", lang.getKey());
+			profile.setDefault(false);
 	    
-		RuleFactory.getInstance().getRules(lang).forEach(s -> profile.activateRule(lang.getRepoKey(), s.getSimpleName()));
+			RuleFactory.getInstance().getRules(lang).forEach(s -> profile.activateRule(lang.getRepoKey(), s.getSimpleName()));
 	    
-	    profile.done();
+			profile.done();
+		}
 	}
 }

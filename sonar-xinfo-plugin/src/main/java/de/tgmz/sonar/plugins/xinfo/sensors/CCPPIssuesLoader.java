@@ -10,6 +10,8 @@
   *******************************************************************************/
 package de.tgmz.sonar.plugins.xinfo.sensors;
 
+import java.util.Arrays;
+
 import org.sonar.api.batch.fs.FileSystem;
 
 import de.tgmz.sonar.plugins.xinfo.languages.Language;
@@ -20,6 +22,6 @@ import de.tgmz.sonar.plugins.xinfo.languages.Language;
 public class CCPPIssuesLoader extends AbstractXinfoIssuesLoader {
 
 	public CCPPIssuesLoader(final FileSystem fileSystem) {
-		super(fileSystem, Language.CCPP);
+		super(fileSystem, Arrays.asList(Language.C, Language.CPP));
 	}
 }

@@ -19,6 +19,7 @@ import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 import java.text.MessageFormat;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -116,7 +117,7 @@ public class XinfoOnTheFlyProvider extends AbstractXinfoProvider {
 	
 	private PACKAGE createXinfo(InputFile pgm, byte[] xinfo) throws IOException, XinfoException {
 		try (InputStream is = new ByteArrayInputStream(xinfo)) {
-			return Language.getByExtension(pgm.filename()) == Language.CCPP ? super.createXinfoFromEvent(is) : super.createXinfo(is);
+			return Arrays.asList(Language.C, Language.CPP).contains(Language.getByExtension(pgm.filename())) ? super.createXinfoFromEvent(is) : super.createXinfo(is);
 		}
 	}
 
@@ -170,7 +171,10 @@ public class XinfoOnTheFlyProvider extends AbstractXinfoProvider {
 		case COBOL:
 			template = "elaxfcoc.txt";
 			break;
-		case CCPP:
+		case C:
+			template = "elaxfcpc.txt";
+			break;
+		case CPP:
 			template = "elaxfcpp.txt";
 			break;
 		case ASSEMBLER:

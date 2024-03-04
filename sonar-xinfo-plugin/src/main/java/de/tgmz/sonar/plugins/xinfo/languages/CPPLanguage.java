@@ -13,8 +13,8 @@ package de.tgmz.sonar.plugins.xinfo.languages;
 /**
  * This class defines the C/C++ language for Sonar.
  */
-public final class CCPPLanguage extends LanguageBridge {
-	public CCPPLanguage() {
-		super(Language.CCPP.getKey(), Language.CCPP.getName());
+public final class CPPLanguage extends LanguageBridge {
+	public CPPLanguage() {
+		super(Language.CPP.getKey(), Language.CPP.getName());
 	}
 }

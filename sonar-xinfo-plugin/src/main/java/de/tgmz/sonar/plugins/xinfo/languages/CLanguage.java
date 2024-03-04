@@ -8,20 +8,13 @@
   * Contributors:
   *    Thomas Zierer - initial API and implementation and/or initial documentation
   *******************************************************************************/
-package de.tgmz.sonar.plugins.xinfo.sensors;
-
-import java.util.Collections;
-
-import org.sonar.api.batch.fs.FileSystem;
-
-import de.tgmz.sonar.plugins.xinfo.languages.Language;
+package de.tgmz.sonar.plugins.xinfo.languages;
 
 /**
- * Sensor for QA of Enterprise Cobol programs.
+ * This class defines the C/C++ language for Sonar.
  */
-public class CobolIssuesLoader extends AbstractXinfoIssuesLoader {
-
-	public CobolIssuesLoader(final FileSystem fileSystem) {
-		super(fileSystem, Collections.singletonList(Language.COBOL));
+public final class CLanguage extends LanguageBridge {
+	public CLanguage() {
+		super(Language.C.getKey(), Language.C.getName());
 	}
 }

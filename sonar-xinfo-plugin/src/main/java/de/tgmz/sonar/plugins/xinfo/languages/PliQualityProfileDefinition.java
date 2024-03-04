@@ -10,11 +10,13 @@
   *******************************************************************************/
 package de.tgmz.sonar.plugins.xinfo.languages;
 
+import java.util.Collections;
+
 /**
  * Default Quality profile for the projects having files of language "pli"
  */
 public final class PliQualityProfileDefinition extends AbstractXinfoQualityProfileDefinition {
 	public PliQualityProfileDefinition() {
-		super(Language.PLI);
+		super(Collections.singletonList(Language.PLI));
 	}
 }
