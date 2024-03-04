@@ -23,6 +23,7 @@ import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.config.internal.MapSettings;
 
 import de.tgmz.sonar.plugins.xinfo.config.XinfoConfig;
+import de.tgmz.sonar.plugins.xinfo.config.XinfoFtpConfig;
 import de.tgmz.sonar.plugins.xinfo.languages.Language;
 import de.tgmz.sonar.plugins.xinfo.sensors.AssemblerIssuesLoader;
 import de.tgmz.sonar.plugins.xinfo.sensors.CCPPIssuesLoader;
@@ -43,13 +44,13 @@ public class SensorOnTheFlyTest {
 		ms.setProperty(XinfoConfig.XINFO_ROOT, LOC + File.separator +"xinfo");
 		ms.setProperty(XinfoConfig.XINFO_LOG_THRESHOLD, "1");
 		ms.setProperty(XinfoConfig.XINFO_INCLUDE_LEVEL, "I,W,E,S,U");
-		ms.setProperty(XinfoConfig.XINFO_OTF, "true");
-		ms.setProperty(XinfoConfig.XINFO_OTF_JOBCARD, System.getProperty(XinfoConfig.XINFO_OTF_JOBCARD));
-		ms.setProperty(XinfoConfig.XINFO_OTF_PASS, System.getProperty(XinfoConfig.XINFO_OTF_PASS));
-		ms.setProperty(XinfoConfig.XINFO_OTF_SERVER, System.getProperty(XinfoConfig.XINFO_OTF_SERVER));
-		ms.setProperty(XinfoConfig.XINFO_OTF_PORT, System.getProperty(XinfoConfig.XINFO_OTF_PORT));
-		ms.setProperty(XinfoConfig.XINFO_OTF_USER, System.getProperty(XinfoConfig.XINFO_OTF_USER));
-		ms.setProperty(XinfoConfig.XINFO_OTF_TIMEOUT, System.getProperty(XinfoConfig.XINFO_OTF_TIMEOUT));
+		ms.setProperty(XinfoFtpConfig.XINFO_OTF, "true");
+		ms.setProperty(XinfoFtpConfig.XINFO_OTF_JOBCARD, System.getProperty(XinfoFtpConfig.XINFO_OTF_JOBCARD));
+		ms.setProperty(XinfoFtpConfig.XINFO_OTF_PASS, System.getProperty(XinfoFtpConfig.XINFO_OTF_PASS));
+		ms.setProperty(XinfoFtpConfig.XINFO_OTF_SERVER, System.getProperty(XinfoFtpConfig.XINFO_OTF_SERVER));
+		ms.setProperty(XinfoFtpConfig.XINFO_OTF_PORT, System.getProperty(XinfoFtpConfig.XINFO_OTF_PORT));
+		ms.setProperty(XinfoFtpConfig.XINFO_OTF_USER, System.getProperty(XinfoFtpConfig.XINFO_OTF_USER));
+		ms.setProperty(XinfoFtpConfig.XINFO_OTF_TIMEOUT, System.getProperty(XinfoFtpConfig.XINFO_OTF_TIMEOUT));
 		
 		File baseDir = new File(LOC);
 		

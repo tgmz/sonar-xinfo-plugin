@@ -34,7 +34,7 @@ import org.sonar.api.config.Configuration;
 
 import de.tgmz.sonar.plugins.xinfo.AbstractXinfoProvider;
 import de.tgmz.sonar.plugins.xinfo.XinfoException;
-import de.tgmz.sonar.plugins.xinfo.config.XinfoConfig;
+import de.tgmz.sonar.plugins.xinfo.config.XinfoFtpConfig;
 import de.tgmz.sonar.plugins.xinfo.generated.plicomp.PACKAGE;
 import de.tgmz.sonar.plugins.xinfo.languages.Language;
 
@@ -50,7 +50,7 @@ public class XinfoOnTheFlyProvider extends AbstractXinfoProvider {
 
 	@Override
 	public PACKAGE getXinfo(InputFile pgm) throws XinfoException {
-		String user = getOtfValue(XinfoConfig.XINFO_OTF_USER);
+		String user = getOtfValue(XinfoFtpConfig.XINFO_OTF_USER);
 		
 		if (client == null || !client.isConnected()) {
 			LOGGER.debug("Connecting");
@@ -69,7 +69,7 @@ public class XinfoOnTheFlyProvider extends AbstractXinfoProvider {
 			client.setOwnerFilter(user);
 			
 			long start = System.currentTimeMillis();
-			int timeout = Integer.parseInt(getOtfValue(XinfoConfig.XINFO_OTF_TIMEOUT)) * 1_000;
+			int timeout = Integer.parseInt(getOtfValue(XinfoFtpConfig.XINFO_OTF_TIMEOUT)) * 1_000;
 
 			while (System.currentTimeMillis() - start < timeout && !"OUTPUT".equals(xinfoJob.getStatus())) {
 				Thread.sleep(500);
@@ -138,8 +138,8 @@ public class XinfoOnTheFlyProvider extends AbstractXinfoProvider {
 		int reply;
 		
 		try {
-			client.connect(getOtfValue(XinfoConfig.XINFO_OTF_SERVER)
-					, Integer.parseInt(getOtfValue(XinfoConfig.XINFO_OTF_PORT)));
+			client.connect(getOtfValue(XinfoFtpConfig.XINFO_OTF_SERVER)
+					, Integer.parseInt(getOtfValue(XinfoFtpConfig.XINFO_OTF_PORT)));
 
 			// After connection attempt, you should check the reply code to verify
 			// success.
@@ -150,7 +150,7 @@ public class XinfoOnTheFlyProvider extends AbstractXinfoProvider {
 				throw new XinfoException("Connect unsuccessfull");
 			}
 
-			if (client.login(user, getOtfValue(XinfoConfig.XINFO_OTF_PASS))) {
+			if (client.login(user, getOtfValue(XinfoFtpConfig.XINFO_OTF_PASS))) {
 				client.enterLocalPassiveMode();
 	            client.site("FILE=Jes JesJOBNAME=*");
 	            
@@ -186,7 +186,7 @@ public class XinfoOnTheFlyProvider extends AbstractXinfoProvider {
 				Reader r = new InputStreamReader(is, StandardCharsets.UTF_8)) {
 				String s = IOUtils.toString(r);
 			
-				return MessageFormat.format(s, getOtfValue(XinfoConfig.XINFO_OTF_JOBCARD),
+				return MessageFormat.format(s, getOtfValue(XinfoFtpConfig.XINFO_OTF_JOBCARD),
 						FilenameUtils.removeExtension(inputFile.filename()).toUpperCase(Locale.getDefault()),
 				inputFile.contents(), sysxmlsd);
 			}
