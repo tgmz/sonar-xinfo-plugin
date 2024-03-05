@@ -42,7 +42,7 @@ public enum Language {
 	 * @param defaultFileSuffixes List of comma-separated file suffixes
 	 * @param repoKey key for the {@link NewRepository}
 	 * @param repoName name for the {@link NewRepository}
-	 * @param ruleKey name for the package to load rules from}
+	 * @param ruleKey name for the package to load rules from. Defaults to key}
 	 */
 	private Language(String key, String name, String defaultFileSuffixes, String repoKey, String repoName, String ruleKey) {
 		this.key = key;

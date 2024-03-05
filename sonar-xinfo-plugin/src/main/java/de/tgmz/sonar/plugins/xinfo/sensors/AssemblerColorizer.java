@@ -12,7 +12,6 @@ package de.tgmz.sonar.plugins.xinfo.sensors;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.Collections;
 
 import org.sonar.api.batch.fs.InputFile;
 
@@ -20,12 +19,12 @@ import de.tgmz.sonar.plugins.xinfo.color.assembler.AssemblerColorizing;
 import de.tgmz.sonar.plugins.xinfo.languages.Language;
 
 /**
- * Sensor for syntaxhighlighting of HL Assembler programes.
+ * Sensor for syntax highlighting of HL Assembler programs.
  */
 public class AssemblerColorizer extends AbstractColorizer<AssemblerColorizing> {
 
 	public AssemblerColorizer() {
-		super(Collections.singletonList(Language.ASSEMBLER));
+		super(Language.ASSEMBLER);
 	}
 
 	@Override

@@ -10,8 +10,6 @@
   *******************************************************************************/
 package de.tgmz.sonar.plugins.xinfo.sensors;
 
-import java.util.Collections;
-
 import org.sonar.api.batch.fs.FileSystem;
 
 import de.tgmz.sonar.plugins.xinfo.languages.Language;
@@ -22,6 +20,6 @@ import de.tgmz.sonar.plugins.xinfo.languages.Language;
 public class CobolIssuesLoader extends AbstractXinfoIssuesLoader {
 
 	public CobolIssuesLoader(final FileSystem fileSystem) {
-		super(fileSystem, Collections.singletonList(Language.COBOL));
+		super(fileSystem, Language.COBOL);
 	}
 }

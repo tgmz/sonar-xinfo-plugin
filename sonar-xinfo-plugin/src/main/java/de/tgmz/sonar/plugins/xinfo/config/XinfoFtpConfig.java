@@ -17,7 +17,7 @@ import java.util.List;
 import org.sonar.api.config.PropertyDefinition;
 
 /**
- * Runtime config.
+ * Runtime config for on-the-fly processing.
  */
 public final class XinfoFtpConfig {
 	public static final String XINFO_OTF = "sonar.xinfo.otf";
@@ -52,7 +52,7 @@ public final class XinfoFtpConfig {
 				.description("XINFO on-the-fly server")
 				.category(CATEGORY).build()
 			, PropertyDefinition.builder(XINFO_OTF_PORT)
-				.name("OtfTimeout")
+				.name("OtfServerPort")
 				.description("XINFO on-the-fly server port")
 				.defaultValue("21")
 				.category(CATEGORY).build()

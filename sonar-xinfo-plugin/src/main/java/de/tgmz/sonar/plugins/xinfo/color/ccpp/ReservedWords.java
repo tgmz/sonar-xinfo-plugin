@@ -10,7 +10,7 @@
 package de.tgmz.sonar.plugins.xinfo.color.ccpp;
 
 /**
- * C key words. <code>enum</code> to identify doubles quickly.
+ * C/C++ key words. <code>enum</code> to identify doubles quickly.
  */
 public enum ReservedWords {
 	ALIGNAS

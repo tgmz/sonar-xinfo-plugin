@@ -12,6 +12,7 @@ package de.tgmz.sonar.plugins.xinfo.sensors;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -68,6 +69,11 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 		this.languages = languages;
 	}
 
+	protected AbstractXinfoIssuesLoader(final FileSystem fileSystem, Language language) {
+		this.fileSystem = fileSystem;
+		this.languages = Collections.singletonList(language);
+	}
+
 	@Override
 	public void describe(final SensorDescriptor descriptor) {
 		StringBuilder s = new StringBuilder();
@@ -114,7 +120,7 @@ public abstract class AbstractXinfoIssuesLoader implements Sensor {
 			createFindings(p, inputFile, Language.getByKey(inputFile.language()));
 			
 			if (++ctr % threshold == 0) {
-				LOGGER.info("{} files processed, current is {}", ctr, inputFile);
+				LOGGER.info("{} file(s) processed, current is {}", ctr, inputFile);
 			}
 		}
 	}

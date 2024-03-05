@@ -39,6 +39,9 @@ import de.tgmz.sonar.plugins.xinfo.config.XinfoFtpConfig;
 import de.tgmz.sonar.plugins.xinfo.generated.plicomp.PACKAGE;
 import de.tgmz.sonar.plugins.xinfo.languages.Language;
 
+/**
+ * Loads issues "on-the-fly", i.e. with no stored XINFO files by invoking the appropriate compiler. 
+ */
 public class XinfoOnTheFlyProvider extends AbstractXinfoProvider {
 	private static final Logger LOGGER = LoggerFactory.getLogger(XinfoOnTheFlyProvider.class);
 	private static final Random random = new SecureRandom();

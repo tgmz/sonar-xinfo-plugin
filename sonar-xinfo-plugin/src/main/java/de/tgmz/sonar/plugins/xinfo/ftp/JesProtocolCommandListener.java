@@ -15,6 +15,9 @@ import org.apache.commons.net.ProtocolCommandListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Helper class for logging ftp commands.
+ */
 public class JesProtocolCommandListener implements ProtocolCommandListener {
 	private static final Logger LOGGER = LoggerFactory.getLogger(JesProtocolCommandListener.class);
 

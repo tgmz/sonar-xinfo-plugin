@@ -11,7 +11,7 @@
 package de.tgmz.sonar.plugins.xinfo.languages;
 
 /**
- * This class defines the C/C++ language for Sonar.
+ * This class defines the C language for Sonar.
  */
 public final class CLanguage extends LanguageBridge {
 	public CLanguage() {

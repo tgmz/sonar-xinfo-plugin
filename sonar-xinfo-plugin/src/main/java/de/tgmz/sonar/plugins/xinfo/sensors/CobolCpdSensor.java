@@ -20,7 +20,7 @@ import org.sonar.api.batch.sensor.cpd.NewCpdTokens;
 import de.tgmz.sonar.plugins.xinfo.languages.Language;
 
 /**
- * Tokenize files for CPD
+ * Tokenize COBOL files for CPD
  */
 public class CobolCpdSensor extends AbstractCpdSensor {
 	public CobolCpdSensor() {
