@@ -25,7 +25,7 @@ import de.tgmz.sonar.plugins.xinfo.languages.Language;
  */
 public class DefaultCpdSensor extends AbstractCpdSensor {
 	public DefaultCpdSensor() {
-		super("XINFO default CPD Sensor", Language.PLI.getKey(), Language.ASSEMBLER.getKey());
+		super("XINFO default CPD Sensor", Language.PLI.getKey(), Language.ASSEMBLER.getKey(), Language.C.getKey(), Language.CPP.getKey());
 	}
 	
 	protected void tokenize(InputFile inputFile, SensorContext context) {

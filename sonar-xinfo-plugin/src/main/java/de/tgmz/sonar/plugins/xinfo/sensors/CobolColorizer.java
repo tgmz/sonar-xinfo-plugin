@@ -12,7 +12,6 @@ package de.tgmz.sonar.plugins.xinfo.sensors;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.Collections;
 
 import org.sonar.api.batch.fs.InputFile;
 
@@ -20,12 +19,12 @@ import de.tgmz.sonar.plugins.xinfo.color.cobol.CobolColorizing;
 import de.tgmz.sonar.plugins.xinfo.languages.Language;
 
 /**
- * Sensor for syntaxhighlighting of Enterprise Cobol programes.
+ * Sensor for syntax highlighting of Enterprise Cobol programs.
  */
 public class CobolColorizer extends AbstractColorizer<CobolColorizing> {
 
 	public CobolColorizer() {
-		super(Collections.singletonList(Language.COBOL));
+		super(Language.COBOL);
 	}
 
 	@Override

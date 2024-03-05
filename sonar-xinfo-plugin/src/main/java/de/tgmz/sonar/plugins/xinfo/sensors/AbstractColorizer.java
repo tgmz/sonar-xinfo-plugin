@@ -13,6 +13,7 @@ package de.tgmz.sonar.plugins.xinfo.sensors;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -46,6 +47,11 @@ public abstract class AbstractColorizer<T extends IColorizing> implements Sensor
 	protected AbstractColorizer(List<Language> languages) {
 		super();
 		this.languages = languages;
+	}
+
+	protected AbstractColorizer(Language lang) {
+		super();
+		this.languages = Collections.singletonList(lang);
 	}
 
 	@Override

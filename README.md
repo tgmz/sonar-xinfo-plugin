@@ -54,7 +54,7 @@ This plugin combines IBMs mainframe compilers with SonarQube. The principle is f
 
 ## Dynamic analysis
 * Tailor the example JCL procedures in "examples/jcl" for your system and store them in your system's PROCLIB
-* Provide credentials etc. in "examples/sonar-project-on-the-fly.properties"
+* Provide credentials etc. Use template "examples/sonar-project-on-the-fly.properties"
 * Analyze
 
 

@@ -11,7 +11,7 @@
 package de.tgmz.sonar.plugins.xinfo;
 
 /**
- * Exception to indicate errors.
+ * Exception to indicate runtime errors.
  */
 public class XinfoRuntimeException extends RuntimeException {
 	private static final long serialVersionUID = 8242050194743145608L;

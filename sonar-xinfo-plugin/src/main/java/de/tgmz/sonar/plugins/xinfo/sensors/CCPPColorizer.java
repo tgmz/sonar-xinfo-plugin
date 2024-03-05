@@ -20,7 +20,7 @@ import de.tgmz.sonar.plugins.xinfo.color.ccpp.CCPPColorizing;
 import de.tgmz.sonar.plugins.xinfo.languages.Language;
 
 /**
- * Sensor for syntaxhighlighting of C/C++ programs.
+ * Sensor for syntax highlighting of C/C++ programs.
  */
 public class CCPPColorizer extends AbstractColorizer<CCPPColorizing> {
 

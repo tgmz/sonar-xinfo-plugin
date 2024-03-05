@@ -23,7 +23,7 @@ import org.sonar.api.batch.sensor.highlighting.TypeOfText;
 import de.tgmz.sonar.plugins.xinfo.color.AbstractColorizing;
 
 /**
- * Syntax highlighting for PL/I files.
+ * Syntax highlighting for C/C++ files.
  */
 public class CCPPColorizing extends AbstractColorizing {
 	private static final List<String> CCPP_KEYWORDS;

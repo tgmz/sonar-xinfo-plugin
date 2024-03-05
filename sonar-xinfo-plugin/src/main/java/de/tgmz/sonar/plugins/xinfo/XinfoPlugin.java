@@ -47,8 +47,7 @@ public class XinfoPlugin implements Plugin {
     context.addExtensions(PliLanguage.class, PliQualityProfileDefinition.class);
     context.addExtensions(CobolLanguage.class, CobolQualityProfileDefinition.class);
     context.addExtensions(AssemblerLanguage.class, AssemblerQualityProfileDefinition.class);
-    context.addExtensions(CLanguage.class, CCPPQualityProfileDefinition.class);
-    context.addExtension(CPPLanguage.class);
+    context.addExtensions(CLanguage.class, CPPLanguage.class, CCPPQualityProfileDefinition.class);
 
     // tutorial on measures
 

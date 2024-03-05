@@ -20,6 +20,9 @@ import java.util.regex.Pattern;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
 
+/**
+ * Extend FTPClient for JES interaction.
+ */
 public class JesClient extends FTPClient {
     public int setOwnerFilter(String owner) throws IOException {
         return site(String.format("JesOWNER=%s", owner));
