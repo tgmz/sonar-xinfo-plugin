@@ -38,7 +38,12 @@
 		<system>GitHub</system>
 		<url>https://github.com/tgmz/sonar-xinfo-plugin/actions</url>
 	</ciManagement>
-
+	
+	<issueManagement>
+		<system>GitHub</system>
+		<url>https://github.com/tgmz/sonar-xinfo-plugin/issues</url>
+	</issueManagement>
+	
 	<scm>
 		<developerConnection>scm:git:https://github.com/tgmz/sonar-xinfo-plugin.git</developerConnection>
 		<url>https://github.com/tgmz/sonar-xinfo-plugin.git</url>
@@ -59,7 +64,7 @@
 
 	<organization>
 		<name>Thomas Zierer</name>
-		<url>https://github.com/tgmz/sonar-xinfo-plugin.git</url>
+		<url>https://github.com/tgmz/</url>
 	</organization>
 
 	<inceptionYear>2016</inceptionYear>

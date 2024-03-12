@@ -197,6 +197,7 @@
 					<pluginClass>de.tgmz.sonar.plugins.xinfo.XinfoPlugin</pluginClass>
 					<detail>true</detail>
 					<finalName>${project.build.finalName}.${maven.build.timestamp}</finalName>
+					<pluginUrl>https://github.com/tgmz/sonar-xinfo-plugin</pluginUrl>
 				</configuration>
 			</plugin>
 			<plugin>
