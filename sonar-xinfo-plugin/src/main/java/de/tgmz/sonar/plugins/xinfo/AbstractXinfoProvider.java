@@ -24,14 +24,14 @@ import java.util.List;
 import javax.xml.parsers.DocumentBuilder;
 
 import org.apache.commons.io.IOUtils;
-import org.sonar.api.config.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.sonar.api.config.Configuration;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-import de.tgmz.sonar.plugins.xinfo.config.XinfoConfig;
+import de.tgmz.sonar.plugins.xinfo.config.XinfoProjectConfig;
 import de.tgmz.sonar.plugins.xinfo.generated.plicomp.FILE;
 import de.tgmz.sonar.plugins.xinfo.generated.plicomp.MESSAGE;
 import de.tgmz.sonar.plugins.xinfo.generated.plicomp.PACKAGE;
@@ -98,7 +98,7 @@ public abstract class AbstractXinfoProvider implements IXinfoProvider {
 			try {
 				LOGGER.debug("Exception \"{}\" occurred, retrying", e.getMessage());
 				
-				String c = configuration.get(XinfoConfig.XINFO_ENCODING).orElse(Charset.defaultCharset().name());
+				String c = configuration.get(XinfoProjectConfig.XINFO_ENCODING).orElse(Charset.defaultCharset().name());
 				
 				String xml = IOUtils.toString(new ByteArrayInputStream(buf), c != null ? Charset.forName(c) : Charset.defaultCharset()).trim();
 

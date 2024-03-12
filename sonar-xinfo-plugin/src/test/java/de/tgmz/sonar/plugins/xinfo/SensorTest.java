@@ -20,6 +20,7 @@ import org.apache.commons.io.IOUtils;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.sonar.api.batch.rule.CheckFactory;
 import org.sonar.api.batch.sensor.Sensor;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.SensorDescriptor;
@@ -28,19 +29,11 @@ import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.config.internal.MapSettings;
 import org.sonar.api.server.rule.RulesDefinition;
 
-import de.tgmz.sonar.plugins.xinfo.config.XinfoConfig;
-import de.tgmz.sonar.plugins.xinfo.languages.Language;
-import de.tgmz.sonar.plugins.xinfo.rules.XinfoRulesDefinition;
-import de.tgmz.sonar.plugins.xinfo.sensors.AssemblerColorizer;
-import de.tgmz.sonar.plugins.xinfo.sensors.AssemblerIssuesLoader;
-import de.tgmz.sonar.plugins.xinfo.sensors.CCPPColorizer;
-import de.tgmz.sonar.plugins.xinfo.sensors.CCPPIssuesLoader;
-import de.tgmz.sonar.plugins.xinfo.sensors.CobolColorizer;
-import de.tgmz.sonar.plugins.xinfo.sensors.CobolCpdSensor;
-import de.tgmz.sonar.plugins.xinfo.sensors.CobolIssuesLoader;
-import de.tgmz.sonar.plugins.xinfo.sensors.DefaultCpdSensor;
-import de.tgmz.sonar.plugins.xinfo.sensors.PliColorizer;
-import de.tgmz.sonar.plugins.xinfo.sensors.PliIssuesLoader;
+import de.tgmz.sonar.plugins.xinfo.config.XinfoProjectConfig;
+import de.tgmz.sonar.plugins.xinfo.rules.XinfoRuleDefinition;
+import de.tgmz.sonar.plugins.xinfo.sensors.ColorizerSensor;
+import de.tgmz.sonar.plugins.xinfo.sensors.XinfoCpdSensor;
+import de.tgmz.sonar.plugins.xinfo.sensors.XinfoIssuesLoader;
 
 /**
  * Tests for all sensors.
@@ -53,9 +46,9 @@ public class SensorTest {
 	@BeforeClass
 	public static void setupOnce() throws IOException {
 		MapSettings ms = new MapSettings();
-		ms.setProperty(XinfoConfig.XINFO_ROOT, LOC + File.separator +"xinfo");
-		ms.setProperty(XinfoConfig.XINFO_LOG_THRESHOLD, "1");
-		ms.setProperty(XinfoConfig.XINFO_INCLUDE_LEVEL, "I,W,E,S,U");
+		ms.setProperty(XinfoProjectConfig.XINFO_ROOT, LOC + File.separator +"xinfo");
+		ms.setProperty(XinfoProjectConfig.XINFO_LOG_THRESHOLD, "1");
+		ms.setProperty(XinfoProjectConfig.XINFO_INCLUDE_LEVEL, "I,W,E,S,U");
 		
 		File baseDir = new File(LOC);
 		
@@ -71,7 +64,7 @@ public class SensorTest {
 		});
 		
 		for (File f : testresources) {
-			((SensorContextTester) sensorContext).fileSystem().add(SonarTestFileUtil.create(LOC, f.getName(), Language.getByExtension(f.getName())));
+			((SensorContextTester) sensorContext).fileSystem().add(SonarTestFileUtil.create(LOC, f.getName()));
 		}
 		
 		sensorDescriptor = new DefaultSensorDescriptor();
@@ -85,66 +78,29 @@ public class SensorTest {
 	}
 	
 	@Test(expected = Test.None.class)
-	public void testPli() {
-		PliColorizer colorizer = new PliColorizer();
-		PliIssuesLoader issuesLoader = new PliIssuesLoader(sensorContext.fileSystem());
-		
-		colorizer.describe(sensorDescriptor);
-		colorizer.execute(sensorContext);
+	public void testIssuesLoader() {
+		XinfoIssuesLoader issuesLoader = new XinfoIssuesLoader(new CheckFactory(sensorContext.activeRules()));
 		
 		issuesLoader.describe(sensorDescriptor);
 		issuesLoader.execute(sensorContext);
 	}
 
 	@Test(expected = Test.None.class)
-	public void testCobol() {
-		CobolColorizer colorizer = new CobolColorizer();
-		CobolIssuesLoader issuesLoader = new CobolIssuesLoader(sensorContext.fileSystem());
+	public void testColorizer() {
+		ColorizerSensor sensor = new ColorizerSensor();
 		
-		colorizer.describe(sensorDescriptor);
-		colorizer.execute(sensorContext);
-		
-		issuesLoader.describe(sensorDescriptor);
-		issuesLoader.execute(sensorContext);
-	}
-
-	@Test(expected = Test.None.class)
-	public void testAssember() {
-		AssemblerColorizer colorizer = new AssemblerColorizer();
-		AssemblerIssuesLoader issuesLoader = new AssemblerIssuesLoader(sensorContext.fileSystem());
-		
-		colorizer.describe(sensorDescriptor);
-		colorizer.execute(sensorContext);
-		
-		issuesLoader.describe(sensorDescriptor);
-		issuesLoader.execute(sensorContext);
-	}
-
-	@Test(expected = Test.None.class)
-	public void testCCPP() {
-		CCPPColorizer colorizer = new CCPPColorizer();
-		CCPPIssuesLoader issuesLoader = new CCPPIssuesLoader(sensorContext.fileSystem());
-		
-		colorizer.describe(sensorDescriptor);
-		colorizer.execute(sensorContext);
-		
-		issuesLoader.describe(sensorDescriptor);
-		issuesLoader.execute(sensorContext);
+		sensor.describe(sensorDescriptor);
+		sensor.execute(sensorContext);
 	}
 
 	@Test(expected = Test.None.class)
 	public void testRulesDefinition() {
-		new XinfoRulesDefinition().define(new RulesDefinition.Context());
+		new XinfoRuleDefinition().define(new RulesDefinition.Context());
 	}
 	
 	@Test(expected = Test.None.class)
 	public void testCpd() {
-		Sensor cpdSensor = new DefaultCpdSensor();
-		
-		cpdSensor.describe(sensorDescriptor);
-		cpdSensor.execute(sensorContext);
-
-		cpdSensor = new CobolCpdSensor();
+		Sensor cpdSensor = new XinfoCpdSensor();
 		
 		cpdSensor.describe(sensorDescriptor);
 		cpdSensor.execute(sensorContext);

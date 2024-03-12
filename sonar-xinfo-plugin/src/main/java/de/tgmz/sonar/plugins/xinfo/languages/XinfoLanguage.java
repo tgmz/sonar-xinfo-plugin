@@ -1,5 +1,5 @@
 /*******************************************************************************
-  * Copyright (c) 13.11.2016 Thomas Zierer.
+  * Copyright (c) 11.03.2024 Thomas Zierer.
   * All rights reserved. This program and the accompanying materials
   * are made available under the terms of the Eclipse Public License v2.0
   * which accompanies this distribution, and is available at
@@ -10,22 +10,28 @@
   *******************************************************************************/
 package de.tgmz.sonar.plugins.xinfo.languages;
 
-import java.util.List;
-
+import org.sonar.api.config.Configuration;
 import org.sonar.api.resources.AbstractLanguage;
 
+import de.tgmz.sonar.plugins.xinfo.config.XinfoConfig;
+
 /**
- * This class acts as a bridge between the {@link AbstractLanguage} used by Sonar and the {@link Language} enum.
+ * This class defines the Xinfo language.
  */
-public class LanguageBridge extends AbstractLanguage {
-	public LanguageBridge(String key, String name) {
-		super(key, name);
+public final class XinfoLanguage extends AbstractLanguage {
+
+	public static final String NAME = "Xinfo";
+	public static final String KEY = "xinfo";
+
+	private final Configuration config;
+
+	public XinfoLanguage(Configuration config) {
+		super(KEY, NAME);
+		this.config = config;
 	}
 
 	@Override
 	public String[] getFileSuffixes() {
-		List<String> defaultFileSuffixes = Language.getByKey(getKey()).getDefaultFileSuffixes();
-		
-		return defaultFileSuffixes.toArray(new String[defaultFileSuffixes.size()]);
+		return config.getStringArray(XinfoConfig.FILE_SUFFIXES_KEY);
 	}
 }

@@ -15,49 +15,27 @@ import static java.util.Arrays.asList;
 import java.util.List;
 
 import org.sonar.api.config.PropertyDefinition;
+import org.sonar.api.resources.Qualifiers;
 
-/**
- * Runtime config.
- */
-public final class XinfoConfig {
-	public static final String COLORIZING_LIMIT = "sonar.xinfo.colorizing.limit";
-	public static final String XINFO_ROOT = "sonar.xinfo.root.xinfo";
-	public static final String XINFO_CPD_OFF = "sonar.xinfo.cpd.off";
-	public static final String XINFO_ENCODING = "sonar.xinfo.encoding";
-	public static final String XINFO_LOG_THRESHOLD = "sonar.xinfo.log.threshold";
-	public static final String XINFO_INCLUDE_LEVEL = "sonar.xinfo.include.levels";
+public class XinfoConfig {
 	public static final String CATEGORY = "Xinfo";
 
+	public static final String FILE_SUFFIXES_KEY = "sonar.xinfo.file.suffixes";
+	public static final String FILE_SUFFIXES_DEFAULT_VALUE = ".pli,.asm,.cbl,.c,.cpp";
+
 	private XinfoConfig() {
-		// Only statics
+		// only statics
 	}
 
 	public static List<PropertyDefinition> definitions() {
-		return asList(PropertyDefinition.builder(COLORIZING_LIMIT)
-				.name("XinfoColorizingLimit")
-				.description("Xinfo Colorizing Limit")
-				.defaultValue(String.valueOf(5000))
-				.category(CATEGORY).build()
-			, PropertyDefinition.builder(XINFO_ROOT)
-				.name("RootXinfo")
-				.description("XINFO root directory")
-				.category(CATEGORY).build()
-			, PropertyDefinition.builder(XINFO_CPD_OFF)
-				.name("XinfoCpdOff")
-				.description("XINFO turn off copy/paste detection")
-				.category(CATEGORY).build()
-			, PropertyDefinition.builder(XINFO_ENCODING)
-				.name("EncodingXinfo")
-				.description("XINFO encoding")
-				.category(CATEGORY).build()
-			, PropertyDefinition.builder(XINFO_LOG_THRESHOLD)
-				.name("LogThresholdXinfo")
-				.description("XINFO log threshold")
-				.category(CATEGORY).build()
-			, PropertyDefinition.builder(XINFO_INCLUDE_LEVEL)
-				.name("IncludeLevelXinfo")
-				.description("XINFO include level. Comma separated list of levels, e.g. \'E,S,U\'")
-				.category(CATEGORY).build()
-		);
+		return asList(PropertyDefinition.builder(FILE_SUFFIXES_KEY)
+				.multiValues(true)
+				.defaultValue(FILE_SUFFIXES_DEFAULT_VALUE)
+				.category(CATEGORY)
+				.name("File Suffixes")
+				.description("List of suffixes for files to analyze.")
+				.onQualifiers(Qualifiers.PROJECT)
+				.build()
+			);				
 	}
 }

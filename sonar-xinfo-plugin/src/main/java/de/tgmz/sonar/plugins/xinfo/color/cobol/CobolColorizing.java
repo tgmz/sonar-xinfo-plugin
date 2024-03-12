@@ -21,13 +21,13 @@ import java.util.regex.Pattern;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.sensor.highlighting.TypeOfText;
 
-import de.tgmz.sonar.plugins.xinfo.color.AbstractColorizing;
+import de.tgmz.sonar.plugins.xinfo.color.DefaultColorizing;
 import de.tgmz.sonar.plugins.xinfo.color.ColorizingData;
 
 /**
  * Syntax highlighting for Cobol files.
  */
-public class CobolColorizing extends AbstractColorizing {
+public class CobolColorizing extends DefaultColorizing {
 	private static final List<String> KEYWORDS;
 	private static final Pattern COBOL_WORD_PATTERN = Pattern.compile("[\\w$§\\.\\-]+");
 	private static final Pattern COBOL_STRING_PATTERN = Pattern.compile("[\"'].*[\"']");
@@ -46,7 +46,7 @@ public class CobolColorizing extends AbstractColorizing {
 	}
 
 	@Override
-	protected void createAreas() {
+	public void createAreas() {
 		// Comments
 		colorizeComments();
 		

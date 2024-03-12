@@ -13,6 +13,7 @@ package de.tgmz.sonar.plugins.xinfo.color;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.text.NumberFormat;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -30,10 +31,13 @@ import org.sonar.api.batch.sensor.highlighting.TypeOfText;
 /**
  * Common functions for Syntax highlighting.
  */
-public abstract class AbstractColorizing implements IColorizing {
+public class DefaultColorizing implements IColorizing {
     public static final ThreadLocal<NumberFormat> NF = ThreadLocal.withInitial(NumberFormat::getNumberInstance);
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(AbstractColorizing.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(DefaultColorizing.class);
+
+	private static final Pattern DEFAULT_WORD_PATTERN = Pattern.compile("\\w+");
+	private static final Pattern DEFAULT_STRING_PATTERN = Pattern.compile("[\"'].*[\"']");
 
 	/** The areas to colorize. */
 	private HighligthedAreas areas;
@@ -47,7 +51,7 @@ public abstract class AbstractColorizing implements IColorizing {
 	 * @param limit maximum number of lines to colorize
 	 * @throws IOException if the file can't be read
 	 */
-    protected AbstractColorizing(InputFile file, Charset charset, int limit) throws IOException {
+    public DefaultColorizing(InputFile file, Charset charset, int limit) throws IOException {
 		this.limit = limit;
 		
 		LOGGER.debug("Colorize file {}", file);
@@ -73,9 +77,14 @@ public abstract class AbstractColorizing implements IColorizing {
 	}
 
 	/**
-	 * Every subclass must implement this.
+	 * Every subclass should override this.
 	 */
-	protected abstract void createAreas();
+	public void createAreas() {
+		// Strings
+		colorizeAreaByPattern(DEFAULT_STRING_PATTERN, TypeOfText.STRING);
+		
+		colorizeTokens(DEFAULT_WORD_PATTERN,  Collections.emptyMap(), -1, Integer.MAX_VALUE);
+	}
 	
 	/**
 	 * Colorizes every area of the file's content that matches a regex in a manner described by typeOfText

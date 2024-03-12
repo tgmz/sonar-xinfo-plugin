@@ -22,13 +22,13 @@ import java.util.regex.Pattern;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.sensor.highlighting.TypeOfText;
 
-import de.tgmz.sonar.plugins.xinfo.color.AbstractColorizing;
+import de.tgmz.sonar.plugins.xinfo.color.DefaultColorizing;
 import de.tgmz.sonar.plugins.xinfo.color.ColorizingData;
 
 /**
  * Syntax highlighting for Assembler files.
  */
-public class AssemblerColorizing extends AbstractColorizing {
+public class AssemblerColorizing extends DefaultColorizing {
 	private static final int DFT_LIMIT = 40;
 	private static final List<String> INSTRUCTIONS;
 	private static final List<String> BUILTIN;
@@ -61,7 +61,7 @@ public class AssemblerColorizing extends AbstractColorizing {
 	}
 
 	@Override
-	protected void createAreas() {
+	public void createAreas() {
 		// Comments
 		colorizeComments();
 		

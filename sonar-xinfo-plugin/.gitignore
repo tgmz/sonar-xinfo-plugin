@@ -1,3 +1,12 @@
-/bin/
-/target/
-/.settings/
+node_modules
+.DS_Store
+yarn.lock
+target/
+node/
+.idea/
+sonar-example-plugin.iml
+
+# Eclipse
+.classpath
+.project
+.settings/

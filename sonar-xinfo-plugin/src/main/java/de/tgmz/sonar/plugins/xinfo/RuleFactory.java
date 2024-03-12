@@ -14,21 +14,33 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.sonar.check.Rule;
 
-import de.tgmz.sonar.plugins.xinfo.languages.Language;
+import de.tgmz.sonar.plugins.xinfo.rules.XinfoRule;
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ClassInfoList;
 import io.github.classgraph.ScanResult;
 
 /**
- * Factory for creating the sonar rules for a {@link Language}
+ * Factory for creating the xinfo sonar rules.
  */
 public final class RuleFactory {
 	private static final Logger LOGGER = LoggerFactory.getLogger(RuleFactory.class);
 	private static RuleFactory instance;
+	private List<Class<?>> rules;
 
 	private RuleFactory() {
+		String pkg = "de.tgmz.sonar.plugins.xinfo.rules.generated";
+		
+		LOGGER.info("Get rules from package {}", pkg);
+		
+		long start = System.currentTimeMillis();
+
+		try (ScanResult scanResult = new ClassGraph().enableAllInfo().acceptPackages(pkg).scan()) {
+			ClassInfoList xinfoRuleClasses = scanResult.getSubclasses(XinfoRule.class);
+			rules = xinfoRuleClasses.loadClasses();
+		}
+		
+		LOGGER.info("Loaded {} rules in {} msec", rules.size(), System.currentTimeMillis() - start);
 	}
 
 	public static synchronized RuleFactory getInstance() {
@@ -41,14 +53,7 @@ public final class RuleFactory {
 		return instance;
 	}
 
-	public List<Class<?>> getRules(Language l) {
-		String pkg = "de.tgmz.sonar.plugins.xinfo.rules.generated." + l.getRuleKey();
-		
-		LOGGER.info("Get rules for {} from package {}", l, pkg);
-
-		try (ScanResult scanResult = new ClassGraph().enableAllInfo().acceptPackages(pkg).scan()) {
-			ClassInfoList xinfoRuleClasses = scanResult.getClassesWithAnnotation(Rule.class);
-			return xinfoRuleClasses.loadClasses();
-		}
+	public List<Class<?>> getRules() {
+		return rules;
 	}
 }

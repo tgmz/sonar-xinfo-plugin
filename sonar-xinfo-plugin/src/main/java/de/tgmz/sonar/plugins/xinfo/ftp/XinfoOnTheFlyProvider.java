@@ -120,7 +120,7 @@ public class XinfoOnTheFlyProvider extends AbstractXinfoProvider {
 	
 	private PACKAGE createXinfo(InputFile pgm, byte[] xinfo) throws IOException, XinfoException {
 		try (InputStream is = new ByteArrayInputStream(xinfo)) {
-			return Arrays.asList(Language.C, Language.CPP).contains(Language.getByExtension(pgm.filename())) ? super.createXinfoFromEvent(is) : super.createXinfo(is);
+			return Arrays.asList(Language.C, Language.CPP).contains(Language.getByFilename(pgm.filename())) ? super.createXinfoFromEvent(is) : super.createXinfo(is);
 		}
 	}
 
@@ -170,7 +170,7 @@ public class XinfoOnTheFlyProvider extends AbstractXinfoProvider {
 	private String createJcl(InputFile inputFile, String sysxmlsd) throws IOException, XinfoException {
 		String template = null;
 
-		switch (Language.getByExtension(inputFile.filename())) {
+		switch (Language.getByFilename(inputFile.filename())) {
 		case COBOL:
 			template = "elaxfcoc.txt";
 			break;

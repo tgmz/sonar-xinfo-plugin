@@ -125,6 +125,13 @@ public class XinfoMojo extends AbstractMojo {
 		
 		createRulesFromString(s, "^IBM\\d{4}I\\s[IWESU]\\s", 3);
 		createRulesFromString(s, "^IBM\\d{4}\\s", 1);
+		
+		//Undocumented
+		writeRule("IBM1063I"
+				, targetPackage
+				, 'I'
+				, "Code generated for DO group would be more efficient if control variable were a 4-byte integer."
+				, "The control variable in the DO loop is a 1-byte integer, 2-byte integer, fixed decimal or fixed picture, and consequently, the code generated for the loop will not be optimal.");
 	}
 	private void generateAssembler() throws IOException {
 		String s = stripPdf(document

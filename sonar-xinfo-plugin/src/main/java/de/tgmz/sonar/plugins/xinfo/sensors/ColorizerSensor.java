@@ -12,15 +12,11 @@ package de.tgmz.sonar.plugins.xinfo.sensors;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.sonar.api.batch.fs.FileSystem;
+import org.sonar.api.batch.fs.FilePredicates;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.TextRange;
 import org.sonar.api.batch.sensor.Sensor;
@@ -28,60 +24,41 @@ import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.SensorDescriptor;
 import org.sonar.api.batch.sensor.highlighting.NewHighlighting;
 
+import de.tgmz.sonar.plugins.xinfo.color.DefaultColorizing;
 import de.tgmz.sonar.plugins.xinfo.color.ColorizingData;
 import de.tgmz.sonar.plugins.xinfo.color.IColorizing;
-import de.tgmz.sonar.plugins.xinfo.config.XinfoConfig;
+import de.tgmz.sonar.plugins.xinfo.color.assembler.AssemblerColorizing;
+import de.tgmz.sonar.plugins.xinfo.color.ccpp.CCPPColorizing;
+import de.tgmz.sonar.plugins.xinfo.color.cobol.CobolColorizing;
+import de.tgmz.sonar.plugins.xinfo.color.pli.PliColorizing;
+import de.tgmz.sonar.plugins.xinfo.config.XinfoProjectConfig;
 import de.tgmz.sonar.plugins.xinfo.languages.Language;
+import de.tgmz.sonar.plugins.xinfo.languages.XinfoLanguage;
 
 /**
  * Abstract sensor to provide syntax highlighting.
  *
  * @param <T> the colorizing scheme to use
  */
-public abstract class AbstractColorizer<T extends IColorizing> implements Sensor {
-	private static final Logger LOGGER = LoggerFactory.getLogger(AbstractColorizer.class);
+public class ColorizerSensor implements Sensor {
+	private static final Logger LOGGER = LoggerFactory.getLogger(ColorizerSensor.class);
 	private static final int DEFAULT_LINES_LIMIT = 5000;
 	
-	private List<Language> languages;
-
-	protected AbstractColorizer(List<Language> languages) {
-		super();
-		this.languages = languages;
-	}
-
-	protected AbstractColorizer(Language lang) {
-		super();
-		this.languages = Collections.singletonList(lang);
-	}
-
 	@Override
 	public void describe(final SensorDescriptor descriptor) {
-		StringBuilder s = new StringBuilder();
-		List<String> onlyOnLanguages = new LinkedList<>();
-		
-		languages.forEach(n -> {
-			s.append(n.getName() + " "); 
-			onlyOnLanguages.add(n.getKey());
-		});
-		
-		
-		descriptor.name(s.toString() + "Colorizer Sensor");
-		descriptor.onlyOnLanguages(onlyOnLanguages.toArray(new String[languages.size()]));
+		descriptor.name("XinfoColorizer");
+		descriptor.onlyOnLanguages(XinfoLanguage.KEY);
 	}
 	
 	@Override
 	public void execute(final SensorContext context) {
-	    FileSystem fs = context.fileSystem();
-	    
-	    int threshold = context.config().getInt(XinfoConfig.XINFO_LOG_THRESHOLD).orElse(100);
-	    
+	    int threshold = context.config().getInt(XinfoProjectConfig.XINFO_LOG_THRESHOLD).orElse(100);
+
+		FilePredicates p = context.fileSystem().predicates();
+		
 		int ctr = 0;
 		
-		Collection<String> c = new LinkedList<>();
-		
-		languages.forEach(n -> c.add(n.getKey()));
-		
-	    for (InputFile inputFile : fs.inputFiles(fs.predicates().hasLanguages(c))) {
+		for (InputFile inputFile : context.fileSystem().inputFiles(p.hasLanguages(XinfoLanguage.KEY))) {
 			try {
 				highlightFile(inputFile, context);
 				
@@ -98,8 +75,8 @@ public abstract class AbstractColorizer<T extends IColorizing> implements Sensor
 	private void highlightFile(final InputFile inputFile, final SensorContext context) throws IOException {
 		NewHighlighting newHighlighting = context.newHighlighting().onFile(inputFile);
 		
-		int limit = Math.max(DEFAULT_LINES_LIMIT, context.config().getInt(XinfoConfig.COLORIZING_LIMIT).orElse(Integer.valueOf(5000)));
-		String charset = context.config().get(XinfoConfig.XINFO_ENCODING).orElse(System.getProperty("file.encoding"));
+		int limit = Math.max(DEFAULT_LINES_LIMIT, context.config().getInt(XinfoProjectConfig.COLORIZING_LIMIT).orElse(Integer.valueOf(5000)));
+		String charset = context.config().get(XinfoProjectConfig.XINFO_ENCODING).orElse(System.getProperty("file.encoding"));
 
 		IColorizing colorozing = getColorizing(inputFile, Charset.forName(charset), limit);
 
@@ -129,6 +106,31 @@ public abstract class AbstractColorizer<T extends IColorizing> implements Sensor
 	 * @return the implementation of the {@link IColorizing}
 	 * @throws IOException if the file can't be read 
 	 */
-	protected abstract T getColorizing(InputFile f, Charset charset,  int limit) throws IOException;
+	private IColorizing getColorizing(InputFile f, Charset charset,  int limit) throws IOException {
+		Language lang = Language.getByFilename(f.filename());
+		
+		DefaultColorizing ic = null;
+		
+		switch(lang) {
+		case ASSEMBLER:
+			ic = new AssemblerColorizing(f, charset, limit);
+			break;
+		case COBOL:
+			ic = new CobolColorizing(f, charset, limit);
+			break;
+		case C,CPP:
+			ic = new CCPPColorizing(f, charset, limit);
+			break;
+		case PLI:
+			ic = new PliColorizing(f, charset, limit);
+			break;
+		default:
+			ic = new DefaultColorizing(f, charset, limit);
+		}
+		
+		ic.createAreas();
+		
+		return ic;
+	}
 	
 }

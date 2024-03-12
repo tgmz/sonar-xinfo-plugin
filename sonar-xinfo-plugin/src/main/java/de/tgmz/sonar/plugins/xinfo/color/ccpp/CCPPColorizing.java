@@ -20,12 +20,12 @@ import java.util.regex.Pattern;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.sensor.highlighting.TypeOfText;
 
-import de.tgmz.sonar.plugins.xinfo.color.AbstractColorizing;
+import de.tgmz.sonar.plugins.xinfo.color.DefaultColorizing;
 
 /**
  * Syntax highlighting for C/C++ files.
  */
-public class CCPPColorizing extends AbstractColorizing {
+public class CCPPColorizing extends DefaultColorizing {
 	private static final List<String> CCPP_KEYWORDS;
 	private static final Pattern CCPP_COMMENT_PATTERN = Pattern.compile("\\/\\*.*\\*\\/");
 	private static final Pattern CCPP_PREPROCESS_PATTERN = Pattern.compile("#\\w+");
@@ -46,7 +46,7 @@ public class CCPPColorizing extends AbstractColorizing {
 	}
 
 	@Override
-	protected void createAreas() {
+	public void createAreas() {
 		// Comments
 		colorizeAreaByPattern(CCPP_COMMENT_PATTERN, TypeOfText.COMMENT);
 

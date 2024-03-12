@@ -10,69 +10,34 @@
   *******************************************************************************/
 
 package de.tgmz.sonar.plugins.xinfo;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
+import java.io.File;
 
 import org.junit.Test;
 import org.junit.Test.None;
+import org.sonar.api.batch.sensor.internal.SensorContextTester;
 
-import de.tgmz.sonar.plugins.xinfo.languages.AssemblerLanguage;
-import de.tgmz.sonar.plugins.xinfo.languages.CLanguage;
-import de.tgmz.sonar.plugins.xinfo.languages.CPPLanguage;
-import de.tgmz.sonar.plugins.xinfo.languages.CobolLanguage;
 import de.tgmz.sonar.plugins.xinfo.languages.Language;
-import de.tgmz.sonar.plugins.xinfo.languages.PliLanguage;
+import de.tgmz.sonar.plugins.xinfo.languages.XinfoLanguage;
 
 /**
  * Simple testcases for languages
  */
 public class LanguageTest {
-
+	private static final String LOC = "testresources";
 	@Test
 	public void testExtensions() {
-		assertArrayEquals(new String[] {"pli", "pl1"}, new PliLanguage().getFileSuffixes());
-		assertArrayEquals(new String[] {"cbl", "cob"}, new CobolLanguage().getFileSuffixes());
-		assertArrayEquals(new String[] {"asm"}, new AssemblerLanguage().getFileSuffixes());
-		assertArrayEquals(new String[] {"c"}, new CLanguage().getFileSuffixes());
-		assertArrayEquals(new String[] {"cpp"}, new CPPLanguage().getFileSuffixes());
+		assertNotNull(new XinfoLanguage(SensorContextTester.create(new File(LOC)).config()).getFileSuffixes());
 	}
-
-	@Test
-	public void testLanguages() {
-		assertEquals(Language.ASSEMBLER, Language.getByKey("asm"));
-		assertEquals(Language.COBOL, Language.getByKey("cbl"));
-		assertEquals(Language.PLI, Language.getByKey("pli"));
-		assertEquals(Language.C, Language.getByKey("c"));
-		assertEquals(Language.CPP, Language.getByKey("cpp"));
-		
-		assertEquals("xinfo-pli", Language.PLI.getRepoKey());
-		assertEquals("Xinfo PL/I", Language.PLI.getRepoName());
-		
-		assertEquals("xinfo-cbl", Language.COBOL.getRepoKey());
-		assertEquals("Xinfo COBOL", Language.COBOL.getRepoName());
-		
-		assertEquals("xinfo-asm", Language.ASSEMBLER.getRepoKey());
-		assertEquals("Xinfo Assembler", Language.ASSEMBLER.getRepoName());
-		
-		assertEquals("xinfo-c", Language.C.getRepoKey());
-		assertEquals("Xinfo C", Language.C.getRepoName());
-		
-		assertEquals("xinfo-cpp", Language.CPP.getRepoKey());
-		assertEquals("Xinfo C++", Language.CPP.getRepoName());
-	}
-
-	@Test(expected=IllegalArgumentException.class)
-	public void testLanguageWrongKey() {
-		Language.getByKey("wrong");
-	}
-
+	
 	@Test(expected=None.class)
 	public void testLanguageByFile() {
-		Language.getByExtension("temp.pli");
+		Language.getByFilename("temp.pli");
 	}
 	
 	@Test(expected=IllegalArgumentException.class)
 	public void testLanguageByFileError() {
-		Language.getByExtension("temp.php");
+		Language.getByFilename("temp.php");
 	}
 }

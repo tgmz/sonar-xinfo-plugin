@@ -13,10 +13,12 @@ package {3};
 import org.sonar.check.Rule;
 import org.sonar.check.Priority;
 
+import de.tgmz.sonar.plugins.xinfo.rules.XinfoRule;
+
 @Rule(key = "{0}"
 	, priority = Priority.{4}
 	, tags = '{'"xinfo"'}'
 	, name = "{1}"
 	, description = "{2}")
-public class {0} '{'
+public class {0} extends XinfoRule '{'
 '}'

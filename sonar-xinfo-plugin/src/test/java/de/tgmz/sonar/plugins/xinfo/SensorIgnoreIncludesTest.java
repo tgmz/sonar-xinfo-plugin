@@ -15,16 +15,15 @@ import java.io.IOException;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.sonar.api.batch.rule.CheckFactory;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.SensorDescriptor;
 import org.sonar.api.batch.sensor.internal.DefaultSensorDescriptor;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.config.internal.MapSettings;
 
-import de.tgmz.sonar.plugins.xinfo.config.XinfoConfig;
-import de.tgmz.sonar.plugins.xinfo.languages.Language;
-import de.tgmz.sonar.plugins.xinfo.sensors.PliColorizer;
-import de.tgmz.sonar.plugins.xinfo.sensors.PliIssuesLoader;
+import de.tgmz.sonar.plugins.xinfo.config.XinfoProjectConfig;
+import de.tgmz.sonar.plugins.xinfo.sensors.XinfoIssuesLoader;
 
 /**
  * Test for PL/I with ignore.includes.
@@ -37,25 +36,21 @@ public class SensorIgnoreIncludesTest {
 	@BeforeClass
 	public static void setupOnce() throws IOException {
 		MapSettings ms = new MapSettings();
-		ms.setProperty(XinfoConfig.XINFO_ROOT, LOC + File.separator +"xinfo");
+		ms.setProperty(XinfoProjectConfig.XINFO_ROOT, LOC + File.separator +"xinfo");
 		
 		File baseDir = new File(LOC);
 		
 		sensorContext = SensorContextTester.create(baseDir);
 		((SensorContextTester) sensorContext).setSettings(ms);
 		
-		((SensorContextTester) sensorContext).fileSystem().add(SonarTestFileUtil.create(LOC, "plitst4.pli", Language.PLI));
+		((SensorContextTester) sensorContext).fileSystem().add(SonarTestFileUtil.create(LOC, "plitst4.pli"));
 		
 		sensorDescriptor = new DefaultSensorDescriptor();
 	}
 	
 	@Test(expected = Test.None.class)
 	public void testPli() {
-		PliColorizer colorizer = new PliColorizer();
-		PliIssuesLoader issuesLoader = new PliIssuesLoader(sensorContext.fileSystem());
-		
-		colorizer.describe(sensorDescriptor);
-		colorizer.execute(sensorContext);
+		XinfoIssuesLoader issuesLoader = new XinfoIssuesLoader(new CheckFactory(sensorContext.activeRules()));
 		
 		issuesLoader.describe(sensorDescriptor);
 		issuesLoader.execute(sensorContext);

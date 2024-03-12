@@ -16,19 +16,16 @@ import java.io.IOException;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.sonar.api.batch.rule.CheckFactory;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.SensorDescriptor;
 import org.sonar.api.batch.sensor.internal.DefaultSensorDescriptor;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.config.internal.MapSettings;
 
-import de.tgmz.sonar.plugins.xinfo.config.XinfoConfig;
 import de.tgmz.sonar.plugins.xinfo.config.XinfoFtpConfig;
-import de.tgmz.sonar.plugins.xinfo.languages.Language;
-import de.tgmz.sonar.plugins.xinfo.sensors.AssemblerIssuesLoader;
-import de.tgmz.sonar.plugins.xinfo.sensors.CCPPIssuesLoader;
-import de.tgmz.sonar.plugins.xinfo.sensors.CobolIssuesLoader;
-import de.tgmz.sonar.plugins.xinfo.sensors.PliIssuesLoader;
+import de.tgmz.sonar.plugins.xinfo.config.XinfoProjectConfig;
+import de.tgmz.sonar.plugins.xinfo.sensors.XinfoIssuesLoader;
 
 /**
  * Tests for all sensors.
@@ -41,9 +38,9 @@ public class SensorOnTheFlyTest {
 	@BeforeClass
 	public static void setupOnce() throws IOException {
 		MapSettings ms = new MapSettings();
-		ms.setProperty(XinfoConfig.XINFO_ROOT, LOC + File.separator +"xinfo");
-		ms.setProperty(XinfoConfig.XINFO_LOG_THRESHOLD, "1");
-		ms.setProperty(XinfoConfig.XINFO_INCLUDE_LEVEL, "I,W,E,S,U");
+		ms.setProperty(XinfoProjectConfig.XINFO_ROOT, LOC + File.separator +"xinfo");
+		ms.setProperty(XinfoProjectConfig.XINFO_LOG_THRESHOLD, "1");
+		ms.setProperty(XinfoProjectConfig.XINFO_INCLUDE_LEVEL, "I,W,E,S,U");
 		ms.setProperty(XinfoFtpConfig.XINFO_OTF, "true");
 		ms.setProperty(XinfoFtpConfig.XINFO_OTF_JOBCARD, System.getProperty(XinfoFtpConfig.XINFO_OTF_JOBCARD));
 		ms.setProperty(XinfoFtpConfig.XINFO_OTF_PASS, System.getProperty(XinfoFtpConfig.XINFO_OTF_PASS));
@@ -66,7 +63,7 @@ public class SensorOnTheFlyTest {
 		});
 		
 		for (File f : testresources) {
-			((SensorContextTester) sensorContext).fileSystem().add(SonarTestFileUtil.create(LOC, f.getName(), Language.getByExtension(f.getName())));
+			((SensorContextTester) sensorContext).fileSystem().add(SonarTestFileUtil.create(LOC, f.getName()));
 		}
 		
 		sensorDescriptor = new DefaultSensorDescriptor();
@@ -74,33 +71,10 @@ public class SensorOnTheFlyTest {
 	
 	@Test(expected = Test.None.class)
 	public void testPli() {
-		PliIssuesLoader issuesLoader = new PliIssuesLoader(sensorContext.fileSystem());
+		XinfoIssuesLoader issuesLoader = new XinfoIssuesLoader(new CheckFactory(sensorContext.activeRules()));
 		
 		issuesLoader.describe(sensorDescriptor);
 		issuesLoader.execute(sensorContext);
 	}
 
-	@Test(expected = Test.None.class)
-	public void testCobol() {
-		CobolIssuesLoader issuesLoader = new CobolIssuesLoader(sensorContext.fileSystem());
-		
-		issuesLoader.describe(sensorDescriptor);
-		issuesLoader.execute(sensorContext);
-	}
-
-	@Test(expected = Test.None.class)
-	public void testAssember() {
-		AssemblerIssuesLoader issuesLoader = new AssemblerIssuesLoader(sensorContext.fileSystem());
-		
-		issuesLoader.describe(sensorDescriptor);
-		issuesLoader.execute(sensorContext);
-	}
-
-	@Test(expected = Test.None.class)
-	public void testCCPP() {
-		CCPPIssuesLoader issuesLoader = new CCPPIssuesLoader(sensorContext.fileSystem());
-		
-		issuesLoader.describe(sensorDescriptor);
-		issuesLoader.execute(sensorContext);
-	}
 }

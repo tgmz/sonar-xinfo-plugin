@@ -22,8 +22,6 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import de.tgmz.sonar.plugins.xinfo.languages.Language;
-
 /**
  * Simple testcases for rules
  */
@@ -42,7 +40,7 @@ public class RuleTest {
 	}
 	
 	private Class<?> find(String s) {
-		Iterator<Class<?>> it = RuleFactory.getInstance().getRules(Language.PLI).iterator();
+		Iterator<Class<?>> it = RuleFactory.getInstance().getRules().iterator();
 		
 		Class<?> r = null;
 		
@@ -56,7 +54,7 @@ public class RuleTest {
 	@Parameters(name = "{index}: Check for message [{0}]")
 	public static Collection<Object[]> data() {
 		Object[][] data = new Object[][] {
-				{ "IBM1039I"}, {"IBM1479I"}, {"IBM3988I"}, {"IBM1247I"}, {"IBM2848I"},
+				{ "IBM1039I"}, {"IBM1479I"}, {"IBM3988I"}, {"IBM1247I"}, {"IBM2848I"}, {"IBM1063I"}, {"IBM1316I"},
 		};
 		return Arrays.asList(data);
 	}

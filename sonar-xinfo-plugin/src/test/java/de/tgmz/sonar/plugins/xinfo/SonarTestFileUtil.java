@@ -19,16 +19,16 @@ import org.apache.commons.io.IOUtils;
 import org.sonar.api.batch.fs.internal.DefaultInputFile;
 import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
 
-import de.tgmz.sonar.plugins.xinfo.languages.Language;
+import de.tgmz.sonar.plugins.xinfo.languages.XinfoLanguage;
 
 /**
  * Simple Utility for test file creation.
  */
 public class SonarTestFileUtil {
-	public static DefaultInputFile create(String location, String fileName, Language lang) throws IOException {
+	public static DefaultInputFile create(String location, String fileName) throws IOException {
 		return new TestInputFileBuilder(location, fileName)
 						.setCharset(StandardCharsets.UTF_8)
-						.setLanguage(lang.getKey())
+						.setLanguage(XinfoLanguage.KEY)
 						.initMetadata(IOUtils.toString(new FileInputStream(new File(location, fileName)), StandardCharsets.UTF_8))
 						.build();
 	}

@@ -21,12 +21,12 @@ import java.util.regex.Pattern;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.sensor.highlighting.TypeOfText;
 
-import de.tgmz.sonar.plugins.xinfo.color.AbstractColorizing;
+import de.tgmz.sonar.plugins.xinfo.color.DefaultColorizing;
 
 /**
  * Syntax highlighting for PL/I files.
  */
-public class PliColorizing extends AbstractColorizing {
+public class PliColorizing extends DefaultColorizing {
 	private static final List<String> PLI_KEYWORDS;
 	private static final List<String> PLI_BUILTIN;
 	private static final Pattern PLI_COMMENT_PATTERN = Pattern.compile("\\/\\*.*\\*\\/");
@@ -55,7 +55,7 @@ public class PliColorizing extends AbstractColorizing {
 	}
 
 	@Override
-	protected void createAreas() {
+	public void createAreas() {
 		// Comments
 		colorizeAreaByPattern(PLI_COMMENT_PATTERN, TypeOfText.COMMENT);
 

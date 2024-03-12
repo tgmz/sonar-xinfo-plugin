@@ -1,5 +1,5 @@
 /*******************************************************************************
-  * Copyright (c) 13.11.2016 Thomas Zierer.
+  * Copyright (c) 11.03.2024 Thomas Zierer.
   * All rights reserved. This program and the accompanying materials
   * are made available under the terms of the Eclipse Public License v2.0
   * which accompanies this distribution, and is available at
@@ -10,32 +10,28 @@
   *******************************************************************************/
 package de.tgmz.sonar.plugins.xinfo.languages;
 
-import java.util.List;
+import static de.tgmz.sonar.plugins.xinfo.rules.XinfoRuleDefinition.REPO_KEY;
 
 import org.sonar.api.server.profile.BuiltInQualityProfilesDefinition;
+import org.sonar.check.Rule;
 
 import de.tgmz.sonar.plugins.xinfo.RuleFactory;
 
 /**
- * Default quality profile for the projects having files of a supported language.
+ * Default, BuiltIn Quality Profile for the projects having files of the
+ * language "xinfo"
  */
-public abstract class AbstractXinfoQualityProfileDefinition implements BuiltInQualityProfilesDefinition {
-	private List<Language> languages;
-
-	protected AbstractXinfoQualityProfileDefinition(List<Language> languages) {
-		super();
-		this.languages = languages;
-	}
+public final class XinfoQualityProfile implements BuiltInQualityProfilesDefinition {
 
 	@Override
 	public void define(Context context) {
-		for (Language lang : languages) {
-			NewBuiltInQualityProfile profile = context.createBuiltInQualityProfile("Xinfo Rules", lang.getKey());
-			profile.setDefault(false);
-	    
-			RuleFactory.getInstance().getRules(lang).forEach(s -> profile.activateRule(lang.getRepoKey(), s.getSimpleName()));
-	    
-			profile.done();
+		NewBuiltInQualityProfile profile = context.createBuiltInQualityProfile("Xinfo way", XinfoLanguage.KEY);
+		profile.setDefault(true);
+
+		for (Class<?> c : RuleFactory.getInstance().getRules()) {
+			profile.activateRule(REPO_KEY, c.getDeclaredAnnotation(Rule.class).key());
 		}
+
+		profile.done();
 	}
 }

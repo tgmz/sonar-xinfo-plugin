@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.config.Configuration;
 
-import de.tgmz.sonar.plugins.xinfo.config.XinfoConfig;
+import de.tgmz.sonar.plugins.xinfo.config.XinfoProjectConfig;
 import de.tgmz.sonar.plugins.xinfo.generated.plicomp.PACKAGE;
 
 /**
@@ -48,7 +48,7 @@ public class XinfoFileProvider extends AbstractXinfoProvider {
 
 		String compOutput = FilenameUtils.removeExtension(pgm.filename());
 		
-		String compOutputRoot = getConfiguration().get(XinfoConfig.XINFO_ROOT).orElse("xinfo");
+		String compOutputRoot = getConfiguration().get(XinfoProjectConfig.XINFO_ROOT).orElse("xinfo");
 		
 		Path p = Paths.get(compOutputRoot == null ? "" : compOutputRoot).toAbsolutePath();
 		

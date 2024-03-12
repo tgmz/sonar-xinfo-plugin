@@ -19,9 +19,9 @@ This plugin combines IBMs mainframe compilers with SonarQube. The principle is f
 * C/C++. (fair). Options used: /CXX EVENTS
 
 #Prerequisites
-* [SonarQube](http://www.sonarqube.org/downloads/) 10.3
+* [SonarQube](http://www.sonarqube.org/downloads/) 10.3+
 * [SonarQube Scanner](http://docs.sonarqube.org/display/SCAN/Analyzing+with+SonarQube+Scanner) sonar-scanner-cli-4.7.0.2747
-* Java 11
+* Java 14
 * Maven 3.8.1+
 
 #Usage
