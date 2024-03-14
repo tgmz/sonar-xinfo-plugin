@@ -22,18 +22,22 @@ import java.util.regex.Pattern;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.sensor.highlighting.TypeOfText;
 
-import de.tgmz.sonar.plugins.xinfo.color.DefaultColorizing;
-import de.tgmz.sonar.plugins.xinfo.color.ColorizingData;
+import de.tgmz.sonar.plugins.xinfo.color.ColoringData;
+import de.tgmz.sonar.plugins.xinfo.color.DefaultColoring;
 
 /**
  * Syntax highlighting for Assembler files.
  */
-public class AssemblerColorizing extends DefaultColorizing {
+public class AssemblerColoring extends DefaultColoring {
 	private static final int DFT_LIMIT = 40;
 	private static final List<String> INSTRUCTIONS;
 	private static final List<String> BUILTIN;
 	private static final Pattern ASSEMBLER_WORD_PATTERN = Pattern.compile("[\\w$§\\.]+");
 	private static final Pattern ASSEMBLER_STRING_PATTERN = Pattern.compile("[\"'].*[\"']");
+	// Lines starting with an asterisk are comments
+	private static final Pattern ASSEMBLER_COMMENT_PATTERN_1 = Pattern.compile("^\\*.*$");
+	// A blank at column 39 followed by a word-character indicates that the rest of the line is a comment
+	private static final Pattern ASSEMBLER_COMMENT_PATTERN_2 = Pattern.compile("^.{" + (DFT_LIMIT-2) + "} \\w+.*$");
 
 	static {
 		// Instructions
@@ -56,17 +60,17 @@ public class AssemblerColorizing extends DefaultColorizing {
 		}
 	}
 	
-	public AssemblerColorizing(InputFile file, Charset charset, int limit) throws IOException {
+	public AssemblerColoring(InputFile file, Charset charset, int limit) throws IOException {
 		super(file, charset, limit);
 	}
 
 	@Override
 	public void createAreas() {
 		// Comments
-		colorizeComments();
+		colorComments();
 		
 		// Strings
-		colorizeAreaByPattern(ASSEMBLER_STRING_PATTERN, TypeOfText.STRING);
+		colorAreaByPattern(ASSEMBLER_STRING_PATTERN, TypeOfText.STRING);
 
 		//Multiline strings
 		//Not yet implemented
@@ -76,34 +80,27 @@ public class AssemblerColorizing extends DefaultColorizing {
 		colorTokens.put(TypeOfText.KEYWORD, INSTRUCTIONS);
 		colorTokens.put(TypeOfText.KEYWORD_LIGHT, BUILTIN);
 
-		colorizeTokens(ASSEMBLER_WORD_PATTERN, colorTokens, -1, Integer.MAX_VALUE);
+		colorTokens(ASSEMBLER_WORD_PATTERN, colorTokens, -1, Integer.MAX_VALUE);
 	}
 	
-	private void colorizeComments() {
-		// Lines starting with an asterisk are comments
-		Pattern p0 = Pattern.compile("^\\*.*$");
-		
+	private void colorComments() {
 		for (int i = 0; i < getContent().length; ++i) {
-			Matcher m = p0.matcher(getContent()[i]);
+			Matcher m = ASSEMBLER_COMMENT_PATTERN_1.matcher(getContent()[i]);
 		
 			while (m.find()) {
 				String s = getContent()[i].substring(m.start(), m.end());
 			
-				getAreas().add(new ColorizingData(i+1, m.start(), i+1, m.end(), s, TypeOfText.COMMENT));
+				getAreas().add(new ColoringData(i+1, m.start(), i+1, m.end(), s, TypeOfText.COMMENT));
 			}
 		}
 		
-		// A blank at column 39 followed by a word-character
-		// indicates that the rest of the line is a comment
-		p0 = Pattern.compile("^.{" + (DFT_LIMIT-2) + "} \\w+.*$");
-		
 		for (int i = 0; i < getContent().length; ++i) {
-			Matcher m = p0.matcher(getContent()[i]);
+			Matcher m = ASSEMBLER_COMMENT_PATTERN_2.matcher(getContent()[i]);
 		
 			while (m.find()) {
 				String line = getContent()[i];
 			
-				getAreas().add(new ColorizingData(i+1, DFT_LIMIT - 1, i+1, line.length(), line.substring(DFT_LIMIT - 1), TypeOfText.COMMENT));
+				getAreas().add(new ColoringData(i+1, DFT_LIMIT - 1, i+1, line.length(), line.substring(DFT_LIMIT - 1), TypeOfText.COMMENT));
 			}
 		}
 	}

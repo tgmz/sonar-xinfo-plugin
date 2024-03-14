@@ -17,7 +17,7 @@ import java.util.List;
 import org.sonar.api.config.PropertyDefinition;
 
 public class XinfoProjectConfig {
-	public static final String COLORIZING_LIMIT = "sonar.xinfo.colorizing.limit";
+	public static final String COLORING_LIMIT = "sonar.xinfo.coloring.limit";
 	public static final String XINFO_ROOT = "sonar.xinfo.root.xinfo";
 	public static final String XINFO_CPD_OFF = "sonar.xinfo.cpd.off";
 	public static final String XINFO_ENCODING = "sonar.xinfo.encoding";
@@ -30,9 +30,9 @@ public class XinfoProjectConfig {
 	}
 
 	public static List<PropertyDefinition> definitions() {
-		return asList(PropertyDefinition.builder(COLORIZING_LIMIT)
-				.name("XinfoColorizingLimit")
-				.description("Xinfo Colorizing Limit")
+		return asList(PropertyDefinition.builder(COLORING_LIMIT)
+				.name("XinfoColoringLimit")
+				.description("Xinfo Coloring Limit")
 				.defaultValue(String.valueOf(5000))
 				.category(CATEGORY).build()
 			, PropertyDefinition.builder(XINFO_ROOT)

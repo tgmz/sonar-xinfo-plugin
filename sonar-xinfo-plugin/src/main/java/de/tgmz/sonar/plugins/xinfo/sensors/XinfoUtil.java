@@ -10,8 +10,6 @@
   *******************************************************************************/
 package de.tgmz.sonar.plugins.xinfo.sensors;
 
-import java.util.Iterator;
-
 import de.tgmz.sonar.plugins.xinfo.XinfoException;
 import de.tgmz.sonar.plugins.xinfo.generated.plicomp.FILE;
 import de.tgmz.sonar.plugins.xinfo.generated.plicomp.FILEREFERENCETABLE;
@@ -26,11 +24,7 @@ public final class XinfoUtil {
 	}
 	
 	public static FILE computeFilefromFileNumber(FILEREFERENCETABLE frt, String idx) throws XinfoException {
-		Iterator<FILE> it = frt.getFILE().iterator();
-
-		while (it.hasNext()) {
-			FILE f = it.next();
-
+		for (FILE f : frt.getFILE()) {
 			if (idx.equals(f.getFILENUMBER())) {
 				return f;
 			}

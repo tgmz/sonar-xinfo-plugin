@@ -12,7 +12,6 @@ package de.tgmz.sonar.plugins.xinfo.sensors;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.Iterator;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,13 +23,13 @@ import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.SensorDescriptor;
 import org.sonar.api.batch.sensor.highlighting.NewHighlighting;
 
-import de.tgmz.sonar.plugins.xinfo.color.DefaultColorizing;
-import de.tgmz.sonar.plugins.xinfo.color.ColorizingData;
-import de.tgmz.sonar.plugins.xinfo.color.IColorizing;
-import de.tgmz.sonar.plugins.xinfo.color.assembler.AssemblerColorizing;
-import de.tgmz.sonar.plugins.xinfo.color.ccpp.CCPPColorizing;
-import de.tgmz.sonar.plugins.xinfo.color.cobol.CobolColorizing;
-import de.tgmz.sonar.plugins.xinfo.color.pli.PliColorizing;
+import de.tgmz.sonar.plugins.xinfo.color.ColoringData;
+import de.tgmz.sonar.plugins.xinfo.color.DefaultColoring;
+import de.tgmz.sonar.plugins.xinfo.color.IColoring;
+import de.tgmz.sonar.plugins.xinfo.color.assembler.AssemblerColoring;
+import de.tgmz.sonar.plugins.xinfo.color.ccpp.CCPPColoring;
+import de.tgmz.sonar.plugins.xinfo.color.cobol.CobolColoring;
+import de.tgmz.sonar.plugins.xinfo.color.pli.PliColoring;
 import de.tgmz.sonar.plugins.xinfo.config.XinfoProjectConfig;
 import de.tgmz.sonar.plugins.xinfo.languages.Language;
 import de.tgmz.sonar.plugins.xinfo.languages.XinfoLanguage;
@@ -38,15 +37,15 @@ import de.tgmz.sonar.plugins.xinfo.languages.XinfoLanguage;
 /**
  * Abstract sensor to provide syntax highlighting.
  *
- * @param <T> the colorizing scheme to use
+ * @param <T> the coloring scheme to use
  */
-public class ColorizerSensor implements Sensor {
-	private static final Logger LOGGER = LoggerFactory.getLogger(ColorizerSensor.class);
+public class ColoringSensor implements Sensor {
+	private static final Logger LOGGER = LoggerFactory.getLogger(ColoringSensor.class);
 	private static final int DEFAULT_LINES_LIMIT = 5000;
 	
 	@Override
 	public void describe(final SensorDescriptor descriptor) {
-		descriptor.name("XinfoColorizer");
+		descriptor.name("Xinfocolorr");
 		descriptor.onlyOnLanguages(XinfoLanguage.KEY);
 	}
 	
@@ -75,14 +74,12 @@ public class ColorizerSensor implements Sensor {
 	private void highlightFile(final InputFile inputFile, final SensorContext context) throws IOException {
 		NewHighlighting newHighlighting = context.newHighlighting().onFile(inputFile);
 		
-		int limit = Math.max(DEFAULT_LINES_LIMIT, context.config().getInt(XinfoProjectConfig.COLORIZING_LIMIT).orElse(Integer.valueOf(5000)));
+		int limit = Math.max(DEFAULT_LINES_LIMIT, context.config().getInt(XinfoProjectConfig.COLORING_LIMIT).orElse(Integer.valueOf(5000)));
 		String charset = context.config().get(XinfoProjectConfig.XINFO_ENCODING).orElse(System.getProperty("file.encoding"));
 
-		IColorizing colorozing = getColorizing(inputFile, Charset.forName(charset), limit);
+		IColoring coloring = getColoring(inputFile, Charset.forName(charset), limit);
 
-		for (Iterator<ColorizingData> iterator = colorozing.getAreas().getColorizings().iterator(); iterator.hasNext();) {
-			ColorizingData cd = iterator.next();
-
+		for (ColoringData cd : coloring.getAreas().getColorings()) {
 			TextRange newRange;
 			try {
 				newRange = inputFile.newRange(cd.getStartLineNumber(), cd.getStartOffset(), cd.getEndLineNumber(), cd.getEndOffset());
@@ -99,36 +96,34 @@ public class ColorizerSensor implements Sensor {
 	}
 	
 	/**
-	 * Subclasses must provide the {@link IColorizing} here.
-	 * @param f the file to colorize
+	 * Subclasses must provide the {@link IColoring} here.
+	 * @param f the file to color
 	 * @param charset the file's encoding
-	 * @param limit maximum number of lines to colorize
-	 * @return the implementation of the {@link IColorizing}
+	 * @param limit maximum number of lines to color
+	 * @return the implementation of the {@link IColoring}
 	 * @throws IOException if the file can't be read 
 	 */
-	private IColorizing getColorizing(InputFile f, Charset charset,  int limit) throws IOException {
+	private IColoring getColoring(InputFile f, Charset charset,  int limit) throws IOException {
 		Language lang = Language.getByFilename(f.filename());
 		
-		DefaultColorizing ic = null;
+		IColoring ic;
 		
 		switch(lang) {
 		case ASSEMBLER:
-			ic = new AssemblerColorizing(f, charset, limit);
+			ic = new AssemblerColoring(f, charset, limit);
 			break;
 		case COBOL:
-			ic = new CobolColorizing(f, charset, limit);
+			ic = new CobolColoring(f, charset, limit);
 			break;
 		case C,CPP:
-			ic = new CCPPColorizing(f, charset, limit);
+			ic = new CCPPColoring(f, charset, limit);
 			break;
 		case PLI:
-			ic = new PliColorizing(f, charset, limit);
+			ic = new PliColoring(f, charset, limit);
 			break;
 		default:
-			ic = new DefaultColorizing(f, charset, limit);
+			ic = new DefaultColoring(f, charset, limit);
 		}
-		
-		ic.createAreas();
 		
 		return ic;
 	}

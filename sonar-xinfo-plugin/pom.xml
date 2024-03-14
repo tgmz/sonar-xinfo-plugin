@@ -122,6 +122,7 @@
 						<configuration>
 						<!-- Specify the MyMojo parameter -->
 							<outputDirectory>${project.build.directory}/generated-sources/xinfo</outputDirectory>
+							<!-- Do not change this, RuleFactory relys on it -->
 							<targetPackage>de.tgmz.sonar.plugins.xinfo.rules.generated.pli</targetPackage>
 							<document>${project.basedir}/../ibm/pli/Messages and Codes.pdf</document>
 							<sysuexit>${project.basedir}/../ibm/pli/SYSUEXIT</sysuexit>

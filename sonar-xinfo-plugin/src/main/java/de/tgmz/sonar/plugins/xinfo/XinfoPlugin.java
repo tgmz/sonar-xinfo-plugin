@@ -16,7 +16,7 @@ import de.tgmz.sonar.plugins.xinfo.config.XinfoConfig;
 import de.tgmz.sonar.plugins.xinfo.languages.XinfoLanguage;
 import de.tgmz.sonar.plugins.xinfo.languages.XinfoQualityProfile;
 import de.tgmz.sonar.plugins.xinfo.rules.XinfoRuleDefinition;
-import de.tgmz.sonar.plugins.xinfo.sensors.ColorizerSensor;
+import de.tgmz.sonar.plugins.xinfo.sensors.ColoringSensor;
 import de.tgmz.sonar.plugins.xinfo.sensors.XinfoCpdSensor;
 import de.tgmz.sonar.plugins.xinfo.sensors.XinfoIssuesLoader;
 
@@ -39,7 +39,7 @@ public class XinfoPlugin implements Plugin {
 
 		// tutorial on rules
 		context.addExtensions(XinfoRuleDefinition.class, XinfoIssuesLoader.class);
-		context.addExtension(ColorizerSensor.class);
+		context.addExtension(ColoringSensor.class);
 		
 		context.addExtension(XinfoCpdSensor.class);
 

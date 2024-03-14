@@ -31,7 +31,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 
 import de.tgmz.sonar.plugins.xinfo.config.XinfoProjectConfig;
 import de.tgmz.sonar.plugins.xinfo.rules.XinfoRuleDefinition;
-import de.tgmz.sonar.plugins.xinfo.sensors.ColorizerSensor;
+import de.tgmz.sonar.plugins.xinfo.sensors.ColoringSensor;
 import de.tgmz.sonar.plugins.xinfo.sensors.XinfoCpdSensor;
 import de.tgmz.sonar.plugins.xinfo.sensors.XinfoIssuesLoader;
 
@@ -86,8 +86,8 @@ public class SensorTest {
 	}
 
 	@Test(expected = Test.None.class)
-	public void testColorizer() {
-		ColorizerSensor sensor = new ColorizerSensor();
+	public void testcolor() {
+		ColoringSensor sensor = new ColoringSensor();
 		
 		sensor.describe(sensorDescriptor);
 		sensor.execute(sensorContext);

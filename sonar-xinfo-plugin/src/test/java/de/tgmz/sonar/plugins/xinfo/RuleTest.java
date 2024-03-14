@@ -15,7 +15,7 @@ import static org.junit.Assert.assertNotNull;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Iterator;
+import java.util.Optional;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,15 +40,9 @@ public class RuleTest {
 	}
 	
 	private Class<?> find(String s) {
-		Iterator<Class<?>> it = RuleFactory.getInstance().getRules().iterator();
+		Optional<Class<?>> first = RuleFactory.getInstance().getRules().stream().filter(r -> r.getSimpleName().equals(s)).findFirst();
 		
-		Class<?> r = null;
-		
-		do {
-			r = it.next();
-		} while (!r.getSimpleName().equals(s));
-		
-		return r;
+		return first.isPresent() ? first.get() : null;
 	}
 	
 	@Parameters(name = "{index}: Check for message [{0}]")

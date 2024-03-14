@@ -14,6 +14,6 @@ package de.tgmz.sonar.plugins.xinfo.color;
  * General interface for Syntax highlighting.
  */
 @FunctionalInterface
-public interface IColorizing {
+public interface IColoring {
 	HighligthedAreas getAreas();
 }

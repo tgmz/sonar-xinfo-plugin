@@ -21,16 +21,17 @@ import java.util.regex.Pattern;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.sensor.highlighting.TypeOfText;
 
-import de.tgmz.sonar.plugins.xinfo.color.DefaultColorizing;
-import de.tgmz.sonar.plugins.xinfo.color.ColorizingData;
+import de.tgmz.sonar.plugins.xinfo.color.DefaultColoring;
+import de.tgmz.sonar.plugins.xinfo.color.ColoringData;
 
 /**
  * Syntax highlighting for Cobol files.
  */
-public class CobolColorizing extends DefaultColorizing {
+public class CobolColoring extends DefaultColoring {
 	private static final List<String> KEYWORDS;
 	private static final Pattern COBOL_WORD_PATTERN = Pattern.compile("[\\w$§\\.\\-]+");
 	private static final Pattern COBOL_STRING_PATTERN = Pattern.compile("[\"'].*[\"']");
+	private static final Pattern COBOL_COMMENT_PATTERN = Pattern.compile("^.{6}\\*.*$");
 	
 	static {
 		// Keywords
@@ -41,35 +42,33 @@ public class CobolColorizing extends DefaultColorizing {
 		}
 	}
 
-	public CobolColorizing(InputFile file, Charset charset, int limit) throws IOException {
+	public CobolColoring(InputFile file, Charset charset, int limit) throws IOException {
 		super(file, charset, limit);
 	}
 
 	@Override
 	public void createAreas() {
 		// Comments
-		colorizeComments();
+		colorComments();
 		
 		// Strings
-		colorizeAreaByPattern(COBOL_STRING_PATTERN, TypeOfText.STRING);
+		colorAreaByPattern(COBOL_STRING_PATTERN, TypeOfText.STRING);
 
 		//Multiline strings
 		//Not yet implemented
 		
 		//Reserved words
-		colorizeTokens(COBOL_WORD_PATTERN, Collections.singletonMap(TypeOfText.KEYWORD, KEYWORDS), 7, 71);
+		colorTokens(COBOL_WORD_PATTERN, Collections.singletonMap(TypeOfText.KEYWORD, KEYWORDS), 7, 71);
 	}
 	
-	private void colorizeComments() {
-		Pattern p0 = Pattern.compile("^.{6}\\*.*$");
-		
+	private void colorComments() {
 		for (int i = 0; i < getContent().length; ++i) {
-			Matcher m = p0.matcher(getContent()[i]);
+			Matcher m = COBOL_COMMENT_PATTERN.matcher(getContent()[i]);
 		
 			while (m.find()) {
 				String s = getContent()[i].substring(m.start(), m.end());
 			
-				getAreas().add(new ColorizingData(i+1, m.start(), i+1, m.end(), s, TypeOfText.COMMENT));
+				getAreas().add(new ColoringData(i+1, m.start(), i+1, m.end(), s, TypeOfText.COMMENT));
 			}
 		}
 	}

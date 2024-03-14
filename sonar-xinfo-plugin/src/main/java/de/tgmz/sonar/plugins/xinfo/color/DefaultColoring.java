@@ -31,15 +31,15 @@ import org.sonar.api.batch.sensor.highlighting.TypeOfText;
 /**
  * Common functions for Syntax highlighting.
  */
-public class DefaultColorizing implements IColorizing {
+public class DefaultColoring implements IColoring {
     public static final ThreadLocal<NumberFormat> NF = ThreadLocal.withInitial(NumberFormat::getNumberInstance);
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(DefaultColorizing.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(DefaultColoring.class);
 
 	private static final Pattern DEFAULT_WORD_PATTERN = Pattern.compile("\\w+");
 	private static final Pattern DEFAULT_STRING_PATTERN = Pattern.compile("[\"'].*[\"']");
 
-	/** The areas to colorize. */
+	/** The areas to color. */
 	private HighligthedAreas areas;
 	private String[] content;
 	private int limit;
@@ -48,13 +48,13 @@ public class DefaultColorizing implements IColorizing {
 	 * Creates the areas of a file to color.
 	 * @param file the file to color
 	 * @param charset the files encoding
-	 * @param limit maximum number of lines to colorize
+	 * @param limit maximum number of lines to color
 	 * @throws IOException if the file can't be read
 	 */
-    public DefaultColorizing(InputFile file, Charset charset, int limit) throws IOException {
+    public DefaultColoring(InputFile file, Charset charset, int limit) throws IOException {
 		this.limit = limit;
 		
-		LOGGER.debug("Colorize file {}", file);
+		LOGGER.debug("color file {}", file);
 		
 		List<String> readLines = IOUtils.readLines(file.inputStream(), charset);
 		
@@ -66,13 +66,15 @@ public class DefaultColorizing implements IColorizing {
 		content = new String[Math.min(readLines.size(), limit)];
 		
 		System.arraycopy(readLines.toArray(new String[readLines.size()]), 0, content, 0, content.length);
-		
-		areas = new HighligthedAreas();
-		
-		createAreas();
 	}
 
 	public HighligthedAreas getAreas() {
+		if (areas == null) {
+			areas = new HighligthedAreas();
+			
+			createAreas();
+		}
+		
 		return areas;
 	}
 
@@ -81,30 +83,30 @@ public class DefaultColorizing implements IColorizing {
 	 */
 	public void createAreas() {
 		// Strings
-		colorizeAreaByPattern(DEFAULT_STRING_PATTERN, TypeOfText.STRING);
+		colorAreaByPattern(DEFAULT_STRING_PATTERN, TypeOfText.STRING);
 		
-		colorizeTokens(DEFAULT_WORD_PATTERN,  Collections.emptyMap(), -1, Integer.MAX_VALUE);
+		colorTokens(DEFAULT_WORD_PATTERN,  Collections.emptyMap(), -1, Integer.MAX_VALUE);
 	}
 	
 	/**
-	 * Colorizes every area of the file's content that matches a regex in a manner described by typeOfText
+	 * colors every area of the file's content that matches a regex in a manner described by typeOfText
 	 * @param p the regex
 	 * @param typeOfText the type
 	 */
-	protected void colorizeAreaByPattern(Pattern p, TypeOfText typeOfText) {
+	protected void colorAreaByPattern(Pattern p, TypeOfText typeOfText) {
 		for (int i = 0; i < content.length; i++) {
 			Matcher m = p.matcher(content[i]);
 			
 			while (m.find()) {
 				String s = content[i].substring(m.start(), m.end());
 				
-				areas.add(new ColorizingData(i+1, m.start(), i+1, m.end(), s, typeOfText));
+				areas.add(new ColoringData(i+1, m.start(), i+1, m.end(), s, typeOfText));
 			}
 		}
 	}
 	
-	protected void colorizeTokens(Pattern pattern, Map<TypeOfText, List<String>> colorTokens, int left, int right) {
-		for (int i = 0; i < Math.min(getLimit(), getContent().length); ++i) {
+	protected void colorTokens(Pattern pattern, Map<TypeOfText, List<String>> colorTokens, int left, int right) {
+		for (int i = 0; i < Math.min(limit, getContent().length); ++i) {
 			Matcher m = pattern.matcher(getContent()[i]);
 	
 			while (m.find()) {
@@ -114,18 +116,18 @@ public class DefaultColorizing implements IColorizing {
 					continue;
 				}
 				
-				colorizeToken(colorTokens, i+1, m.start(), m.end(), token);
+				colorToken(colorTokens, i+1, m.start(), m.end(), token);
 			}
 		}
 	}
 	
-	private void colorizeToken(Map<TypeOfText, List<String>> colorTokens, int lineNumber, int startOffset, int endOffset, String token) {
+	private void colorToken(Map<TypeOfText, List<String>> colorTokens, int lineNumber, int startOffset, int endOffset, String token) {
 		if (NumberUtils.isNumber(token)) {
-			getAreas().add(new ColorizingData(lineNumber, startOffset, lineNumber, endOffset, token, TypeOfText.CONSTANT));
+			getAreas().add(new ColoringData(lineNumber, startOffset, lineNumber, endOffset, token, TypeOfText.CONSTANT));
 		} else {
 			for (Entry<TypeOfText, List<String>> entry : colorTokens.entrySet()) {
 				if (entry.getValue().contains(token.toUpperCase(Locale.ROOT))) {
-					getAreas().add(new ColorizingData(lineNumber, startOffset, lineNumber, endOffset, token, entry.getKey()));
+					getAreas().add(new ColoringData(lineNumber, startOffset, lineNumber, endOffset, token, entry.getKey()));
 				
 					break;
 				}
@@ -135,10 +137,6 @@ public class DefaultColorizing implements IColorizing {
 
 	protected String[] getContent() {
 		return content;
-	}
-
-	protected int getLimit() {
-		return limit;
 	}
 
 	protected static ThreadLocal<NumberFormat> getNf() {

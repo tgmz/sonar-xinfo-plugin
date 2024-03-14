@@ -17,7 +17,7 @@ import org.sonar.api.batch.sensor.highlighting.TypeOfText;
 /**
  * Highlighted area.
  */
-public class ColorizingData {
+public class ColoringData {
 	private int startLineNumber;
 	private int startOffset;
 	private int endLineNumber;
@@ -25,11 +25,11 @@ public class ColorizingData {
 	private TypeOfText type;
 	private String content;
 
-	public ColorizingData(int startLineNumber, int startOffset, int endLineNumber, int endOffset, String content, TypeOfText type) {
+	public ColoringData(int startLineNumber, int startOffset, int endLineNumber, int endOffset, String content, TypeOfText type) {
 		super();
 		
 		if (startLineNumber != endLineNumber) {
-			throw new IllegalArgumentException("Multiline colorizing is not supported yet");
+			throw new IllegalArgumentException("Multiline coloring is not supported yet");
 		}
 		
 		this.startLineNumber = startLineNumber;
@@ -73,7 +73,7 @@ public class ColorizingData {
 			return false;
 		}
 		
-		ColorizingData other = (ColorizingData) obj;
+		ColoringData other = (ColoringData) obj;
 		
 		// This area starts after the other ends
 		if (this.getStartLineNumber() > other.getEndLineNumber()) {
@@ -104,7 +104,7 @@ public class ColorizingData {
 
 	@Override
 	public String toString() {
-		return "ColorizingData [startLineNumber=" + startLineNumber + ", startOffset=" + startOffset
+		return "ColoringData [startLineNumber=" + startLineNumber + ", startOffset=" + startOffset
 				+ ", endLineNumber=" + endLineNumber + ", endOffset=" + endOffset + ", type=" + type + ", content="
 				+ content + "]";
 	}

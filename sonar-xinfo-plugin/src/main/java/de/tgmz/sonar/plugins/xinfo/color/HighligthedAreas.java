@@ -10,7 +10,6 @@
   *******************************************************************************/
 package de.tgmz.sonar.plugins.xinfo.color;
 
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -18,21 +17,18 @@ import java.util.List;
  * Highlighted areas.
  */
 public class HighligthedAreas {
-	private List<ColorizingData> colorizings;
+	private List<ColoringData> colorings;
 
 	public HighligthedAreas() {
-		colorizings = new LinkedList<>();
+		colorings = new LinkedList<>();
 	}
-	public List<ColorizingData> getColorizings() {
-		return colorizings;
+	public List<ColoringData> getColorings() {
+		return colorings;
 	}
-	public void add(ColorizingData t) {
-		for (Iterator<ColorizingData> iterator = colorizings.iterator(); iterator.hasNext();) {
-			if (iterator.next().overlap(t)) {
-				return;
-			}
+	
+	public void add(ColoringData t) {
+		if (colorings.stream().noneMatch(c -> c.overlap(t))) {
+			colorings.add(t);
 		}
-		
-		colorizings.add(t);
 	}
 }

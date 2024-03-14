@@ -15,7 +15,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.math.BigInteger;
-import java.util.Iterator;
 
 import javax.xml.parsers.DocumentBuilder;
 
@@ -63,8 +62,8 @@ public class Converter {
 		
 		cf.setPath(root.toString() + File.separator + csect.getEXTNAME() + ext);
 		
-		for (Iterator<EXECUTED> iterator = csect.getEXECUTED().iterator(); iterator.hasNext();) {
-			String[] executed = iterator.next().getvalue().split("\\s");
+		for (EXECUTED ex : csect.getEXECUTED()) {
+			String[] executed = ex .getvalue().split("\\s");
 			
 			for (String s : executed) {
 				LineToCover ltc = OF.createCoverageFileLineToCover();
@@ -75,8 +74,8 @@ public class Converter {
 			}
 		}
 		
-		for (Iterator<UNEXECUTED> iterator = csect.getUNEXECUTED().iterator(); iterator.hasNext();) {
-			String[] unexecuted = iterator.next().getvalue().split("\\s");
+		for (UNEXECUTED unex : csect.getUNEXECUTED()) {
+			String[] unexecuted = unex.getvalue().split("\\s");
 			
 			for (String s : unexecuted) {
 				LineToCover ltc = OF.createCoverageFileLineToCover();

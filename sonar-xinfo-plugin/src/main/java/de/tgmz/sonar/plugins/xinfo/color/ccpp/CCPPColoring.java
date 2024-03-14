@@ -20,12 +20,12 @@ import java.util.regex.Pattern;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.sensor.highlighting.TypeOfText;
 
-import de.tgmz.sonar.plugins.xinfo.color.DefaultColorizing;
+import de.tgmz.sonar.plugins.xinfo.color.DefaultColoring;
 
 /**
  * Syntax highlighting for C/C++ files.
  */
-public class CCPPColorizing extends DefaultColorizing {
+public class CCPPColoring extends DefaultColoring {
 	private static final List<String> CCPP_KEYWORDS;
 	private static final Pattern CCPP_COMMENT_PATTERN = Pattern.compile("\\/\\*.*\\*\\/");
 	private static final Pattern CCPP_PREPROCESS_PATTERN = Pattern.compile("#\\w+");
@@ -41,28 +41,28 @@ public class CCPPColorizing extends DefaultColorizing {
 		}
 	}
 	
-	public CCPPColorizing(InputFile file, Charset charset, int limit) throws IOException {
+	public CCPPColoring(InputFile file, Charset charset, int limit) throws IOException {
 		super(file, charset, limit);
 	}
 
 	@Override
 	public void createAreas() {
 		// Comments
-		colorizeAreaByPattern(CCPP_COMMENT_PATTERN, TypeOfText.COMMENT);
+		colorAreaByPattern(CCPP_COMMENT_PATTERN, TypeOfText.COMMENT);
 
 		//Multiline comments
 		//Not yet implemented
 		
 		// Preprocessor directives (#include, #line etc.)
-		colorizeAreaByPattern(CCPP_PREPROCESS_PATTERN, TypeOfText.PREPROCESS_DIRECTIVE);
+		colorAreaByPattern(CCPP_PREPROCESS_PATTERN, TypeOfText.PREPROCESS_DIRECTIVE);
 		
 		// Strings
-		colorizeAreaByPattern(CCPP_STRING_PATTERN, TypeOfText.STRING);
+		colorAreaByPattern(CCPP_STRING_PATTERN, TypeOfText.STRING);
 
 		//multiline strings
 		//Not yet implemented
 		
 		//Reserved words
-		colorizeTokens(CCPP_WORD_PATTERN,  Collections.singletonMap(TypeOfText.KEYWORD, CCPP_KEYWORDS), -1, Integer.MAX_VALUE);
+		colorTokens(CCPP_WORD_PATTERN,  Collections.singletonMap(TypeOfText.KEYWORD, CCPP_KEYWORDS), -1, Integer.MAX_VALUE);
 	}
 }

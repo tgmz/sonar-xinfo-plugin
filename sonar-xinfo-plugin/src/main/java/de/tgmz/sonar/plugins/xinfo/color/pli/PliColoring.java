@@ -21,12 +21,12 @@ import java.util.regex.Pattern;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.sensor.highlighting.TypeOfText;
 
-import de.tgmz.sonar.plugins.xinfo.color.DefaultColorizing;
+import de.tgmz.sonar.plugins.xinfo.color.DefaultColoring;
 
 /**
  * Syntax highlighting for PL/I files.
  */
-public class PliColorizing extends DefaultColorizing {
+public class PliColoring extends DefaultColoring {
 	private static final List<String> PLI_KEYWORDS;
 	private static final List<String> PLI_BUILTIN;
 	private static final Pattern PLI_COMMENT_PATTERN = Pattern.compile("\\/\\*.*\\*\\/");
@@ -50,23 +50,23 @@ public class PliColorizing extends DefaultColorizing {
 		}
 	}
 	
-	public PliColorizing(InputFile file, Charset charset, int limit) throws IOException {
+	public PliColoring(InputFile file, Charset charset, int limit) throws IOException {
 		super(file, charset, limit);
 	}
 
 	@Override
 	public void createAreas() {
 		// Comments
-		colorizeAreaByPattern(PLI_COMMENT_PATTERN, TypeOfText.COMMENT);
+		colorAreaByPattern(PLI_COMMENT_PATTERN, TypeOfText.COMMENT);
 
 		//Multiline comments
 		//Not yet implemented
 		
 		// Preprocessor directives (%INCLUDE, %DCL, etc.)
-		colorizeAreaByPattern(PLI_PREPROCESS_PATTERN, TypeOfText.PREPROCESS_DIRECTIVE);
+		colorAreaByPattern(PLI_PREPROCESS_PATTERN, TypeOfText.PREPROCESS_DIRECTIVE);
 		
 		// Strings
-		colorizeAreaByPattern(PLI_STRING_PATTERN, TypeOfText.STRING);
+		colorAreaByPattern(PLI_STRING_PATTERN, TypeOfText.STRING);
 
 		//multiline strings
 		//Not yet implemented
@@ -76,6 +76,6 @@ public class PliColorizing extends DefaultColorizing {
 		colorTokens.put(TypeOfText.KEYWORD, PLI_KEYWORDS);
 		colorTokens.put(TypeOfText.KEYWORD_LIGHT, PLI_BUILTIN);
 
-		colorizeTokens(PLI_WORD_PATTERN, colorTokens, -1, 71);
+		colorTokens(PLI_WORD_PATTERN, colorTokens, -1, 71);
 	}
 }
