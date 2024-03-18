@@ -109,16 +109,16 @@ public class ColoringSensor implements Sensor {
 		IColoring ic;
 		
 		switch(lang) {
-		case ASSEMBLER:
+		case ASSEMBLER, MACRO:
 			ic = new AssemblerColoring(f, charset, limit);
 			break;
-		case COBOL:
+		case COBOL, COPYBOOK:
 			ic = new CobolColoring(f, charset, limit);
 			break;
 		case C,CPP:
 			ic = new CCPPColoring(f, charset, limit);
 			break;
-		case PLI:
+		case PLI, INCLUDE:
 			ic = new PliColoring(f, charset, limit);
 			break;
 		default:

@@ -25,6 +25,10 @@ public enum Language {
 	ASSEMBLER("asm"),
 	C("c"),
 	CPP("cpp"),
+	INCLUDE("include"),
+	COPYBOOK("cpy"),
+	MACRO("mac"),
+	REXX("rexx"),
 	;
 	
 	private List<String> defaultFileSuffixes;
@@ -53,5 +57,21 @@ public enum Language {
 
 	public List<String> getDefaultFileSuffixes() {
 		return defaultFileSuffixes;
+	}
+	
+	public static String getAllFileSuffixes() {
+		StringBuilder sb = new StringBuilder();
+		
+		for (Language lang : Language.values()) {
+			for (String s : lang.defaultFileSuffixes) {
+				sb.append(s);
+				sb.append(",");
+			}
+		}
+		
+		return sb.substring(0, sb.length() - 1);
+	}
+	public boolean canCompile() {
+		return this == ASSEMBLER || this == COBOL || this == PLI;
 	}
 }

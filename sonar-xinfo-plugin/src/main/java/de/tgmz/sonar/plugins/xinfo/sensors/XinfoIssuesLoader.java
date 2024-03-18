@@ -26,6 +26,7 @@ import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.SensorDescriptor;
 import org.sonar.api.rule.RuleKey;
 
+import de.tgmz.sonar.plugins.xinfo.IXinfoProvider;
 import de.tgmz.sonar.plugins.xinfo.RuleFactory;
 import de.tgmz.sonar.plugins.xinfo.XinfoException;
 import de.tgmz.sonar.plugins.xinfo.XinfoProviderFactory;
@@ -44,6 +45,7 @@ public class XinfoIssuesLoader implements Sensor {
 	private static final Logger LOGGER = LoggerFactory.getLogger(XinfoIssuesLoader.class);
 	
 	private final Checks<XinfoRule> checks;
+	private IXinfoProvider xinfoProvider;
 
 	private static class Issue {
 		InputFile inputFile;
@@ -75,6 +77,8 @@ public class XinfoIssuesLoader implements Sensor {
 
 	@Override
 	public void execute(SensorContext context) {
+		xinfoProvider = XinfoProviderFactory.getProvider(context.config());
+		
 		includeLevels = context.config().getStringArray(XinfoProjectConfig.XINFO_INCLUDE_LEVEL);
 		
 	    int threshold = context.config().getInt(XinfoProjectConfig.XINFO_LOG_THRESHOLD).orElse(100);
@@ -86,28 +90,34 @@ public class XinfoIssuesLoader implements Sensor {
 		for (InputFile inputFile : context.fileSystem().inputFiles(p.hasLanguages(XinfoLanguage.KEY))) {
 			Language lang = Language.getByFilename(inputFile.filename());
 			
-			try {
-				PACKAGE xinfo = XinfoProviderFactory.getProvider(context.config()).getXinfo(inputFile);
-				
-				for (MESSAGE m : xinfo.getMESSAGE()) {
-					Issue issue = computeIssue(m, xinfo.getFILEREFERENCETABLE(), inputFile, lang);
+			if (lang.canCompile()) {
+				try {
+					execute(context, inputFile, lang);
 					
-					if (issue != null) {
-						RuleKey rk = RuleKey.of(XinfoRuleDefinition.REPO_KEY, issue.ruleKey);
-						
-						XinfoRule xr = getRule(rk);
-						
-						if (xr != null) {
-							xr.execute(context, inputFile, rk, issue.message, issue.line);
-						}
+					if (++ctr % threshold == 0) {
+						LOGGER.info("{} file(s) processed, current is {}", ctr, inputFile);
 					}
+				} catch (XinfoException e) {
+					LOGGER.error("Cannot get xinfo for {}", inputFile, e);
 				}
-				
-				if (++ctr % threshold == 0) {
-					LOGGER.info("{} file(s) processed, current is {}", ctr, inputFile);
+			}
+		}
+	}
+
+	private void execute(SensorContext context, InputFile inputFile, Language lang) throws XinfoException {
+		PACKAGE xinfo = xinfoProvider.getXinfo(inputFile);
+
+		for (MESSAGE m : xinfo.getMESSAGE()) {
+			Issue issue = computeIssue(m, xinfo.getFILEREFERENCETABLE(), inputFile, lang);
+		
+			if (issue != null) {
+				RuleKey rk = RuleKey.of(XinfoRuleDefinition.REPO_KEY, issue.ruleKey);
+			
+				XinfoRule xr = getRule(rk);
+			
+				if (xr != null) {
+					xr.execute(context, inputFile, rk, issue.message, issue.line);
 				}
-			} catch (XinfoException e) {
-				LOGGER.error("Cannot get xinfo for {}", inputFile, e);
 			}
 		}
 	}

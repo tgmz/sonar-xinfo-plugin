@@ -17,11 +17,13 @@ import java.util.List;
 import org.sonar.api.config.PropertyDefinition;
 import org.sonar.api.resources.Qualifiers;
 
+import de.tgmz.sonar.plugins.xinfo.languages.Language;
+
 public class XinfoConfig {
 	public static final String CATEGORY = "Xinfo";
 
 	public static final String FILE_SUFFIXES_KEY = "sonar.xinfo.file.suffixes";
-	public static final String FILE_SUFFIXES_DEFAULT_VALUE = ".pli,.asm,.cbl,.c,.cpp";
+	public static final String FILE_SUFFIXES_DEFAULT_VALUE = Language.getAllFileSuffixes();
 
 	private XinfoConfig() {
 		// only statics

@@ -1,0 +1,5 @@
+ Hallo: proc options(main);
+ 	  %INCLUDE FOO;
+ 	  
+      put list ('Hallo Welt!');
+ end Hall;
