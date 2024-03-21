@@ -138,7 +138,7 @@ public class XinfoOnTheFlyProvider extends AbstractXinfoProvider {
 	
 	private boolean connect(String user) throws XinfoException {
 		client = new JesClient();
-		client.addProtocolCommandListener(new JesProtocolCommandListener());
+		
 		int reply;
 		
 		try {

@@ -12,6 +12,7 @@ package de.tgmz.sonar.plugins.xinfo.ftp;
 
 import org.apache.commons.net.ProtocolCommandEvent;
 import org.apache.commons.net.ProtocolCommandListener;
+import org.apache.commons.net.SocketClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,11 +24,32 @@ public class JesProtocolCommandListener implements ProtocolCommandListener {
 
 	@Override
 	public void protocolCommandSent(ProtocolCommandEvent event) {
-		LOGGER.debug(event.getMessage());
+        if (LOGGER.isDebugEnabled()) {
+        	final String cmd = event.getCommand();
+        	
+        	if ("PASS".equalsIgnoreCase(cmd) || "USER".equalsIgnoreCase(cmd)) {
+        		LOGGER.debug(String.format("%s %s", cmd, "*******"));
+        	} else {
+        		LOGGER.debug(getPrintableString(event.getMessage()));
+        	}
+        }
 	}
 
 	@Override
 	public void protocolReplyReceived(ProtocolCommandEvent event) {
-		LOGGER.debug(event.getMessage());
+        if (LOGGER.isDebugEnabled()) {
+        	LOGGER.debug(getPrintableString(event.getMessage()));
+        }
 	}
+	
+    private String getPrintableString(final String msg) {
+        final int pos = msg.indexOf(SocketClient.NETASCII_EOL);
+        if (pos > 0) {
+            final StringBuilder sb = new StringBuilder();
+            sb.append(msg.substring(0, pos));
+            return sb.toString();
+        }
+        
+        return msg;
+    }
 }
