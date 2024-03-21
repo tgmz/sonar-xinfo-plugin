@@ -66,7 +66,8 @@ public abstract class AbstractXinfoProvider implements IXinfoProvider {
 		this.configuration = configuration;
 	}
 
-	protected PACKAGE createXinfo(InputStream is) throws XinfoException {
+	//Parser may not be thread safe.
+	protected synchronized PACKAGE createXinfo(InputStream is) throws XinfoException {
 		PACKAGE p = null;
 		
 		// Perhaps we need to read the InputStream more than once so we save it to a ByteArray first

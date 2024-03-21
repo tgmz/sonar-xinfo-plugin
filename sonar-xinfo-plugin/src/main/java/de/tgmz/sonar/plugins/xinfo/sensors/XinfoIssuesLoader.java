@@ -11,8 +11,16 @@
 package de.tgmz.sonar.plugins.xinfo.sensors;
 
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -26,10 +34,8 @@ import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.SensorDescriptor;
 import org.sonar.api.rule.RuleKey;
 
-import de.tgmz.sonar.plugins.xinfo.IXinfoProvider;
 import de.tgmz.sonar.plugins.xinfo.RuleFactory;
 import de.tgmz.sonar.plugins.xinfo.XinfoException;
-import de.tgmz.sonar.plugins.xinfo.XinfoProviderFactory;
 import de.tgmz.sonar.plugins.xinfo.config.XinfoProjectConfig;
 import de.tgmz.sonar.plugins.xinfo.generated.plicomp.FILE;
 import de.tgmz.sonar.plugins.xinfo.generated.plicomp.FILEREFERENCETABLE;
@@ -45,7 +51,6 @@ public class XinfoIssuesLoader implements Sensor {
 	private static final Logger LOGGER = LoggerFactory.getLogger(XinfoIssuesLoader.class);
 	
 	private final Checks<XinfoRule> checks;
-	private IXinfoProvider xinfoProvider;
 
 	private static class Issue {
 		InputFile inputFile;
@@ -77,8 +82,6 @@ public class XinfoIssuesLoader implements Sensor {
 
 	@Override
 	public void execute(SensorContext context) {
-		xinfoProvider = XinfoProviderFactory.getProvider(context.config());
-		
 		includeLevels = context.config().getStringArray(XinfoProjectConfig.XINFO_INCLUDE_LEVEL);
 		
 	    int threshold = context.config().getInt(XinfoProjectConfig.XINFO_LOG_THRESHOLD).orElse(100);
@@ -87,28 +90,47 @@ public class XinfoIssuesLoader implements Sensor {
 		
 		int ctr = 0;
 		
+		ExecutorService es = Executors.newCachedThreadPool();
+		List<Callable<Map<InputFile, PACKAGE>>> tasks = new LinkedList<>();
+		
 		for (InputFile inputFile : context.fileSystem().inputFiles(p.hasLanguages(XinfoLanguage.KEY))) {
-			Language lang = Language.getByFilename(inputFile.filename());
+			if (Language.getByFilename(inputFile.filename()).canCompile()) {
+				tasks.add(new XinfoExecutor(context.config(), inputFile));
+			}
+		}
+		
+		try {
+			LOGGER.info("Executing {} tasks", tasks.size());
 			
-			if (lang.canCompile()) {
-				try {
-					execute(context, inputFile, lang);
+			long start = System.currentTimeMillis();
+			
+			List<Future<Map<InputFile, PACKAGE>>> invokeAll = es.invokeAll(tasks);
+
+			LOGGER.info("Tasks finished in {} msecs", System.currentTimeMillis() - start);
+			
+			for (Future<Map<InputFile, PACKAGE>> fXinfo : invokeAll) {
+				for (Entry<InputFile, PACKAGE> entry : fXinfo.get().entrySet()) {
+					InputFile inputFile = entry.getKey();
 					
+					applyChecks(entry.getValue(), context, inputFile);
+				
 					if (++ctr % threshold == 0) {
 						LOGGER.info("{} file(s) processed, current is {}", ctr, inputFile);
 					}
-				} catch (XinfoException e) {
-					LOGGER.error("Cannot get xinfo for {}", inputFile, e);
 				}
 			}
+		} catch (ExecutionException e) {
+			LOGGER.error("Error invoking XinfoExecutor", e);
+		} catch (InterruptedException  e) {
+			LOGGER.error("XinfoExecutor invocation interrupted", e);
+			
+			Thread.currentThread().interrupt();
 		}
 	}
 
-	private void execute(SensorContext context, InputFile inputFile, Language lang) throws XinfoException {
-		PACKAGE xinfo = xinfoProvider.getXinfo(inputFile);
-
+	private void applyChecks(PACKAGE xinfo, SensorContext context, InputFile inputFile) {
 		for (MESSAGE m : xinfo.getMESSAGE()) {
-			Issue issue = computeIssue(m, xinfo.getFILEREFERENCETABLE(), inputFile, lang);
+			Issue issue = computeIssue(m, xinfo.getFILEREFERENCETABLE(), inputFile);
 		
 			if (issue != null) {
 				RuleKey rk = RuleKey.of(XinfoRuleDefinition.REPO_KEY, issue.ruleKey);
@@ -121,7 +143,10 @@ public class XinfoIssuesLoader implements Sensor {
 			}
 		}
 	}
-	private Issue computeIssue(MESSAGE m, FILEREFERENCETABLE frt, InputFile inputFile, Language lang) {
+	
+	private Issue computeIssue(MESSAGE m, FILEREFERENCETABLE frt, InputFile inputFile) {
+		Language lang = Language.getByFilename(inputFile.filename());
+		
 		String msgFile = m.getMSGFILE();
 		String msgLine = m.getMSGLINE();
 		
