@@ -44,16 +44,20 @@ import de.tgmz.sonar.plugins.xinfo.languages.Language;
  */
 public class XinfoOnTheFlyProvider extends AbstractXinfoProvider {
 	private static final Logger LOGGER = LoggerFactory.getLogger(XinfoOnTheFlyProvider.class);
-	private static final Random random = new SecureRandom();
+	private static final Random RANDOM = new SecureRandom();
 
-	private JesClient client;
+	// Since getXinfo() is synchronized we only need a single client
+	private static JesClient client = new JesClient();
 
 	public XinfoOnTheFlyProvider(Configuration configuration) {
 		super(configuration);
 	}
 
+	/**
+	 * The commons-net ftp client is not thread safe so we cannot run multiple tasks simultaneously.
+	 */
 	@Override
-	public PACKAGE getXinfo(InputFile pgm) throws XinfoException {
+	public synchronized PACKAGE getXinfo(InputFile pgm) throws XinfoException {
 		String user = getOtfValue(XinfoFtpConfig.XINFO_OTF_USER);
 		
 		if (client == null || !client.isConnected()) {
@@ -62,7 +66,7 @@ public class XinfoOnTheFlyProvider extends AbstractXinfoProvider {
 			connect(user);
 		}
 
-		String sysxmlsd = user + ".XINFO.T" + random.nextInt(10_000_000) + ".XML";
+		String sysxmlsd = user + ".XINFO.T" + RANDOM.nextInt(10_000_000) + ".XML";
 
 		try {
 			String jcl = createJcl(pgm, sysxmlsd);
@@ -76,8 +80,6 @@ public class XinfoOnTheFlyProvider extends AbstractXinfoProvider {
 			int timeout = Integer.parseInt(getOtfValue(XinfoFtpConfig.XINFO_OTF_TIMEOUT)) * 1_000;
 
 			while (System.currentTimeMillis() - start < timeout && !"OUTPUT".equals(xinfoJob.getStatus())) {
-				Thread.sleep(500);
-
 				List<JesJob> listJobs = client.listJobsDetailed();
 
 				xinfoJob = findJob(listJobs, xinfoJob);
@@ -103,12 +105,6 @@ public class XinfoOnTheFlyProvider extends AbstractXinfoProvider {
 			return createXinfo(pgm, xinfo);
 		} catch (IOException e) {
 			throw new XinfoException("IOException in communication", e);
-		} catch (InterruptedException e) {
-			LOGGER.error("Interrupted while waiting job to end", e);
-			
-			Thread.currentThread().interrupt();
-			
-			return null;
 		}
 	}
 
@@ -137,8 +133,6 @@ public class XinfoOnTheFlyProvider extends AbstractXinfoProvider {
 	}
 	
 	private boolean connect(String user) throws XinfoException {
-		client = new JesClient();
-		
 		int reply;
 		
 		try {
@@ -188,14 +182,16 @@ public class XinfoOnTheFlyProvider extends AbstractXinfoProvider {
 			template = "elaxfpl1.txt";
 			break;
 		}
-
+		
 		try (InputStream is = this.getClass().getClassLoader().getResourceAsStream(template);
 				Reader r = new InputStreamReader(is, StandardCharsets.UTF_8)) {
 				String s = IOUtils.toString(r);
 			
-				return MessageFormat.format(s, getOtfValue(XinfoFtpConfig.XINFO_OTF_JOBCARD),
-						FilenameUtils.removeExtension(inputFile.filename()).toUpperCase(Locale.getDefault()),
-				inputFile.contents(), sysxmlsd);
+				return MessageFormat.format(s
+						, getOtfValue(XinfoFtpConfig.XINFO_OTF_JOBCARD)
+						, FilenameUtils.removeExtension(inputFile.filename()).toUpperCase(Locale.getDefault())
+						, inputFile.contents()
+						, sysxmlsd);
 			}
 	}
 
@@ -205,12 +201,6 @@ public class XinfoOnTheFlyProvider extends AbstractXinfoProvider {
 		return o.isPresent() ? o.get() : job;
 	}
 	private String getOtfValue(String param) throws XinfoException {
-		Optional<String> o = getConfiguration().get(param);
-		
-		if (o.isPresent()) {
-			return o.get();
-		} else {
-			throw new XinfoException("Param " + param + " not provided");
-		}
+		return getConfiguration().get(param).orElseThrow(() -> new XinfoException("Param " + param + " not provided"));
 	}
 }

@@ -23,6 +23,7 @@ public class XinfoProjectConfig {
 	public static final String XINFO_ENCODING = "sonar.xinfo.encoding";
 	public static final String XINFO_LOG_THRESHOLD = "sonar.xinfo.log.threshold";
 	public static final String XINFO_INCLUDE_LEVEL = "sonar.xinfo.include.levels";
+	public static final String XINFO_NUM_THREADS = "sonar.xinfo.threads";
 	public static final String CATEGORY = "Xinfo";
 
 	private XinfoProjectConfig() {
@@ -34,27 +35,39 @@ public class XinfoProjectConfig {
 				.name("XinfoColoringLimit")
 				.description("Xinfo Coloring Limit")
 				.defaultValue(String.valueOf(5000))
-				.category(CATEGORY).build()
+				.category(CATEGORY)
+				.build()
 			, PropertyDefinition.builder(XINFO_ROOT)
 				.name("RootXinfo")
 				.description("XINFO root directory")
-				.category(CATEGORY).build()
+				.category(CATEGORY)
+				.build()
 			, PropertyDefinition.builder(XINFO_CPD_OFF)
 				.name("XinfoCpdOff")
 				.description("XINFO turn off copy/paste detection")
-				.category(CATEGORY).build()
+				.category(CATEGORY)
+				.build()
 			, PropertyDefinition.builder(XINFO_ENCODING)
 				.name("EncodingXinfo")
 				.description("XINFO encoding")
-				.category(CATEGORY).build()
+				.category(CATEGORY)
+				.build()
 			, PropertyDefinition.builder(XINFO_LOG_THRESHOLD)
 				.name("LogThresholdXinfo")
 				.description("XINFO log threshold")
-				.category(CATEGORY).build()
+				.category(CATEGORY)
+				.build()
 			, PropertyDefinition.builder(XINFO_INCLUDE_LEVEL)
 				.name("IncludeLevelXinfo")
 				.description("XINFO include level. Comma separated list of levels, e.g. \'E,S,U\'")
-				.category(CATEGORY).build()
+				.category(CATEGORY)
+				.build()
+			, PropertyDefinition.builder(XINFO_NUM_THREADS)
+				.name("XinfoNumThreads")
+				.description("Number of concurrent threads")
+				.defaultValue(String.valueOf(4))
+				.category(CATEGORY)
+				.build()
 		);
 	}
 }

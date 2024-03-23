@@ -10,8 +10,9 @@
   *******************************************************************************/
 package de.tgmz.sonar.plugins.xinfo.ftp;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -20,10 +21,14 @@ import java.util.regex.Pattern;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
 
+import de.tgmz.sonar.plugins.xinfo.XinfoException;
+
 /**
  * Extend FTPClient for JES interaction.
  */
 public class JesClient extends FTPClient {
+	private static final Pattern JES_PATTERN = Pattern.compile("It is known to J[Ee][Ss] as (?<handle>.+)");
+	
     public JesClient() {
 		super();
 		
@@ -45,19 +50,20 @@ public class JesClient extends FTPClient {
         return jobs;
     }
 
-    public JesJob submit(String sourceJCL) throws IOException {
-        OutputStream outputStream = storeFileStream("job");
-        outputStream.write(sourceJCL.getBytes());
-        outputStream.close();
-        completePendingCommand();
-
-        Pattern pattern = Pattern.compile("It is known to J[Ee][Ss] as (?<handle>.+)");
-        Matcher matcher = pattern.matcher(getReplyString());
-        JesJob job = null;
-        if (matcher.find()) {
-            job = new JesJob();
-            job.setHandle(matcher.group("handle"));
+    public JesJob submit(String sourceJCL) throws IOException, XinfoException {
+        if (storeFile("job", new ByteArrayInputStream(sourceJCL.getBytes(StandardCharsets.UTF_8)))) {
+        	Matcher matcher = JES_PATTERN.matcher(getReplyString());
+        	
+        	if (matcher.find()) {
+        		JesJob job = new JesJob();
+        		job.setHandle(matcher.group("handle"));
+        		
+            	return job;
+        	} else {
+               	throw new XinfoException("Failed to receive job information");
+        	}
         }
-        return job;
+        	
+       	throw new XinfoException("Failed to submit job");
     }
 }

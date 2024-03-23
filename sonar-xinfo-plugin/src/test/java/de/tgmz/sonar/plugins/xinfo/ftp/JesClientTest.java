@@ -12,6 +12,7 @@ package de.tgmz.sonar.plugins.xinfo.ftp;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
@@ -21,18 +22,24 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockftpserver.stub.StubFtpServer;
 
+import de.tgmz.sonar.plugins.xinfo.XinfoException;
+
 public class JesClientTest {
 	private static final String LOG_LEVEL_KEY = "org.slf4j.simpleLogger.defaultLogLevel"; 
 	private static String logLevel;
 	private static StubFtpServer server;
+	private static JesClient client;
 
 	@BeforeClass
-	public static void setupOnce() {
+	public static void setupOnce() throws IOException {
 		logLevel = System.getProperty(LOG_LEVEL_KEY, "INFO");
 		System.setProperty(LOG_LEVEL_KEY, "DEBUG");	// Force noisy logging in JesProtocolCommandListener 
 		
 		server = new StubFtpServer();
 		server.start();
+		
+		client = new JesClient();
+		client.connect("localhost", server.getServerControlPort());
 	}
 	
 	@AfterClass
@@ -43,12 +50,12 @@ public class JesClientTest {
 	}
 	
 	@Test
-	public void testClient() throws IOException {
-		JesClient client = new JesClient();
-		client.connect("localhost", server.getServerControlPort());
-		
+	public void testLogin() throws IOException {
 		assertTrue(client.login("foo", "bar"));
-		client.submit("");
+	}
+	@Test
+	public void testSubmit() throws IOException, XinfoException {
+		assertThrows(XinfoException.class, () -> client.submit(""));
 		assertEquals(200, client.setOwnerFilter(""));
 		assertNotNull(client.listJobsDetailed());
 	}

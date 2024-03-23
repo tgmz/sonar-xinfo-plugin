@@ -14,9 +14,11 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.sonar.api.batch.rule.CheckFactory;
+import org.sonar.api.batch.sensor.Sensor;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.SensorDescriptor;
 import org.sonar.api.batch.sensor.internal.DefaultSensorDescriptor;
@@ -31,16 +33,22 @@ import de.tgmz.sonar.plugins.xinfo.sensors.XinfoIssuesLoader;
  * Tests for all sensors.
  */
 public class SensorOnTheFlyTest {
-	private static final String LOC = "testresources";
+	private static final String LOG_LEVEL_KEY = "org.slf4j.simpleLogger.defaultLogLevel"; 
+	private static final String LOC = "otftestresources";
 	private static SensorContext sensorContext;
 	private static SensorDescriptor sensorDescriptor;
+	private static String logLevel;
 	
 	@BeforeClass
 	public static void setupOnce() throws IOException {
+		logLevel = System.getProperty(LOG_LEVEL_KEY, "INFO");
+		System.setProperty(LOG_LEVEL_KEY, "DEBUG");	// Force noisy logging in JesProtocolCommandListener
+		
 		MapSettings ms = new MapSettings();
 		ms.setProperty(XinfoProjectConfig.XINFO_ROOT, LOC + File.separator +"xinfo");
 		ms.setProperty(XinfoProjectConfig.XINFO_LOG_THRESHOLD, "1");
 		ms.setProperty(XinfoProjectConfig.XINFO_INCLUDE_LEVEL, "I,W,E,S,U");
+		//ms.setProperty(XinfoProjectConfig.XINFO_NUM_THREADS, "2");
 		ms.setProperty(XinfoFtpConfig.XINFO_OTF, "true");
 		ms.setProperty(XinfoFtpConfig.XINFO_OTF_JOBCARD, System.getProperty(XinfoFtpConfig.XINFO_OTF_JOBCARD));
 		ms.setProperty(XinfoFtpConfig.XINFO_OTF_PASS, System.getProperty(XinfoFtpConfig.XINFO_OTF_PASS));
@@ -69,12 +77,16 @@ public class SensorOnTheFlyTest {
 		sensorDescriptor = new DefaultSensorDescriptor();
 	}
 	
-	@Test(expected = Test.None.class)
-	public void testPli() {
-		XinfoIssuesLoader issuesLoader = new XinfoIssuesLoader(new CheckFactory(sensorContext.activeRules()));
-		
-		issuesLoader.describe(sensorDescriptor);
-		issuesLoader.execute(sensorContext);
+	@AfterClass
+	public static void teardownOnce() {
+		System.setProperty(LOG_LEVEL_KEY, logLevel);
 	}
-
+	
+	@Test(expected = Test.None.class)
+	public void testIsuuesLoader() {
+		Sensor sensor = new XinfoIssuesLoader(new CheckFactory(sensorContext.activeRules()));
+		
+		sensor.describe(sensorDescriptor);
+		sensor.execute(sensorContext);
+	}
 }

@@ -32,6 +32,7 @@ import org.sonar.api.batch.rule.Checks;
 import org.sonar.api.batch.sensor.Sensor;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.SensorDescriptor;
+import org.sonar.api.config.Configuration;
 import org.sonar.api.rule.RuleKey;
 
 import de.tgmz.sonar.plugins.xinfo.RuleFactory;
@@ -82,20 +83,25 @@ public class XinfoIssuesLoader implements Sensor {
 
 	@Override
 	public void execute(SensorContext context) {
-		includeLevels = context.config().getStringArray(XinfoProjectConfig.XINFO_INCLUDE_LEVEL);
+		Configuration config = context.config();
 		
-	    int threshold = context.config().getInt(XinfoProjectConfig.XINFO_LOG_THRESHOLD).orElse(100);
+		includeLevels = config.getStringArray(XinfoProjectConfig.XINFO_INCLUDE_LEVEL);
+		
+	    int threshold = config.getInt(XinfoProjectConfig.XINFO_LOG_THRESHOLD).orElse(100);
 
 		FilePredicates p = context.fileSystem().predicates();
 		
 		int ctr = 0;
 		
-		ExecutorService es = Executors.newCachedThreadPool();
+		Optional<Integer> numThreads = config.getInt(XinfoProjectConfig.XINFO_NUM_THREADS);
+		
+		ExecutorService es = numThreads.isPresent() ? Executors.newFixedThreadPool(numThreads.get()) : Executors.newCachedThreadPool();
+		
 		List<Callable<Map<InputFile, PACKAGE>>> tasks = new LinkedList<>();
 		
 		for (InputFile inputFile : context.fileSystem().inputFiles(p.hasLanguages(XinfoLanguage.KEY))) {
 			if (Language.getByFilename(inputFile.filename()).canCompile()) {
-				tasks.add(new XinfoExecutor(context.config(), inputFile));
+				tasks.add(new XinfoExecutor(config, inputFile));
 			}
 		}
 		

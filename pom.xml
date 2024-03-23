@@ -209,6 +209,7 @@
 										<!-- Templates -->
 										<!-- Test resources -->
 										<exclude>testresources/**</exclude>
+										<exclude>otftestresources/**</exclude>
 										<exclude>src/test/resources/</exclude>
 										<!-- IBM stuff -->
 										<exclude>ibm/cobol/**</exclude>
