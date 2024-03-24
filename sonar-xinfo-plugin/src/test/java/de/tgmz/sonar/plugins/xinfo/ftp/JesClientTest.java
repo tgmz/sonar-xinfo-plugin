@@ -36,6 +36,7 @@ public class JesClientTest {
 		System.setProperty(LOG_LEVEL_KEY, "DEBUG");	// Force noisy logging in JesProtocolCommandListener 
 		
 		server = new StubFtpServer();
+		server.setServerControlPort(8021);
 		server.start();
 		
 		client = new JesClient();
