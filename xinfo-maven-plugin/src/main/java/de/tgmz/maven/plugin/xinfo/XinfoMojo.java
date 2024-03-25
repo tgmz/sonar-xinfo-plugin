@@ -132,6 +132,12 @@ public class XinfoMojo extends AbstractMojo {
 				, 'I'
 				, "Code generated for DO group would be more efficient if control variable were a 4-byte integer."
 				, "The control variable in the DO loop is a 1-byte integer, 2-byte integer, fixed decimal or fixed picture, and consequently, the code generated for the loop will not be optimal.");
+		
+		writeRule("IBM2811I"
+				, targetPackage
+				, 'I'
+				, "Use of PICTURE as DO control variable is not recommended."
+				, "If the control variable in a DO loop is a PICTURE variable, then more code will be generated for the loop than if the control variable were a FIXED BIN variable. Moreover, such loops may easily be miscoded so that they will loop infinitely.");
 	}
 	private void generateAssembler() throws IOException {
 		String s = stripPdf(document
@@ -407,5 +413,13 @@ public class XinfoMojo extends AbstractMojo {
 
 	public void setSysuexit(File sysuexit) {
 		this.sysuexit = sysuexit;
+	}
+
+	public File getOutputDirectory() {
+		return outputDirectory;
+	}
+
+	public String getTargetPackage() {
+		return targetPackage;
 	}
 }

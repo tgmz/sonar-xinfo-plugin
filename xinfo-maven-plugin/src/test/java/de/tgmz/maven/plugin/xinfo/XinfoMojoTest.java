@@ -14,9 +14,13 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collection;
 
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.Test.None;
@@ -26,6 +30,8 @@ import org.junit.runners.Parameterized.Parameters;
 
 @RunWith(Parameterized.class)
 public class XinfoMojoTest extends AbstractXinfoMojoTest {
+	private static final String[] EXPECTED = new String[] { "IBM1039I", "IBM1479I", "IBM3988I", "IBM1247I", "IBM2848I", "IBM1063I", "IBM1316I", "IBM2811I"};
+;
 	private String lang;
 	private String doc;
 	private String sysuexit;
@@ -52,6 +58,18 @@ public class XinfoMojoTest extends AbstractXinfoMojoTest {
 		myMojo.setLang(lang);
 		myMojo.setSysuexit(sysuexit != null ? new File(sysuexit) : null);
 		myMojo.execute();
+	}
+	
+	@AfterClass
+	public static void check() throws IOException {
+		File pom = new File("target/test-classes/project-to-test/");
+		assertTrue(pom.exists());
+
+		Path dir = Paths.get(myMojo.getOutputDirectory().getCanonicalPath(), myMojo.getTargetPackage().replace('.', File.separatorChar));
+
+		for (String rule : EXPECTED) {
+			assertTrue(String.format("Rule %s not found",  rule), new File(dir.toFile(), rule + ".java").isFile());
+		}
 	}
 	
 	@Parameters(name = "{index}: Check for language [{0}]")
