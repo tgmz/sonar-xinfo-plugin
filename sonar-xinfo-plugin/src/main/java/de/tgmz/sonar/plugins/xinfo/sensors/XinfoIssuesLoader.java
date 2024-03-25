@@ -108,12 +108,8 @@ public class XinfoIssuesLoader implements Sensor {
 		try {
 			LOGGER.info("Executing {} tasks", tasks.size());
 			
-			long start = System.currentTimeMillis();
-			
 			List<Future<Map<InputFile, PACKAGE>>> invokeAll = es.invokeAll(tasks);
 
-			LOGGER.info("Tasks finished in {} msecs", System.currentTimeMillis() - start);
-			
 			for (Future<Map<InputFile, PACKAGE>> fXinfo : invokeAll) {
 				for (Entry<InputFile, PACKAGE> entry : fXinfo.get().entrySet()) {
 					InputFile inputFile = entry.getKey();
