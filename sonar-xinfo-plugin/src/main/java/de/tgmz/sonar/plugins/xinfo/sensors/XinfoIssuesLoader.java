@@ -44,6 +44,7 @@ import de.tgmz.sonar.plugins.xinfo.generated.plicomp.MESSAGE;
 import de.tgmz.sonar.plugins.xinfo.generated.plicomp.PACKAGE;
 import de.tgmz.sonar.plugins.xinfo.languages.Language;
 import de.tgmz.sonar.plugins.xinfo.languages.XinfoLanguage;
+import de.tgmz.sonar.plugins.xinfo.measures.XinfoMetrics;
 import de.tgmz.sonar.plugins.xinfo.rules.XinfoRule;
 import de.tgmz.sonar.plugins.xinfo.rules.XinfoRuleDefinition;
 
@@ -113,8 +114,19 @@ public class XinfoIssuesLoader implements Sensor {
 			for (Future<Map<InputFile, PACKAGE>> fXinfo : invokeAll) {
 				for (Entry<InputFile, PACKAGE> entry : fXinfo.get().entrySet()) {
 					InputFile inputFile = entry.getKey();
+					PACKAGE xinfo = entry.getValue();
 					
-					applyChecks(entry.getValue(), context, inputFile);
+					applyChecks(xinfo, context, inputFile);
+					
+					FILEREFERENCETABLE frt = xinfo.getFILEREFERENCETABLE();
+					
+					if (frt != null) {
+						context.<Integer>newMeasure()
+							.forMetric(XinfoMetrics.STATIC_COMPLEXITY)
+							.on(inputFile)
+							.withValue(Integer.parseInt(frt.getFILECOUNT().strip()))
+							.save();
+					}
 				
 					if (++ctr % threshold == 0) {
 						LOGGER.info("{} file(s) processed, current is {}", ctr, inputFile);
