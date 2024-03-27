@@ -138,6 +138,18 @@ public class XinfoMojo extends AbstractMojo {
 				, 'I'
 				, "Use of PICTURE as DO control variable is not recommended."
 				, "If the control variable in a DO loop is a PICTURE variable, then more code will be generated for the loop than if the control variable were a FIXED BIN variable. Moreover, such loops may easily be miscoded so that they will loop infinitely.");
+		
+		writeRule("IBM2804I"
+				, targetPackage
+				, 'I'
+				, "Boolean is compared with something other than '1'b or '0'b."
+				, "This message will flag statements such as the following, where \"true\" is a BIT(1) STATIC INIT('1'b). It would be better if \"true\" were a named constant, i.e. if it were declared with the VALUE attribute rather than STATIC INIT. <b>if ( a < b ) = true then");
+		
+		writeRule("IBM2843I"
+				, targetPackage
+				, 'I'
+				, "The defined structure struct name is alignment byte aligned, but occupies only storage size bytes of storage."
+				, "Defined structures must occupy a number of bytes that is a multiple of the structure’s alignment. So, for example, if a structure contains an aligned fixed bin(31) (or other aligned fullword) field as its most stringently aligned item, then the structure must occupy a multiple of 4 bytes. The following structure does not meet this requirement: <b>define structure<b>1 point,<b>2 x fixed bin(31),<b>2 y char(1);");
 	}
 	private void generateAssembler() throws IOException {
 		String s = stripPdf(document

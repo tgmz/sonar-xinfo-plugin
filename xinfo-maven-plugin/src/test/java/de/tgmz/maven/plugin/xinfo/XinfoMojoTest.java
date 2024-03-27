@@ -30,7 +30,7 @@ import org.junit.runners.Parameterized.Parameters;
 
 @RunWith(Parameterized.class)
 public class XinfoMojoTest extends AbstractXinfoMojoTest {
-	private static final String[] EXPECTED = new String[] { "IBM1039I", "IBM1479I", "IBM3988I", "IBM1247I", "IBM2848I", "IBM1063I", "IBM1316I", "IBM2811I"};
+	private static final String[] EXPECTED = new String[] { "IBM1039I", "IBM1479I", "IBM3988I", "IBM1247I", "IBM2848I", "IBM1063I", "IBM1316I", "IBM2811I", "IBM2804I", "IBM2843I"};
 ;
 	private String lang;
 	private String doc;
