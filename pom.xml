@@ -18,7 +18,7 @@
 
 	<groupId>de.tgmz</groupId>
 	<artifactId>sonar-xinfo</artifactId>
-	<version>3.1.0</version>
+	<version>3.1.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>xinfo-plugins</name>
@@ -78,6 +78,15 @@
 		</dependency>
 	</dependencies>
 
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>tycho-versions-plugin</artifactId>
+				<version>3.0.4</version>
+			</plugin>
+		</plugins>
+	</build>
 	<profiles>
 		<profile>
 			<id>cc</id>

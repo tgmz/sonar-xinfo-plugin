@@ -19,7 +19,7 @@
 	<parent>
 		<groupId>de.tgmz</groupId>
 		<artifactId>sonar-xinfo</artifactId>
-		<version>3.1.0</version>
+		<version>3.1.1-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>xinfo-maven-plugin</artifactId>
@@ -34,8 +34,8 @@
 	</prerequisites>
 
 	<properties>
-		<maven.compiler.source>1.7</maven.compiler.source>
-		<maven.compiler.target>1.7</maven.compiler.target>
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>1.8</maven.compiler.target>
 		<maven.version>3.8.1</maven.version>
 	</properties>
 
