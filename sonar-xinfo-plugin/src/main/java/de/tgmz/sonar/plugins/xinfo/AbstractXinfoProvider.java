@@ -153,8 +153,8 @@ public abstract class AbstractXinfoProvider implements IXinfoProvider {
 		List<String> readLines = IOUtils.readLines(is, Charset.defaultCharset());
 		
 		readLines.forEach(line -> {
-			// See https://www-40.ibm.com/servers/resourcelink/svc00100.nsf/pages/zOSV2R3sc147307/$file/cbcux01_v2r3.pdf
-			// page 648 for the detailed format of the SYSEVENT file
+			// See https://www.ibm.com/docs/en/SSLTBW_2.3.0/pdf/cbcux01_v2r3.pdf appendix e
+			// page 671 for the detailed format of the SYSEVENT file
 			if (line.startsWith("ERROR")) {
 				// The ERROR field looks like this:
 				// ERROR 0 1 0 0 3 3 0 0 CCNnnnn E 12 26 Undeclared identifier add.

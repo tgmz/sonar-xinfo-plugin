@@ -65,7 +65,6 @@ public class XinfoProjectConfig {
 			, PropertyDefinition.builder(XINFO_NUM_THREADS)
 				.name("XinfoNumThreads")
 				.description("Number of concurrent threads")
-				.defaultValue(String.valueOf(4))
 				.category(CATEGORY)
 				.build()
 		);

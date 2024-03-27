@@ -8,7 +8,7 @@
   * Contributors:
   *    Thomas Zierer - initial API and implementation and/or initial documentation
   *******************************************************************************/
-package de.tgmz.sonar.plugins.xinfo.ftp;
+package de.tgmz.sonar.plugins.xinfo;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -22,7 +22,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockftpserver.stub.StubFtpServer;
 
-import de.tgmz.sonar.plugins.xinfo.XinfoException;
+import de.tgmz.sonar.plugins.xinfo.ftp.JesClient;
 
 public class JesClientTest {
 	private static final String LOG_LEVEL_KEY = "org.slf4j.simpleLogger.defaultLogLevel"; 

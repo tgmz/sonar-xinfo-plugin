@@ -23,7 +23,7 @@ jobs:
     - uses: actions/setup-java@v4
       with:
         distribution: 'temurin'
-        java-version: '17'
+        java-version: '21'
         cache: 'maven'
     
     - name: Build with Maven
@@ -33,3 +33,9 @@ jobs:
 #      run: mvn -B install -Pdc,rat --file pom.xml -Dsonar.xinfo.otf.jobcard="${{ secrets.OTF_JOBCARD }}" -Dsonar.xinfo.otf.port=${{ secrets.OTF_PORT }} -Dsonar.xinfo.otf.pass=${{ secrets.OTF_PASS }} -Dsonar.xinfo.otf.user=${{ secrets.OTF_USER }} -Dsonar.xinfo.otf.server=${{ secrets.OTF_SERVER }} -Dsonar.xinfo.otf.timeout=${{ secrets.OTF_TIMEOUT }}
 
       run: mvn -B install -Pdc,rat --file pom.xml -Dtest=!*SensorOnTheFlyTest 
+
+    - uses: actions/upload-artifact@v4
+      with:
+        name: Reports
+        path: target      
+        

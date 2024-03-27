@@ -15,6 +15,9 @@ import org.sonar.api.Plugin;
 import de.tgmz.sonar.plugins.xinfo.config.XinfoConfig;
 import de.tgmz.sonar.plugins.xinfo.languages.XinfoLanguage;
 import de.tgmz.sonar.plugins.xinfo.languages.XinfoQualityProfile;
+import de.tgmz.sonar.plugins.xinfo.measures.ComputeDynamicComplexityAverage;
+import de.tgmz.sonar.plugins.xinfo.measures.ComputeStaticComplexityAverage;
+import de.tgmz.sonar.plugins.xinfo.measures.XinfoMetrics;
 import de.tgmz.sonar.plugins.xinfo.rules.XinfoRuleDefinition;
 import de.tgmz.sonar.plugins.xinfo.sensors.ColoringSensor;
 import de.tgmz.sonar.plugins.xinfo.sensors.XinfoCpdSensor;
@@ -35,7 +38,8 @@ public class XinfoPlugin implements Plugin {
 		context.addExtensions(XinfoLanguage.class, XinfoQualityProfile.class);
 		context.addExtensions(XinfoConfig.definitions());
 
-		// tutorial on measures
+	    // tutorial on measures
+	    context.addExtensions(XinfoMetrics.class, ComputeStaticComplexityAverage.class, ComputeDynamicComplexityAverage.class);
 
 		// tutorial on rules
 		context.addExtensions(XinfoRuleDefinition.class, XinfoIssuesLoader.class);

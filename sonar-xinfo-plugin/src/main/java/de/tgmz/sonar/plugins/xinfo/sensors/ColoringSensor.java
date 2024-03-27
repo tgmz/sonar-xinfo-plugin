@@ -45,7 +45,7 @@ public class ColoringSensor implements Sensor {
 	
 	@Override
 	public void describe(final SensorDescriptor descriptor) {
-		descriptor.name("Xinfocolorr");
+		descriptor.name("XinfoColor");
 		descriptor.onlyOnLanguages(XinfoLanguage.KEY);
 	}
 	

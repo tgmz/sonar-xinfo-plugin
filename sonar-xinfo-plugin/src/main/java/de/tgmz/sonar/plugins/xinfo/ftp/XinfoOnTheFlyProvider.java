@@ -109,6 +109,7 @@ public class XinfoOnTheFlyProvider extends AbstractXinfoProvider {
 	}
 
 	private void cleanup(String sysxmlsd, JesJob submitJob) throws IOException {
+		client.site("FILE=SEQ");
 		client.deleteFile("//" + sysxmlsd);
 		client.site("FILE=Jes");
 		client.deleteFile(submitJob.getHandle());
