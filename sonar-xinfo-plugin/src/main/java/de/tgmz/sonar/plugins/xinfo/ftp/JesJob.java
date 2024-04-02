@@ -28,6 +28,10 @@ public class JesJob {
     private Integer spoolFileCount = null;
 
     public boolean parseDetails(String details) {
+    	if (!details.endsWith(" ")) {
+    		details += " ";
+    	}
+    	
         Matcher matcher = JOB_DETAIL_PATTERN.matcher(details);
         if (!matcher.matches()) {
             return false;

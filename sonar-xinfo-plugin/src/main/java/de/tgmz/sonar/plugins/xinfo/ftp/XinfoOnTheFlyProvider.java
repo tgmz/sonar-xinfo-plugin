@@ -19,7 +19,6 @@ import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 import java.text.MessageFormat;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -45,6 +44,8 @@ import de.tgmz.sonar.plugins.xinfo.languages.Language;
 public class XinfoOnTheFlyProvider extends AbstractXinfoProvider {
 	private static final Logger LOGGER = LoggerFactory.getLogger(XinfoOnTheFlyProvider.class);
 	private static final Random RANDOM = new SecureRandom();
+	private static final String TYPE_JES = "FILE=Jes";
+	private static final String TYPE_SEQ = "FILE=SEQ";
 
 	// Since getXinfo() is synchronized we only need a single client
 	private static JesClient client = new JesClient();
@@ -66,10 +67,12 @@ public class XinfoOnTheFlyProvider extends AbstractXinfoProvider {
 			connect(user);
 		}
 
-		String sysxmlsd = user + ".XINFO.T" + RANDOM.nextInt(10_000_000) + ".XML";
-
 		try {
+			String sysxmlsd = computeXinfoDataset(user);
+
 			String jcl = createJcl(pgm, sysxmlsd);
+
+			client.site(TYPE_JES);
 
 			JesJob xinfoJob = client.submit(jcl);
 			xinfoJob.setStatus("");
@@ -109,21 +112,23 @@ public class XinfoOnTheFlyProvider extends AbstractXinfoProvider {
 	}
 
 	private void cleanup(String sysxmlsd, JesJob submitJob) throws IOException {
-		client.site("FILE=SEQ");
+		client.site(TYPE_JES);
 		client.deleteFile("//" + sysxmlsd);
-		client.site("FILE=Jes");
+		client.site(TYPE_SEQ);
 		client.deleteFile(submitJob.getHandle());
 	}
 	
 	private PACKAGE createXinfo(InputFile pgm, byte[] xinfo) throws IOException, XinfoException {
 		try (InputStream is = new ByteArrayInputStream(xinfo)) {
-			return Arrays.asList(Language.C, Language.CPP).contains(Language.getByFilename(pgm.filename())) ? super.createXinfoFromEvent(is) : super.createXinfo(is);
+			Language lang = Language.getByFilename(pgm.filename());
+			
+			return (lang == Language.C || lang == Language.CPP) ? super.createXinfoFromEvent(is) : super.createXinfo(is);
 		}
 	}
 
 	private byte[] retrieveXinfo(String sysxmlsd) throws IOException {
 		try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
-			client.site("FILE=SEQ");
+			client.site(TYPE_SEQ);
 
 			client.retrieveFile("//" + sysxmlsd, baos);
 
@@ -151,7 +156,7 @@ public class XinfoOnTheFlyProvider extends AbstractXinfoProvider {
 
 			if (client.login(user, getOtfValue(XinfoFtpConfig.XINFO_OTF_PASS))) {
 				client.enterLocalPassiveMode();
-	            client.site("FILE=Jes JesJOBNAME=*");
+	            client.site(TYPE_JES + " JesJOBNAME=*");
 	            
 				return true;
 			} else {		
@@ -201,7 +206,24 @@ public class XinfoOnTheFlyProvider extends AbstractXinfoProvider {
 
 		return o.isPresent() ? o.get() : job;
 	}
+	
 	private String getOtfValue(String param) throws XinfoException {
 		return getConfiguration().get(param).orElseThrow(() -> new XinfoException("Param " + param + " not provided"));
+	}
+	
+	private String computeXinfoDataset(String user) throws IOException {
+		client.site(TYPE_JES);
+		
+		for (int i = 0; i < 5; ++i) {
+			String sysxmlsd = user + ".XINFO.T" + RANDOM.nextInt(10_000_000) + ".XML";
+		
+			String[] names = client.listNames("//" + sysxmlsd);
+		
+			if (names == null || names.length == 0) {
+				return sysxmlsd;
+			}
+		}
+		
+		throw new IOException("Cannot compute SYSXMLSD dataset name");
 	}
 }
