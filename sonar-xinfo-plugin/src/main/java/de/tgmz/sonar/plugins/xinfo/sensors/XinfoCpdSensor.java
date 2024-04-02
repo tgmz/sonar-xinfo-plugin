@@ -10,15 +10,17 @@
   *******************************************************************************/
 package de.tgmz.sonar.plugins.xinfo.sensors;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.Optional;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
-import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.fs.FilePredicates;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.sensor.Sensor;
@@ -27,29 +29,14 @@ import org.sonar.api.batch.sensor.SensorDescriptor;
 import org.sonar.api.batch.sensor.cpd.NewCpdTokens;
 
 import de.tgmz.sonar.plugins.xinfo.config.XinfoProjectConfig;
-import de.tgmz.sonar.plugins.xinfo.languages.Language;
 import de.tgmz.sonar.plugins.xinfo.languages.XinfoLanguage;
 
 /**
  * Tokenize files for CPD
  */
 public class XinfoCpdSensor implements Sensor {
-	protected static final Pattern NON_WHITESPACE = Pattern.compile("\\S+");
+	private static final Logger LOGGER = LoggerFactory.getLogger(XinfoCpdSensor.class);
 	
-	/**
-	 * Utility class for indexing tokens in one line.
-	 */
-	protected static final class WordToken {
-		String token;
-		int idx;
-
-		public WordToken(String token, int idx) {
-			super();
-			this.token = token;
-			this.idx = idx;
-		}
-	}
-
 	@Override
 	public void describe(SensorDescriptor descriptor) {
 		descriptor.name("XinfoCpdSensor");
@@ -64,78 +51,30 @@ public class XinfoCpdSensor implements Sensor {
 		
 		FilePredicates p = context.fileSystem().predicates();
 		
-		for (InputFile inputFile : context.fileSystem().inputFiles(p.hasLanguages(XinfoLanguage.KEY))) {
-			if (Language.getByFilename(inputFile.filename()) == Language.COBOL) {
-				tokenizeCobol(inputFile, context);
-			} else {
-				tokenize(inputFile, context);
-			}
-		}
-	}
-	
-	private void tokenizeCobol(InputFile inputFile, SensorContext context) {
-		int lineIdx = 1;
+		Optional<Integer> numThreads = context.config().getInt(XinfoProjectConfig.XINFO_NUM_THREADS);
 		
-		NewCpdTokens cpdTokens = context.newCpdTokens().onFile(inputFile);
+		ExecutorService es = numThreads.isPresent() ? Executors.newFixedThreadPool(numThreads.get()) : Executors.newCachedThreadPool();
+		
+		List<Callable<NewCpdTokens>> tasks = new LinkedList<>();
+		
+		for (InputFile inputFile : context.fileSystem().inputFiles(p.hasLanguages(XinfoLanguage.KEY))) {
+			tasks.add(new CpdExecutor(context, inputFile));
+		}
+		
+		LOGGER.info("Executing {} tasks", tasks.size());
 		
 		try {
-			for (String line : IOUtils.readLines(inputFile.inputStream(), inputFile.charset())) {
-				if (line.length() > 7 && line.charAt(6) != '*') {
-					String code = line.substring(7, Math.min(line.length(), 72));
-					
-					for (WordToken wt : getNonWhitespaceTokens(code, 7)) {
-						cpdTokens.addToken(inputFile.newRange(lineIdx, wt.idx, lineIdx, wt.idx + wt.token.length()), wt.token);
-					}
-				}
-				
-				lineIdx++;
+			List<Future<NewCpdTokens>> invokeAll = es.invokeAll(tasks);
+
+			for (Future<NewCpdTokens> fXinfo : invokeAll) {
+				fXinfo.get().save();
 			}
-		} catch (IOException e) {
-			throw new IllegalStateException("Unable to tokenize", e);
+		} catch (ExecutionException e) {
+			LOGGER.error("Error invoking HighlightExecutor", e);
+		} catch (InterruptedException  e) {
+			LOGGER.error("XinfoExecutor invocation interrupted", e);
+			
+			Thread.currentThread().interrupt();
 		}
-		
-		cpdTokens.save();
-	}
-	private void tokenize(InputFile inputFile, SensorContext context) {
-		// Column 0 is for carriage control characters, columns > 71 for comments
-		int lineIdx = 1;
-		
-		NewCpdTokens cpdTokens = context.newCpdTokens().onFile(inputFile);
-		
-		try (BufferedReader br = new BufferedReader(new InputStreamReader(inputFile.inputStream(), inputFile.charset()))) {
-		    String line;
-		    
-		    while ((line = br.readLine()) != null) {
-		    	if (line.length() > 1) {
-		    		String code = line.substring(1, Math.min(line.length(), 72));
-		    	
-		    		cpdTokens.addToken(inputFile.newRange(lineIdx, 1, lineIdx, code.length() + 1), code);
-		    	}
-		    	
-		    	lineIdx++;
-		    }
-		} catch (IOException e) {
-			throw new IllegalStateException("Unable to tokenize", e);
-		}
-		
-		cpdTokens.save();
-	}
-	
-	/**
-	 * Computes non-whitespace tokens inline s, adding an offset.
-	 * @param s the line
-	 * @param offset the offset to add
-	 * @return List of tokes
-	 */
-	private List<WordToken> getNonWhitespaceTokens(String s, int offset) {
-		List<WordToken> result = new LinkedList<>();
-		
-		Matcher m = NON_WHITESPACE.matcher(s);
-		
-		while (m.find()) {
-			result.add(new WordToken(m.group(), offset + m.start()));
-		}
-		
-		return result;
 	}
 }
