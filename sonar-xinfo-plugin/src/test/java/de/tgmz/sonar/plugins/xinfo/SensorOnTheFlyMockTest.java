@@ -40,6 +40,8 @@ import de.tgmz.sonar.plugins.xinfo.sensors.XinfoIssuesLoader;
 public class SensorOnTheFlyMockTest {
 	private static final String LOG_LEVEL_KEY = "org.slf4j.simpleLogger.defaultLogLevel"; 
 	private static final String LOC = "otftestresources";
+	private static final String JOB_NAME = "JOB01234";
+	private static final String JES_HEADER = "JOBNAME  JOBID    OWNER    STATUS CLASS";
 	private static StubFtpServer server;
 	private static SensorContext sensorContext;
 	private static String logLevel;
@@ -85,18 +87,23 @@ public class SensorOnTheFlyMockTest {
 		server = new StubFtpServer();
 		server.setServerControlPort(8021);
 		
+		// Mock successful job submit
 		CommandHandler ch = new StorCommandHandler();
-		((StorCommandHandler) ch).setFinalReplyText("It is known to JES as JOB01234");
+		((StorCommandHandler) ch).setFinalReplyText(String.format("It is known to JES as %s", JOB_NAME));
 		server.setCommandHandler("STOR", ch);
 		
+		// Force FTPClient to use a MVSFTPEntryParser to parse the result of LIST command 
 		ch = new SystCommandHandler();
 		((SystCommandHandler) ch).setSystemName("MVS is the operating system of this server. FTP Server is running on z/OS.");
 		server.setCommandHandler("SYST", ch);
 		
+		// Mock result of LIST 
 		ch = new ListCommandHandler();
-		((ListCommandHandler) ch).setDirectoryListing("JOBNAME  JOBID    OWNER    STATUS CLASS" + System.lineSeparator() + "FOOB  JOB01234 FOO   OUTPUT A        RC=0008 4 spool files");
+		((ListCommandHandler) ch).setDirectoryListing(String.format("%s%sFOOB  %s FOO   OUTPUT A        RC=0008 4 spool files", JES_HEADER, System.lineSeparator(), JOB_NAME));
 		server.setCommandHandler("LIST", ch);
 		
+		// Mock XINFO download
+		// Use the same result for all job submissions even for ctest.c. It dosen't matter
 		ch = new RetrCommandHandler();
 		((RetrCommandHandler) ch).setFileContents(IOUtils.toByteArray(new FileReader("testresources/xinfo/plitst.xml"), StandardCharsets.UTF_8));
 		server.setCommandHandler("RETR", ch);

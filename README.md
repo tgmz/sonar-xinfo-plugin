@@ -48,10 +48,11 @@ This plugin combines IBMs mainframe compilers with SonarQube. The principle is f
 * Store sources and XINFO-output somewhere on your file system. (Windows or *NIX. z/OS is not supported)
 * Use the properties sonar.sources to tell the sonar-scanner where to look for the sources and sonar.xinfo.root.xinfo to tell the plugin where to look for the XINFO-files. Make sure that pgm.pli|asm|cbl|c|cpp corresponds with pgm.xml|event
  
-* Analyze your sources with SonarQube using Sonar-scanner:
+* Analyze your sources with SonarQube using Sonar-scanner or Maven:
 
 		cd examples
 		sonar-scanner-cli-4.7.0.2747-<target platform>/sonar-scanner
+		mvn sonar:sonar
         
 ## Dynamic analysis
 * Tailor the example JCL procedures in "examples/jcl" for your system and store them in your system's PROCLIB

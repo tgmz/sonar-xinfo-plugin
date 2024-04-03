@@ -1,0 +1,27 @@
+<!--
+/*******************************************************************************
+  * Copyright (c) 03.04.2024 Thomas Zierer.
+  * All rights reserved. This program and the accompanying materials
+  * are made available under the terms of the Eclipse Public License v2.0
+  * which accompanies this distribution, and is available at
+  * http://www.eclipse.org/legal/epl-v20.html
+  *
+  * Contributors:
+  *    Thomas Zierer - initial API and implementation and/or initial documentation
+  *******************************************************************************/
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>de.tgmz</groupId>
+	<artifactId>de.tgmz.xinfo.foo</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>pom</packaging>
+	<properties>
+		<project.build.sourceEncoding>Cp1252</project.build.sourceEncoding>
+		<sonar.xinfo.root.xinfo>xinfo</sonar.xinfo.root.xinfo>
+		<sonar.sources>src</sonar.sources>
+		<sonar.sourceEncoding>${project.build.sourceEncoding}</sonar.sourceEncoding>
+	</properties>
+</project>

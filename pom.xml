@@ -130,7 +130,7 @@
 		<profile>
 			<id>dc</id>
 			<properties>
-				<dependency-check.version>9.0.9</dependency-check.version>
+				<dependency-check.version>9.1.0</dependency-check.version>
 				<dependency-check.suppressionFile></dependency-check.suppressionFile>
 				<sonar.dependencyCheck.htmlReportPath>${project.build.directory}/dependency-check-report.html</sonar.dependencyCheck.htmlReportPath>
 			</properties>
