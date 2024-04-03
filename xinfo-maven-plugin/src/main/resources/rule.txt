@@ -19,6 +19,7 @@ import de.tgmz.sonar.plugins.xinfo.rules.XinfoRule;
 	, priority = Priority.{4}
 	, tags = '{'"xinfo"'}'
 	, name = "{1}"
+	, status = "READY"
 	, description = "{2}")
 public class {0} extends XinfoRule '{'
 '}'
