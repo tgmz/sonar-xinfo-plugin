@@ -112,9 +112,9 @@ public class XinfoOnTheFlyProvider extends AbstractXinfoProvider {
 	}
 
 	private void cleanup(String sysxmlsd, JesJob submitJob) throws IOException {
-		client.site(TYPE_JES);
-		client.deleteFile("//" + sysxmlsd);
 		client.site(TYPE_SEQ);
+		client.deleteFile("//" + sysxmlsd);
+		client.site(TYPE_JES);
 		client.deleteFile(submitJob.getHandle());
 	}
 	
