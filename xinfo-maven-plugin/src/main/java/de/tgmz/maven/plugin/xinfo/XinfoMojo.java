@@ -54,14 +54,14 @@ public class XinfoMojo extends AbstractMojo {
 			
 	@Parameter(defaultValue = "${project.build.directory}", property = "outputDir", required = true)
 	private File outputDirectory;
-	@Parameter(defaultValue = "de.tgmz.xinfo.rules", property = "targetPackage", required = true)
-	private String targetPackage;
 	@Parameter(property = "document", required = true)
 	private File document;
 	@Parameter(property = "lang", required = true)
 	private String lang;
 	@Parameter(property = "sysuexit", required = false)
 	private File sysuexit;
+
+	private String targetPackage;
 	private int num;
 
 	@Override
@@ -77,15 +77,19 @@ public class XinfoMojo extends AbstractMojo {
 			
 			switch (lang) {
 			case "pli":
+				targetPackage = "de.tgmz.sonar.plugins.xinfo.rules.generated.pli";
 				generatePli();
 				break;
 			case "cobol":
+				targetPackage = "de.tgmz.sonar.plugins.xinfo.rules.generated.cbl";
 				generateCobol();
 				break;
 			case "asm":
+				targetPackage = "de.tgmz.sonar.plugins.xinfo.rules.generated.asm";
 				generateAssembler();
 				break;
 			case "ccpp":
+				targetPackage = "de.tgmz.sonar.plugins.xinfo.rules.generated.ccpp";
 				generateCcpp();
 				break;
 			default:

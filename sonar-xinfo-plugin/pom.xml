@@ -135,7 +135,6 @@
 						<!-- Specify the MyMojo parameter -->
 							<outputDirectory>${project.build.directory}/generated-sources/xinfo</outputDirectory>
 							<!-- Do not change this, RuleFactory relys on it -->
-							<targetPackage>de.tgmz.sonar.plugins.xinfo.rules.generated.pli</targetPackage>
 							<document>${project.basedir}/../ibm/pli/Messages and Codes.pdf</document>
 							<sysuexit>${project.basedir}/../ibm/pli/SYSUEXIT</sysuexit>
 							<lang>pli</lang>
@@ -149,7 +148,6 @@
 						<configuration>
 						<!-- Specify the MyMojo parameter -->
 							<outputDirectory>${project.build.directory}/generated-sources/xinfo</outputDirectory>
-							<targetPackage>de.tgmz.sonar.plugins.xinfo.rules.generated.asm</targetPackage>
 							<document>${project.basedir}/../ibm/Assembler/asmp1021.pdf</document>
 							<lang>asm</lang>
 						</configuration>
@@ -162,7 +160,6 @@
 						<configuration>
 						<!-- Specify the MyMojo parameter -->
 							<outputDirectory>${project.build.directory}/generated-sources/xinfo</outputDirectory>
-							<targetPackage>de.tgmz.sonar.plugins.xinfo.rules.generated.cbl</targetPackage>
 							<document>${project.basedir}/../ibm/cobol/ErrMsg.txt</document>
 							<lang>cobol</lang>
 						</configuration>
@@ -175,7 +172,6 @@
 						<configuration>
 						<!-- Specify the MyMojo parameter -->
 							<outputDirectory>${project.build.directory}/generated-sources/xinfo</outputDirectory>
-							<targetPackage>de.tgmz.sonar.plugins.xinfo.rules.generated.ccpp</targetPackage>
 							<document>${project.basedir}/../ibm/ccpp/cbcdg01_v2r4.pdf</document>
 							<lang>ccpp</lang>
 						</configuration>

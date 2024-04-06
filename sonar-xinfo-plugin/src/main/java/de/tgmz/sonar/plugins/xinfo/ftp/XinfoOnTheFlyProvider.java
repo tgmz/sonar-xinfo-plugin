@@ -212,7 +212,7 @@ public class XinfoOnTheFlyProvider extends AbstractXinfoProvider {
 	}
 	
 	private String computeXinfoDataset(String user) throws IOException {
-		client.site(TYPE_JES);
+		client.site(TYPE_SEQ);
 		
 		for (int i = 0; i < 5; ++i) {
 			String sysxmlsd = user + ".XINFO.T" + RANDOM.nextInt(10_000_000) + ".XML";

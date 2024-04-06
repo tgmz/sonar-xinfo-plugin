@@ -21,21 +21,19 @@ import io.github.classgraph.ClassInfoList;
 import io.github.classgraph.ScanResult;
 
 /**
- * Factory for creating the xinfo sonar rules.
+ * Factory for loading the xinfo sonar rules.
  */
 public final class RuleFactory {
 	private static final Logger LOGGER = LoggerFactory.getLogger(RuleFactory.class);
+	private static final String PKG = "de.tgmz.sonar.plugins.xinfo.rules.generated";
+	
 	private static RuleFactory instance;
 	private List<Class<?>> rules;
 
 	private RuleFactory() {
-		String pkg = "de.tgmz.sonar.plugins.xinfo.rules.generated";
-		
-		LOGGER.info("Get rules from package {}", pkg);
-		
 		long start = System.currentTimeMillis();
 
-		try (ScanResult scanResult = new ClassGraph().enableAllInfo().acceptPackages(pkg).scan()) {
+		try (ScanResult scanResult = new ClassGraph().enableClassInfo().acceptPackages(PKG).scan()) {
 			ClassInfoList xinfoRuleClasses = scanResult.getSubclasses(XinfoRule.class);
 			rules = xinfoRuleClasses.loadClasses();
 		}
