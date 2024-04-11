@@ -1,0 +1,2 @@
+      5 TEXT_IN       CHAR(128),
+      5 TEXT_OUT      CHAR(128)

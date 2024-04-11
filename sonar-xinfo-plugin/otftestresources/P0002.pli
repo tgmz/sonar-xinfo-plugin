@@ -1,0 +1,19 @@
+ P0002: PROC (P_P0002);
+    DCL P_P0002 POINTER;
+
+    DCL P_P0002_E POINTER;
+    DCL LOWER_C   CHAR(29) VALUE('abcdefghijklmnopqrstuvwxyzäöü');
+    DCL UPPER_C   CHAR(29) VALUE('ABCDEFGHIJKLMNOPQRSTUVWXYZÄÖÜ');
+
+    DCL TRANSLATE BUILTIN;
+
+    DCL 1 COMM_AREA BASED(P_P0002_E),
+       %INCLUDE Q0001;;
+
+    P_P0002_E = P_P0002;
+
+    COMM_AREA.TEXT_OUT = TRANSLATE(COMM_AREA.TEXT_IN
+                       , LOWER_C
+                       , UPPER_C);
+ END P0002;
+

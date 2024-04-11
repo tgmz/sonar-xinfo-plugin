@@ -1,4 +1,0 @@
- Hallo: proc options(main);
-      %PAGE;                                                               06-07-17
-      put list ('Hallo Welt!');
- end Hall;

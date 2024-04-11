@@ -197,7 +197,8 @@ public class XinfoOnTheFlyProvider extends AbstractXinfoProvider {
 						, getOtfValue(XinfoFtpConfig.XINFO_OTF_JOBCARD)
 						, FilenameUtils.removeExtension(inputFile.filename()).toUpperCase(Locale.getDefault())
 						, inputFile.contents()
-						, sysxmlsd);
+						, sysxmlsd
+						, getOtfValue(XinfoFtpConfig.XINFO_OTF_SYSLIB));
 			}
 	}
 

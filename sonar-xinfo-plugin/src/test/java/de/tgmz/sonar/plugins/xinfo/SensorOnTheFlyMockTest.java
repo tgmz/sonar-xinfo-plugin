@@ -64,6 +64,7 @@ public class SensorOnTheFlyMockTest {
 		ms.setProperty(XinfoFtpConfig.XINFO_OTF_PORT, server.getServerControlPort());
 		ms.setProperty(XinfoFtpConfig.XINFO_OTF_USER, "foo");
 		ms.setProperty(XinfoFtpConfig.XINFO_OTF_TIMEOUT, "10");
+		ms.setProperty(XinfoFtpConfig.XINFO_OTF_SYSLIB, "FOO.XNFO.SYSLIB");
 		
 		File baseDir = new File(LOC);
 		

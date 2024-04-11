@@ -20,6 +20,7 @@ import de.tgmz.sonar.plugins.xinfo.measures.ComputeStaticComplexityAverage;
 import de.tgmz.sonar.plugins.xinfo.measures.XinfoMetrics;
 import de.tgmz.sonar.plugins.xinfo.rules.XinfoRuleDefinition;
 import de.tgmz.sonar.plugins.xinfo.sensors.ColoringSensor;
+import de.tgmz.sonar.plugins.xinfo.sensors.OtfSetupSensor;
 import de.tgmz.sonar.plugins.xinfo.sensors.XinfoCpdSensor;
 import de.tgmz.sonar.plugins.xinfo.sensors.XinfoIssuesLoader;
 
@@ -43,9 +44,11 @@ public class XinfoPlugin implements Plugin {
 
 		// tutorial on rules
 		context.addExtensions(XinfoRuleDefinition.class, XinfoIssuesLoader.class);
-		context.addExtension(ColoringSensor.class);
 		
+		context.addExtension(ColoringSensor.class);
 		context.addExtension(XinfoCpdSensor.class);
+
+		context.addExtension(OtfSetupSensor.class);
 
 		// tutorial on web extensions
 	}
