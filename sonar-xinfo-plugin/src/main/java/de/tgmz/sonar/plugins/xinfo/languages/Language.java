@@ -71,7 +71,12 @@ public enum Language {
 		
 		return sb.substring(0, sb.length() - 1);
 	}
+	
 	public boolean canCompile() {
 		return this == ASSEMBLER || this == COBOL || this == PLI || this == C || this == CPP;
+	}
+	
+	public boolean isMacro() {
+		return this == COPYBOOK || this == INCLUDE || this == MACRO;
 	}
 }

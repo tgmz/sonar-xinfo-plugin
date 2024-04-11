@@ -27,6 +27,7 @@ public final class XinfoFtpConfig {
 	public static final String XINFO_OTF_USER = "sonar.xinfo.otf.user";
 	public static final String XINFO_OTF_PASS = "sonar.xinfo.otf.pass";
 	public static final String XINFO_OTF_TIMEOUT = "sonar.xinfo.otf.timeout";
+	public static final String XINFO_OTF_SYSLIB = "sonar.xinfo.otf.syslib";
 	public static final String CATEGORY = "Xinfo";
 
 	private XinfoFtpConfig() {
@@ -38,15 +39,18 @@ public final class XinfoFtpConfig {
 				.name("XinfoOtf")
 				.description("XINFO on-the-fly")
 				.defaultValue("false")
-				.category(CATEGORY).build()
+				.category(CATEGORY)
+				.build()
 			, PropertyDefinition.builder(XINFO_OTF_JOBCARD)
 				.name("OtfJobCard")
 				.description("XINFO on-the-fly jobcard")
-				.category(CATEGORY).build()
+				.category(CATEGORY)
+				.build()
 			, PropertyDefinition.builder(XINFO_OTF_PASS)
 				.name("OtfPass")
 				.description("XINFO on-the-fly password")
-				.category(CATEGORY).build()
+				.category(CATEGORY)
+				.build()
 			, PropertyDefinition.builder(XINFO_OTF_SERVER)
 				.name("OtfServer")
 				.description("XINFO on-the-fly server")
@@ -55,16 +59,24 @@ public final class XinfoFtpConfig {
 				.name("OtfServerPort")
 				.description("XINFO on-the-fly server port")
 				.defaultValue("21")
-				.category(CATEGORY).build()
+				.category(CATEGORY)
+				.build()
 			, PropertyDefinition.builder(XINFO_OTF_USER)
 				.name("OtfUser")
 				.description("XINFO on-the-fly user")
-				.category(CATEGORY).build()
+				.category(CATEGORY)
+				.build()
 			, PropertyDefinition.builder(XINFO_OTF_TIMEOUT)
 				.name("OtfTimeout")
 				.description("XINFO timeout to wait for the job to finish in seconds")
 				.defaultValue("10")
-				.category(CATEGORY).build()
+				.category(CATEGORY)
+				.build()
+			, PropertyDefinition.builder(XINFO_OTF_SYSLIB)
+				.name("OtfSyslib")
+				.description("XINFO SYSLIB")
+				.category(CATEGORY)
+				.build()
 		);
 	}
 }
