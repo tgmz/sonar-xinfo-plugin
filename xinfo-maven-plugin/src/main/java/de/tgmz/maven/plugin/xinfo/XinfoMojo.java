@@ -127,33 +127,37 @@ public class XinfoMojo extends AbstractMojo {
 				, IBM_COPYRIGHT
 				, "Enterprise PL/I for z/OS: Enterprise PL/I for z/OS Messages and Codes");
 		
-		createRulesFromString(s, "^IBM\\d{4}I\\s[IWESU]\\s", 3);
-		createRulesFromString(s, "^IBM\\d{4}\\s", 1);
+		createRulesFromString(s, "^IBM\\d{4}I\\s[IWESU]\\s", 3, "pli");
+		createRulesFromString(s, "^IBM\\d{4}\\s", 1, "pli");
 		
 		//Undocumented
 		writeRule("IBM1063I"
 				, targetPackage
 				, 'I'
 				, "Code generated for DO group would be more efficient if control variable were a 4-byte integer."
-				, "The control variable in the DO loop is a 1-byte integer, 2-byte integer, fixed decimal or fixed picture, and consequently, the code generated for the loop will not be optimal.");
+				, "The control variable in the DO loop is a 1-byte integer, 2-byte integer, fixed decimal or fixed picture, and consequently, the code generated for the loop will not be optimal."
+				, "pli");
 		
 		writeRule("IBM2811I"
 				, targetPackage
 				, 'I'
 				, "Use of PICTURE as DO control variable is not recommended."
-				, "If the control variable in a DO loop is a PICTURE variable, then more code will be generated for the loop than if the control variable were a FIXED BIN variable. Moreover, such loops may easily be miscoded so that they will loop infinitely.");
+				, "If the control variable in a DO loop is a PICTURE variable, then more code will be generated for the loop than if the control variable were a FIXED BIN variable. Moreover, such loops may easily be miscoded so that they will loop infinitely."
+				, "pli");
 		
 		writeRule("IBM2804I"
 				, targetPackage
 				, 'I'
 				, "Boolean is compared with something other than '1'b or '0'b."
-				, "This message will flag statements such as the following, where \"true\" is a BIT(1) STATIC INIT('1'b). It would be better if \"true\" were a named constant, i.e. if it were declared with the VALUE attribute rather than STATIC INIT. <b>if ( a < b ) = true then");
+				, "This message will flag statements such as the following, where \"true\" is a BIT(1) STATIC INIT('1'b). It would be better if \"true\" were a named constant, i.e. if it were declared with the VALUE attribute rather than STATIC INIT. <b>if ( a < b ) = true then"
+				, "pli");
 		
 		writeRule("IBM2843I"
 				, targetPackage
 				, 'I'
 				, "The defined structure struct name is alignment byte aligned, but occupies only storage size bytes of storage."
-				, "Defined structures must occupy a number of bytes that is a multiple of the structure’s alignment. So, for example, if a structure contains an aligned fixed bin(31) (or other aligned fullword) field as its most stringently aligned item, then the structure must occupy a multiple of 4 bytes. The following structure does not meet this requirement: <b>define structure<b>1 point,<b>2 x fixed bin(31),<b>2 y char(1);");
+				, "Defined structures must occupy a number of bytes that is a multiple of the structure’s alignment. So, for example, if a structure contains an aligned fixed bin(31) (or other aligned fullword) field as its most stringently aligned item, then the structure must occupy a multiple of 4 bytes. The following structure does not meet this requirement: <b>define structure<b>1 point,<b>2 x fixed bin(31),<b>2 y char(1);"
+				, "pli");
 	}
 	private void generateAssembler() throws IOException {
 		String s = stripPdf(document
@@ -163,7 +167,7 @@ public class XinfoMojo extends AbstractMojo {
 				, "High Level Assembler for z/OS & z/VM & z/VSE: Programmer's Guide"
 				, "•");
 		
-		createRulesFromString(s, "(^ASMA\\d{3}[INWESCU]\\s)|(^ASMACMS\\d{3}E\\s)", 2);
+		createRulesFromString(s, "(^ASMA\\d{3}[INWESCU]\\s)|(^ASMACMS\\d{3}E\\s)", 2, "asm");
 	}
 	private void generateCcpp() throws IOException {
 		String s = stripPdf(document
@@ -172,8 +176,8 @@ public class XinfoMojo extends AbstractMojo {
 				, IBM_COPYRIGHT
 				, "z/OS: z/OS XL C/C++ Messages");
 		
-		createRulesFromString(s, "(^CCN\\d{4}\\s)|(^CDA\\d{4}\\s)", 1);
-		createRulesFromString(s, "EDC\\d{4}\\s\\d{2}\\s", 4);
+		createRulesFromString(s, "(^CCN\\d{4}\\s)|(^CDA\\d{4}\\s)", 1, "ccpp");
+		createRulesFromString(s, "EDC\\d{4}\\s\\d{2}\\s", 4, "ccpp");
 	}
 	
 	private void generateCobol() throws IOException {
@@ -208,7 +212,7 @@ public class XinfoMojo extends AbstractMojo {
 					desc = name;
 				}
 				
-				writeRule(key, targetPackage, sev, name, desc);
+				writeRule(key, targetPackage, sev, name, desc, "cbl");
 			}
 		}
 	}
@@ -253,7 +257,7 @@ public class XinfoMojo extends AbstractMojo {
 		return result.toString();
 	}
 	
-	private void createRulesFromString(String s, String split, int goBack) throws IOException {
+	private void createRulesFromString(String s, String split, int goBack, String lang) throws IOException {
 		Pattern p = Pattern.compile(split, Pattern.MULTILINE);
 		
 		for (String msg : getSections(s, split)) {
@@ -287,7 +291,7 @@ public class XinfoMojo extends AbstractMojo {
 			name = name.replace(System.lineSeparator(), " ").trim();
 			description = description.replace(System.lineSeparator(), " ").trim();
 			
-			writeRule(key, targetPackage, sev, name, description);
+			writeRule(key, targetPackage, sev, name, description, lang);
 		}
 	}
 	private List<String> getSections(String documentation, String msgPattern) {
@@ -311,7 +315,7 @@ public class XinfoMojo extends AbstractMojo {
 
 		return result;
 	}
-	private void writeRule(String key, String target, char sev, String name, String description) throws IOException {
+	private void writeRule(String key, String target, char sev, String name, String description, String lang) throws IOException {
 		if (rules.contains(key)) {
 			getLog().warn("Rule " + key + " already added, skipping");
 
@@ -337,7 +341,7 @@ public class XinfoMojo extends AbstractMojo {
 		String escapedName = StringEscapeUtils.escapeJava(name);
 		String escapedDesc = StringEscapeUtils.escapeJava(description);
 		
-		String rule = MessageFormat.format(ruleTemplate, key, escapedName.substring(0, Math.min(escapedName.length(), 200)), escapedDesc, target, priority);
+		String rule = MessageFormat.format(ruleTemplate, key, escapedName.substring(0, Math.min(escapedName.length(), 200)), escapedDesc, target, priority, lang);
 		
 		Path dir = Paths.get(outputDirectory.getCanonicalPath(), targetPackage.replace('.', File.separatorChar));
 		
