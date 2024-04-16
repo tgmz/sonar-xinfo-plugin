@@ -17,7 +17,7 @@ import de.tgmz.sonar.plugins.xinfo.rules.XinfoRule;
 
 @Rule(key = "{0}"
 	, priority = Priority.{4}
-	, tags = '{'"xinfo"'}'
+	, tags = '{'"xinfo", "{5}"'}'
 	, name = "{1}"
 	, status = "READY"
 	, description = "{2}")
