@@ -28,6 +28,7 @@ public enum Language {
 	INCLUDE("include"),
 	COPYBOOK("cpy"),
 	MACRO("mac"),
+	HEADER("h,hpp"),
 	REXX("rexx"),
 	;
 	
@@ -77,6 +78,6 @@ public enum Language {
 	}
 	
 	public boolean isMacro() {
-		return this == COPYBOOK || this == INCLUDE || this == MACRO;
+		return this == COPYBOOK || this == INCLUDE || this == MACRO || this == HEADER;
 	}
 }
