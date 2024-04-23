@@ -7,7 +7,7 @@
 # Contributors:
 #    Thomas Zierer - initial API and implementation and/or initial documentation
 
-name: Java CI
+name: Deploy
 
 on:
   workflow_dispatch:
