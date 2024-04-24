@@ -14,10 +14,6 @@ import java.io.IOException;
 import java.util.Locale;
 
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.net.ftp.FTP;
-import org.apache.commons.net.ftp.FTPClient;
-import org.apache.commons.net.ftp.FTPClientConfig;
-import org.apache.commons.net.ftp.FTPReply;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.Phase;
@@ -30,103 +26,56 @@ import org.sonar.api.batch.sensor.SensorDescriptor;
 
 import de.tgmz.sonar.plugins.xinfo.config.XinfoFtpConfig;
 import de.tgmz.sonar.plugins.xinfo.config.XinfoProjectConfig;
-import de.tgmz.sonar.plugins.xinfo.ftp.JesClient;
 import de.tgmz.sonar.plugins.xinfo.languages.Language;
 import de.tgmz.sonar.plugins.xinfo.languages.XinfoLanguage;
+import zowe.client.sdk.core.ZosConnection;
+import zowe.client.sdk.rest.Response;
+import zowe.client.sdk.rest.exception.ZosmfRequestException;
+import zowe.client.sdk.zosfiles.dsn.methods.DsnWrite;
 
 @Phase(name = Name.PRE)
 public class OtfSetupSensor implements Sensor {
 	private static final Logger LOGGER = LoggerFactory.getLogger(OtfSetupSensor.class);
 
-	private FTPClient client;
-	
-	public OtfSetupSensor() {
-		client = new JesClient();	// We do not need the JES specific methods but this way we can reuse 
-									// the JesProtocolCommandListener which comes handy with logging
-	    client.configure(new FTPClientConfig(FTPClientConfig.SYST_MVS));
-	}
-	
 	@Override
 	public void describe(final SensorDescriptor descriptor) {
 		descriptor.name("XinfoOtfSetup")
 					.onlyOnLanguages(XinfoLanguage.KEY)
-					.onlyWhenConfiguration(c -> c.getBoolean(XinfoFtpConfig.XINFO_OTF).orElse(false));
+					.onlyWhenConfiguration(c -> c.get(XinfoFtpConfig.XINFO_OTF).isPresent());
 	}
 	
 	@Override
 	public void execute(final SensorContext context) {
+		ZosConnection client = new ZosConnection(context.config().get(XinfoFtpConfig.XINFO_OTF_SERVER).orElseThrow()
+				, context.config().get(XinfoFtpConfig.XINFO_OTF_PORT).orElseThrow()
+				, context.config().get(XinfoFtpConfig.XINFO_OTF_USER).orElseThrow()
+				, context.config().get(XinfoFtpConfig.XINFO_OTF_PASS).orElseThrow());
+		
 	    int threshold = context.config().getInt(XinfoProjectConfig.XINFO_LOG_THRESHOLD).orElse(100);
 	    
 	    try {
-	    	client.connect(context.config().get(XinfoFtpConfig.XINFO_OTF_SERVER).orElseThrow()
-	    				, context.config().getInt(XinfoFtpConfig.XINFO_OTF_PORT).orElse(21));
-	    	
-	    	if (!client.login(context.config().get(XinfoFtpConfig.XINFO_OTF_USER).orElseThrow()
-	    			, context.config().get(XinfoFtpConfig.XINFO_OTF_PASS).orElseThrow())) {
-	    		LOGGER.error("Login unsuccessful");
-	    		
-	    		return;
-	    	}
-	    	
-			client.setFileType(FTP.ASCII_FILE_TYPE);
-			client.enterLocalPassiveMode();
-			
 			String syslib = context.config().get(XinfoFtpConfig.XINFO_OTF_SYSLIB).orElseThrow();
 			
-			if (!client.changeWorkingDirectory("//" + syslib)) {
-	    		LOGGER.error("Cannot change working directory to SYSLIB {}", syslib);
-	    		
-	    		return;
-			}
-			
-			if (!client.getReplyString().contains("is a partitioned data set")) {
-				LOGGER.info("SYSLIB {} does not exist or is not a partitioned dataset, allocating new", syslib);
-				
-				allocateSyslib(syslib);
-			}
-
 			FilePredicates p = context.fileSystem().predicates();
-		
+
+            DsnWrite dsnWrite = new DsnWrite(client);
+            Response response;
+			
 			int ctr = 0;
 		
 			for (InputFile inputFile : context.fileSystem().inputFiles(p.hasLanguages(XinfoLanguage.KEY))) {
 				if (Language.getByFilename(inputFile.filename()).isMacro()) {
-					client.storeFile(FilenameUtils.removeExtension(inputFile.filename()).toUpperCase(Locale.getDefault()), inputFile.inputStream());
+		            response = dsnWrite.write(syslib, FilenameUtils.removeExtension(inputFile.filename()).toUpperCase(Locale.getDefault()), inputFile.contents());
 				
+		            LOGGER.debug("Response for uploading {} is {}", inputFile, response);
+		            
 					if (++ctr % threshold == 0) {
 						LOGGER.info("{} files processed, current is {}", ctr, inputFile);
 					}
 				}
 			}
-			
-			client.logout();
-	    } catch (IOException e) {
+	    } catch (IOException | ZosmfRequestException e) {
 			LOGGER.error("{} failed.", this.getClass().getSimpleName(), e);
 	    }
-	}
-	private void allocateSyslib(String s) throws IOException {
-		client.site("FILETYPE=SEQ");
-		client.site("PDSTYPE=PDSE");		// Use PDS type from the SMS data class
-		client.site("LRECL=80");
-		client.site("PRIMARY=100");
-		client.site("SECONDARY=100");
-		client.site("DIRECTORY=10");
-		
-		int i = s.lastIndexOf('.');
-		
-		String parent = i > 0 ? s.substring(0, i) : "";
-		String dir = s.substring(i + 1);
-		
-		client.changeWorkingDirectory("//" + parent);
-		
-		int mkdir = client.mkd(dir);
-		
-		if (FTPReply.isPositiveCompletion(mkdir)) {
-			LOGGER.info("New SYSLIB {} allocated", s);
-		} else {
-			throw new IOException(String.format("SYSLIB %s not allocated, reason is %d %s", s, mkdir, client.getReplyString()));
-		}
-		
-		client.changeWorkingDirectory(dir);
 	}
 }

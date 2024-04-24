@@ -29,7 +29,7 @@ import de.tgmz.sonar.plugins.xinfo.config.XinfoFtpConfig;
 import de.tgmz.sonar.plugins.xinfo.config.XinfoProjectConfig;
 import de.tgmz.sonar.plugins.xinfo.sensors.OtfSetupSensor;
 
-public class OtfSetupMockTest {
+public class FtpSetupMockTest {
 	private static final String LOG_LEVEL_KEY = "org.slf4j.simpleLogger.defaultLogLevel"; 
 	private static final String LOC = "otftestresources";
 	private static StubFtpServer server;
@@ -46,7 +46,7 @@ public class OtfSetupMockTest {
 		MapSettings ms = new MapSettings();
 		ms.setProperty(XinfoProjectConfig.XINFO_ROOT, LOC + File.separator +"xinfo");
 		ms.setProperty(XinfoProjectConfig.XINFO_LOG_THRESHOLD, "1");
-		ms.setProperty(XinfoFtpConfig.XINFO_OTF, "true");
+		ms.setProperty(XinfoFtpConfig.XINFO_OTF, "ftp");
 		ms.setProperty(XinfoFtpConfig.XINFO_OTF_PASS, "bar");
 		ms.setProperty(XinfoFtpConfig.XINFO_OTF_SERVER, "localhost");
 		ms.setProperty(XinfoFtpConfig.XINFO_OTF_PORT, server.getServerControlPort());

@@ -41,8 +41,8 @@ import de.tgmz.sonar.plugins.xinfo.languages.Language;
 /**
  * Loads issues "on-the-fly", i.e. with no stored XINFO files by invoking the appropriate compiler. 
  */
-public class XinfoOnTheFlyProvider extends AbstractXinfoProvider {
-	private static final Logger LOGGER = LoggerFactory.getLogger(XinfoOnTheFlyProvider.class);
+public class XinfoFtpProvider extends AbstractXinfoProvider {
+	private static final Logger LOGGER = LoggerFactory.getLogger(XinfoFtpProvider.class);
 	private static final Random RANDOM = new SecureRandom();
 	private static final String TYPE_JES = "FILE=Jes";
 	private static final String TYPE_SEQ = "FILE=SEQ";
@@ -50,7 +50,7 @@ public class XinfoOnTheFlyProvider extends AbstractXinfoProvider {
 	// Since getXinfo() is synchronized we only need a single client
 	private static JesClient client = new JesClient();
 
-	public XinfoOnTheFlyProvider(Configuration configuration) {
+	public XinfoFtpProvider(Configuration configuration) {
 		super(configuration);
 	}
 

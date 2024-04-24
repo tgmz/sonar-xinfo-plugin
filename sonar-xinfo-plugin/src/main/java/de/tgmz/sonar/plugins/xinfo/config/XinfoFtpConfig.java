@@ -38,7 +38,6 @@ public final class XinfoFtpConfig {
 		return asList(PropertyDefinition.builder(XINFO_OTF)
 				.name("XinfoOtf")
 				.description("XINFO on-the-fly")
-				.defaultValue("false")
 				.category(CATEGORY)
 				.build()
 			, PropertyDefinition.builder(XINFO_OTF_JOBCARD)

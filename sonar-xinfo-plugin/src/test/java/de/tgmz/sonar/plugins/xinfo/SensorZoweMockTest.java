@@ -1,5 +1,5 @@
 /*******************************************************************************
-  * Copyright (c) 03.03.2024 Thomas Zierer.
+  * Copyright (c) 02.04.2024 Thomas Zierer.
   * All rights reserved. This program and the accompanying materials
   * are made available under the terms of the Eclipse Public License v2.0
   * which accompanies this distribution, and is available at
@@ -13,37 +13,45 @@ package de.tgmz.sonar.plugins.xinfo;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 
+import javax.net.ssl.HttpsURLConnection;
+
+import org.apache.commons.io.IOUtils;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.mockserver.configuration.Configuration;
+import org.mockserver.integration.ClientAndServer;
+import org.mockserver.logging.MockServerLogger;
+import org.mockserver.model.HttpRequest;
+import org.mockserver.model.HttpResponse;
+import org.mockserver.socket.PortFactory;
+import org.mockserver.socket.tls.KeyStoreFactory;
 import org.sonar.api.batch.rule.CheckFactory;
 import org.sonar.api.batch.sensor.Sensor;
 import org.sonar.api.batch.sensor.SensorContext;
-import org.sonar.api.batch.sensor.SensorDescriptor;
-import org.sonar.api.batch.sensor.internal.DefaultSensorDescriptor;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.config.internal.MapSettings;
 
 import de.tgmz.sonar.plugins.xinfo.config.XinfoFtpConfig;
 import de.tgmz.sonar.plugins.xinfo.config.XinfoProjectConfig;
-import de.tgmz.sonar.plugins.xinfo.sensors.OtfSetupSensor;
 import de.tgmz.sonar.plugins.xinfo.sensors.XinfoIssuesLoader;
 
-/**
- * Tests for all sensors.
- */
-public class SensorOnTheFlyTest {
+public class SensorZoweMockTest {
 	private static final String LOG_LEVEL_KEY = "org.slf4j.simpleLogger.defaultLogLevel"; 
 	private static final String LOC = "otftestresources";
+	private static ClientAndServer server;
 	private static SensorContext sensorContext;
-	private static SensorDescriptor sensorDescriptor;
 	private static String logLevel;
 	
 	@BeforeClass
 	public static void setupOnce() throws IOException {
 		logLevel = System.getProperty(LOG_LEVEL_KEY, "INFO");
 		System.setProperty(LOG_LEVEL_KEY, "DEBUG");	// Force noisy logging in JesProtocolCommandListener
+
+		setupServer();
 		
 		MapSettings ms = new MapSettings();
 		ms.setProperty(XinfoProjectConfig.XINFO_ROOT, LOC + File.separator +"xinfo");
@@ -51,13 +59,13 @@ public class SensorOnTheFlyTest {
 		ms.setProperty(XinfoProjectConfig.XINFO_INCLUDE_LEVEL, "I,W,E,S,U");
 		ms.setProperty(XinfoProjectConfig.XINFO_NUM_THREADS, "1");
 		ms.setProperty(XinfoFtpConfig.XINFO_OTF, "zowe");
-		ms.setProperty(XinfoFtpConfig.XINFO_OTF_JOBCARD, System.getProperty(XinfoFtpConfig.XINFO_OTF_JOBCARD));
-		ms.setProperty(XinfoFtpConfig.XINFO_OTF_PASS, System.getProperty(XinfoFtpConfig.XINFO_OTF_PASS));
-		ms.setProperty(XinfoFtpConfig.XINFO_OTF_SERVER, System.getProperty(XinfoFtpConfig.XINFO_OTF_SERVER));
-		ms.setProperty(XinfoFtpConfig.XINFO_OTF_PORT, System.getProperty(XinfoFtpConfig.XINFO_OTF_PORT));
-		ms.setProperty(XinfoFtpConfig.XINFO_OTF_USER, System.getProperty(XinfoFtpConfig.XINFO_OTF_USER));
-		ms.setProperty(XinfoFtpConfig.XINFO_OTF_TIMEOUT, System.getProperty(XinfoFtpConfig.XINFO_OTF_TIMEOUT));
-		ms.setProperty(XinfoFtpConfig.XINFO_OTF_SYSLIB, System.getProperty(XinfoFtpConfig.XINFO_OTF_SYSLIB));
+		ms.setProperty(XinfoFtpConfig.XINFO_OTF_JOBCARD, "");
+		ms.setProperty(XinfoFtpConfig.XINFO_OTF_PASS, "bar");
+		ms.setProperty(XinfoFtpConfig.XINFO_OTF_SERVER, "localhost");
+		ms.setProperty(XinfoFtpConfig.XINFO_OTF_PORT, server.getPort());
+		ms.setProperty(XinfoFtpConfig.XINFO_OTF_USER, "foo");
+		ms.setProperty(XinfoFtpConfig.XINFO_OTF_TIMEOUT, "10");
+		ms.setProperty(XinfoFtpConfig.XINFO_OTF_SYSLIB, "FOO.XNFO.SYSLIB");
 		
 		File baseDir = new File(LOC);
 		
@@ -75,8 +83,19 @@ public class SensorOnTheFlyTest {
 		for (File f : testresources) {
 			((SensorContextTester) sensorContext).fileSystem().add(SonarTestFileUtil.create(LOC, f.getName()));
 		}
+	}
+
+	private static void setupServer() throws IOException {
+		HttpsURLConnection.setDefaultSSLSocketFactory(new KeyStoreFactory(Configuration.configuration(), new MockServerLogger()).sslContext().getSocketFactory());
+		server = ClientAndServer.startClientAndServer(PortFactory.findFreePort());
 		
-		sensorDescriptor = new DefaultSensorDescriptor();
+		try (InputStream is0 = SensorZoweMockTest.class.getClassLoader().getResourceAsStream("submit0.json");
+				InputStream is1 = SensorZoweMockTest.class.getClassLoader().getResourceAsStream("submit1.json")) {
+			server.when(HttpRequest.request().withMethod("PUT")).respond(HttpResponse.response(IOUtils.toString(is0, StandardCharsets.UTF_8)));
+			server.when(HttpRequest.request().withMethod("GET")).respond(HttpResponse.response(IOUtils.toString(is1, StandardCharsets.UTF_8)));
+		}
+		
+		server.when(HttpRequest.request().withMethod("DELETE")).respond(HttpResponse.response().withStatusCode(204));
 	}
 	
 	@AfterClass
@@ -86,14 +105,8 @@ public class SensorOnTheFlyTest {
 	
 	@Test(expected = Test.None.class)
 	public void testIssuesLoader() {
-		Sensor sensor = new OtfSetupSensor();
+		Sensor sensor = new XinfoIssuesLoader(new CheckFactory(sensorContext.activeRules()));
 		
-		sensor.describe(sensorDescriptor);
-		sensor.execute(sensorContext);
-		
-		sensor = new XinfoIssuesLoader(new CheckFactory(sensorContext.activeRules()));
-		
-		sensor.describe(sensorDescriptor);
 		sensor.execute(sensorContext);
 	}
 }
