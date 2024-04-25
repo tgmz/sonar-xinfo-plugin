@@ -17,11 +17,9 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
-import java.util.Locale;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.config.Configuration;
@@ -48,10 +46,10 @@ public abstract class AbstractOtfProvider extends AbstractXinfoProvider {
 		}
 	}
 
-	protected String createJcl(InputFile inputFile, String sysxmlsd) throws IOException, XinfoException {
+	protected String createJcl(Language lang, String mbr, String inputDsn, String sysxmlsd) throws IOException, XinfoException {
 		String template = null;
 
-		switch (Language.getByFilename(inputFile.filename())) {
+		switch (lang) {
 		case COBOL:
 			template = "elaxfcoc.txt";
 			break;
@@ -76,8 +74,8 @@ public abstract class AbstractOtfProvider extends AbstractXinfoProvider {
 			
 				Stream<String> lines = MessageFormat.format(s
 						, getConfiguration().get(XinfoFtpConfig.XINFO_OTF_JOBCARD).orElseThrow()
-						, FilenameUtils.removeExtension(inputFile.filename()).toUpperCase(Locale.getDefault())
-						, inputFile.contents()
+						, mbr
+						, inputDsn
 						, sysxmlsd
 						, getConfiguration().get(XinfoFtpConfig.XINFO_OTF_SYSLIB).orElseThrow()).lines();
 				

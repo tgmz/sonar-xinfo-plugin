@@ -14,8 +14,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.SecureRandom;
+import java.util.Locale;
 import java.util.Random;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,13 +27,17 @@ import org.sonar.api.config.Configuration;
 import de.tgmz.sonar.plugins.xinfo.XinfoException;
 import de.tgmz.sonar.plugins.xinfo.config.XinfoFtpConfig;
 import de.tgmz.sonar.plugins.xinfo.generated.plicomp.PACKAGE;
+import de.tgmz.sonar.plugins.xinfo.languages.Language;
 import de.tgmz.sonar.plugins.xinfo.otf.AbstractOtfProvider;
 import zowe.client.sdk.core.ZosConnection;
 import zowe.client.sdk.rest.Response;
 import zowe.client.sdk.rest.exception.ZosmfRequestException;
+import zowe.client.sdk.zosfiles.dsn.input.CreateParams;
 import zowe.client.sdk.zosfiles.dsn.input.DownloadParams;
+import zowe.client.sdk.zosfiles.dsn.methods.DsnCreate;
 import zowe.client.sdk.zosfiles.dsn.methods.DsnDelete;
 import zowe.client.sdk.zosfiles.dsn.methods.DsnGet;
+import zowe.client.sdk.zosfiles.dsn.methods.DsnWrite;
 import zowe.client.sdk.zosjobs.methods.JobDelete;
 import zowe.client.sdk.zosjobs.methods.JobMonitor;
 import zowe.client.sdk.zosjobs.methods.JobSubmit;
@@ -62,9 +68,33 @@ public class XinfoZoweProvider extends AbstractOtfProvider {
 	@Override
 	public PACKAGE getXinfo(InputFile pgm) throws XinfoException {
 		try {
+			Response response; 
+			
+			String inputDsn = connection.getUser() + ".XINFO.T" + RANDOM.nextInt(10_000_000) + ".INPUT";
+			
+            DsnCreate dsnCreate = new DsnCreate(connection);
+            response = dsnCreate.create(inputDsn, new CreateParams.Builder()
+                    .dsorg("PS")
+                    .alcunit("CYL")
+                    .primary(1)
+                    .secondary(1)
+                    .recfm("FB")
+                    .lrecl(120)
+                    .build());
+            
+            LOGGER.debug("Rersponse from dataset creation: {}", response);
+
+            DsnWrite dsnWrite = new DsnWrite(connection);
+            response = dsnWrite.write(inputDsn, pgm.contents());
+			
+            LOGGER.debug("Rersponse from source upload: {}", response);
+
 			String sysxmlsd = connection.getUser() + ".XINFO.T" + RANDOM.nextInt(10_000_000) + ".XML";
 
-			String jcl = createJcl(pgm, sysxmlsd);
+			String jcl = createJcl(Language.getByFilename(pgm.filename())
+					, FilenameUtils.removeExtension(pgm.filename()).toUpperCase(Locale.getDefault())
+					, inputDsn
+					, sysxmlsd);
 
 	        JobSubmit jobSubmit = new JobSubmit(connection);
 	        
@@ -74,7 +104,7 @@ public class XinfoZoweProvider extends AbstractOtfProvider {
 	        
 	        job = jobMonitor.waitByStatus(job, Type.OUTPUT);
 
-			byte[] xinfo = retrieveXinfo(sysxmlsd);
+	        byte[] xinfo = retrieveXinfo(sysxmlsd);
 		
 			cleanup(sysxmlsd, job);
 

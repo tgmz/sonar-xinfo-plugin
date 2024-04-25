@@ -14,9 +14,8 @@
 //        SET DB2=
 //        SET CICS=
 //STP0000 EXEC PROC=ELAXFCPP
-//SYSIN    DD *,DLM=@@
-{2}
-@@
+//SYSIN    DD DISP=(OLD,DELETE,DELETE),
+//         DSN={2}
 //SYSEVENT DD DISP=(NEW,CATLG,DELETE),                           	
 //         DSN={3},
 //         UNIT=VIO,SPACE=(CYL,(1,1)),
