@@ -152,7 +152,7 @@ public abstract class AbstractXinfoProvider implements IXinfoProvider {
 
 		List<String> readLines = IOUtils.readLines(is, Charset.defaultCharset());
 		
-		readLines.forEach(line -> {
+		for (String line : readLines) {
 			// See https://www.ibm.com/docs/en/SSLTBW_2.3.0/pdf/cbcux01_v2r3.pdf appendix e
 			// page 671 for the detailed format of the SYSEVENT file
 			if (line.startsWith("ERROR")) {
@@ -186,7 +186,7 @@ public abstract class AbstractXinfoProvider implements IXinfoProvider {
 				
 				ccomp.getFILEREFERENCETABLE().getFILE().add(f);
 			}
-		});
+		}
 		
 		ccomp.getFILEREFERENCETABLE().setFILECOUNT(String.valueOf(ccomp.getFILEREFERENCETABLE().getFILE().size()));
 		
