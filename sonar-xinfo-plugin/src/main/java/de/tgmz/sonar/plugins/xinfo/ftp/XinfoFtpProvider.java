@@ -12,11 +12,15 @@ package de.tgmz.sonar.plugins.xinfo.ftp;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.security.SecureRandom;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.Random;
 
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.net.ftp.FTPReply;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +29,9 @@ import org.sonar.api.config.Configuration;
 
 import de.tgmz.sonar.plugins.xinfo.XinfoException;
 import de.tgmz.sonar.plugins.xinfo.config.XinfoFtpConfig;
+import de.tgmz.sonar.plugins.xinfo.config.XinfoProjectConfig;
 import de.tgmz.sonar.plugins.xinfo.generated.plicomp.PACKAGE;
+import de.tgmz.sonar.plugins.xinfo.languages.Language;
 import de.tgmz.sonar.plugins.xinfo.otf.AbstractOtfProvider;
 
 /**
@@ -58,9 +64,15 @@ public class XinfoFtpProvider extends AbstractOtfProvider {
 		}
 
 		try {
-			String sysxmlsd = computeXinfoDataset(user);
-
-			String jcl = createJcl(pgm, sysxmlsd);
+			String sysxmlsd = computeXinfoDataset(user, ".XML");
+			String inputDataset = computeXinfoDataset(user, ".INPUT");
+			
+			createInputDataset(inputDataset, pgm);
+			
+			String jcl = createJcl(Language.getByFilename(pgm.filename())
+					, FilenameUtils.removeExtension(pgm.filename()).toUpperCase(Locale.getDefault())
+					, inputDataset
+					, sysxmlsd);
 
 			client.site(TYPE_JES);
 
@@ -159,11 +171,11 @@ public class XinfoFtpProvider extends AbstractOtfProvider {
 		return getConfiguration().get(param).orElseThrow(() -> new XinfoException("Param " + param + " not provided"));
 	}
 	
-	private String computeXinfoDataset(String user) throws IOException {
+	private String computeXinfoDataset(String user, String suffix) throws IOException {
 		client.site(TYPE_SEQ);
 		
 		for (int i = 0; i < 5; ++i) {
-			String sysxmlsd = user + ".XINFO.T" + RANDOM.nextInt(10_000_000) + ".XML";
+			String sysxmlsd = user + ".XINFO.T" + RANDOM.nextInt(10_000_000) + suffix;
 		
 			String[] names = client.listNames("//" + sysxmlsd);
 		
@@ -173,5 +185,17 @@ public class XinfoFtpProvider extends AbstractOtfProvider {
 		}
 		
 		throw new IOException("Cannot compute SYSXMLSD dataset name");
+	}
+	private void createInputDataset(String s, InputFile pgm) throws IOException {
+		client.site("FILETYPE=SEQ");
+		client.site("DSNTYPE=BASIC");
+		client.site("RECFM=FB");
+		client.site("LRECL=120");
+		client.site("PRIMARY=100");
+		client.site("SECONDARY=100");
+		
+		try (InputStream is = IOUtils.toInputStream(pgm.contents(), getConfiguration().get(XinfoProjectConfig.XINFO_ENCODING).orElse("UTF-8"))) {
+			client.storeFile(s, is);
+		}
 	}
 }

@@ -95,6 +95,7 @@ public class SensorZoweMockTest {
 			server.when(HttpRequest.request().withMethod("GET")).respond(HttpResponse.response(IOUtils.toString(is1, StandardCharsets.UTF_8)));
 		}
 		
+		server.when(HttpRequest.request().withMethod("POST")).respond(HttpResponse.response().withStatusCode(201));
 		server.when(HttpRequest.request().withMethod("DELETE")).respond(HttpResponse.response().withStatusCode(204));
 	}
 	
