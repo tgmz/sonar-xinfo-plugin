@@ -58,6 +58,7 @@ public class SensorFtpMockTest {
 		ms.setProperty(XinfoProjectConfig.XINFO_LOG_THRESHOLD, "1");
 		ms.setProperty(XinfoProjectConfig.XINFO_INCLUDE_LEVEL, "I,W,E,S,U");
 		ms.setProperty(XinfoFtpConfig.XINFO_OTF, "ftp");
+		ms.setProperty(XinfoFtpConfig.XINFO_OTF_STORE_LOCAL, "true");
 		ms.setProperty(XinfoFtpConfig.XINFO_OTF_JOBCARD, "");
 		ms.setProperty(XinfoFtpConfig.XINFO_OTF_PASS, "bar");
 		ms.setProperty(XinfoFtpConfig.XINFO_OTF_SERVER, "localhost");

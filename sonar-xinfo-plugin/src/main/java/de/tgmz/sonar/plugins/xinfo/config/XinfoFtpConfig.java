@@ -21,6 +21,7 @@ import org.sonar.api.config.PropertyDefinition;
  */
 public final class XinfoFtpConfig {
 	public static final String XINFO_OTF = "sonar.xinfo.otf";
+	public static final String XINFO_OTF_STORE_LOCAL = "sonar.xinfo.otf.storelocal";
 	public static final String XINFO_OTF_JOBCARD = "sonar.xinfo.otf.jobcard";
 	public static final String XINFO_OTF_SERVER = "sonar.xinfo.otf.server";
 	public static final String XINFO_OTF_PORT = "sonar.xinfo.otf.port";
@@ -38,6 +39,12 @@ public final class XinfoFtpConfig {
 		return asList(PropertyDefinition.builder(XINFO_OTF)
 				.name("XinfoOtf")
 				.description("XINFO on-the-fly")
+				.category(CATEGORY)
+				.build()
+			, PropertyDefinition.builder(XINFO_OTF_STORE_LOCAL)
+				.name("OtfOverwrite")
+				.description("XINFO on-the-fly store XINFO locally")
+				.defaultValue("false")
 				.category(CATEGORY)
 				.build()
 			, PropertyDefinition.builder(XINFO_OTF_JOBCARD)
