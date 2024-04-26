@@ -79,9 +79,7 @@ public class XinfoZoweProvider extends AbstractOtfProvider {
 
 			String sysxmlsd = connection.getUser() + ".XINFO.T" + RANDOM.nextInt(10_000_000) + ".XML";
 
-			String jcl = createJcl(Language.getByFilename(pgm.filename())
-					, inputDsn
-					, sysxmlsd);
+			String jcl = createJcl(pgm, inputDsn, sysxmlsd);
 
 	        JobSubmit jobSubmit = new JobSubmit(connection);
 	        

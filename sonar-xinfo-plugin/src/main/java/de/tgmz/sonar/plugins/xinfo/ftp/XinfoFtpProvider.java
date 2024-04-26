@@ -29,7 +29,6 @@ import de.tgmz.sonar.plugins.xinfo.XinfoException;
 import de.tgmz.sonar.plugins.xinfo.config.XinfoFtpConfig;
 import de.tgmz.sonar.plugins.xinfo.config.XinfoProjectConfig;
 import de.tgmz.sonar.plugins.xinfo.generated.plicomp.PACKAGE;
-import de.tgmz.sonar.plugins.xinfo.languages.Language;
 import de.tgmz.sonar.plugins.xinfo.otf.AbstractOtfProvider;
 
 /**
@@ -67,9 +66,7 @@ public class XinfoFtpProvider extends AbstractOtfProvider {
 			
 			createInputDataset(inputDataset, pgm);
 			
-			String jcl = createJcl(Language.getByFilename(pgm.filename())
-					, inputDataset
-					, sysxmlsd);
+			String jcl = createJcl(pgm, inputDataset, sysxmlsd);
 
 			client.site(TYPE_JES);
 
