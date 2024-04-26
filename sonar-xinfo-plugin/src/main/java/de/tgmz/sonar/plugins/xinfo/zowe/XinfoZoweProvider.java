@@ -14,10 +14,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.SecureRandom;
-import java.util.Locale;
 import java.util.Random;
 
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,7 +80,6 @@ public class XinfoZoweProvider extends AbstractOtfProvider {
 			String sysxmlsd = connection.getUser() + ".XINFO.T" + RANDOM.nextInt(10_000_000) + ".XML";
 
 			String jcl = createJcl(Language.getByFilename(pgm.filename())
-					, FilenameUtils.removeExtension(pgm.filename()).toUpperCase(Locale.getDefault())
 					, inputDsn
 					, sysxmlsd);
 
