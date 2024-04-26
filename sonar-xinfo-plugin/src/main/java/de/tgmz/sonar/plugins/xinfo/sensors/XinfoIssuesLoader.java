@@ -167,6 +167,12 @@ public class XinfoIssuesLoader implements Sensor {
 				XinfoRule xr = getRule(rk);
 			
 				if (xr != null) {
+					if (issue.line > inputFile.lines()) {
+						LOGGER.info("Linenumber {} in issue {} for {} is outside range. It was reduced to {}", issue.line, rk, inputFile, inputFile.lines());
+							
+						issue.line = inputFile.lines();
+					}
+					
 					xr.execute(context, inputFile, rk, issue.message, issue.line);
 				}
 			}
