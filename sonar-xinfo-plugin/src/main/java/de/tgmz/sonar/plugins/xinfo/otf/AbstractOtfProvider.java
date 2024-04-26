@@ -60,7 +60,7 @@ public abstract class AbstractOtfProvider extends AbstractXinfoProvider {
 		}
 	}
 
-	protected String createJcl(Language lang, String mbr, String inputDsn, String sysxmlsd) throws IOException, XinfoException {
+	protected String createJcl(Language lang, String inputDsn, String sysxmlsd) throws IOException, XinfoException {
 		String template = null;
 
 		switch (lang) {
@@ -88,7 +88,6 @@ public abstract class AbstractOtfProvider extends AbstractXinfoProvider {
 			
 				Stream<String> lines = MessageFormat.format(s
 						, getConfiguration().get(XinfoFtpConfig.XINFO_OTF_JOBCARD).orElseThrow()
-						, mbr
 						, inputDsn
 						, sysxmlsd
 						, getConfiguration().get(XinfoFtpConfig.XINFO_OTF_SYSLIB).orElseThrow()).lines();

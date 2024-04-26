@@ -9,16 +9,16 @@
 //* Contributors:
 //*    Thomas Zierer - initial API and implementation and/or initial documentation
 //*******************************************************************************/
-//        SET MBR={1}
+//        SET MBR=SONAR
 //        SET COMP='',NOCOMPILE,NOOBJ''
 //        SET DB2=
 //        SET CICS=
 //STP0001 EXEC PROC=ELAXFCOC                                     	
 //SYSIN    DD DISP=(OLD,DELETE,DELETE),
-//         DSN={2}
+//         DSN={1}
 //SYSXMLSD DD DISP=(NEW,CATLG,DELETE),                           	
-//         DSN={3},
+//         DSN={2},
 //         UNIT=VIO,SPACE=(CYL,(1,1)),
 //         DCB=(RECFM=VBA,LRECL=16383,BLKSIZE=0)
-//SYSLIB   DD DISP=SHR,DSN={4}
+//SYSLIB   DD DISP=SHR,DSN={3}
 //

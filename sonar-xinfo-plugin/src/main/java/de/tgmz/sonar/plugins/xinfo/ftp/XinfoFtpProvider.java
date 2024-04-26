@@ -15,11 +15,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.SecureRandom;
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 import java.util.Random;
 
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.net.ftp.FTPReply;
 import org.slf4j.Logger;
@@ -70,7 +68,6 @@ public class XinfoFtpProvider extends AbstractOtfProvider {
 			createInputDataset(inputDataset, pgm);
 			
 			String jcl = createJcl(Language.getByFilename(pgm.filename())
-					, FilenameUtils.removeExtension(pgm.filename()).toUpperCase(Locale.getDefault())
 					, inputDataset
 					, sysxmlsd);
 
