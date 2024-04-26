@@ -10,9 +10,9 @@
 //*    Thomas Zierer - initial API and implementation and/or initial documentation
 //*******************************************************************************/
 //        SET MBR=SONAR
-//        SET COMP=
-//        SET DB2=
-//        SET CICS=
+//        SET COMP={4}
+//        SET DB2={5}
+//        SET CICS={6}
 //STP0000 EXEC PROC=ELAXFCPP
 //SYSIN    DD DISP=(OLD,DELETE,DELETE),
 //         DSN={1}

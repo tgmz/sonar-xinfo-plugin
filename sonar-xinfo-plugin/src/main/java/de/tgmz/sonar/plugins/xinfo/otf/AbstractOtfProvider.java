@@ -21,6 +21,7 @@ import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.util.Optional;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -43,7 +44,9 @@ import de.tgmz.sonar.plugins.xinfo.languages.Language;
  */
 public abstract class AbstractOtfProvider extends AbstractXinfoProvider {
 	private static final Logger LOGGER = LoggerFactory.getLogger(AbstractOtfProvider.class);
-	
+	private static final Pattern P_DB2 = Pattern.compile("EXEC\\s+SQL", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
+	private static final Pattern P_CICS = Pattern.compile("EXE\\s+CICS", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
+
 	protected AbstractOtfProvider(Configuration configuration) {
 		super(configuration);
 	}
@@ -60,10 +63,14 @@ public abstract class AbstractOtfProvider extends AbstractXinfoProvider {
 		}
 	}
 
-	protected String createJcl(Language lang, String inputDsn, String sysxmlsd) throws IOException, XinfoException {
+	protected String createJcl(InputFile pgm, String inputDsn, String sysxmlsd) throws IOException, XinfoException {
 		String template = null;
 
-		switch (lang) {
+		String comp = "";
+		String db2 = getDb2(pgm); 
+		String cics = getCics(pgm);
+
+		switch (Language.getByFilename(pgm.filename())) {
 		case COBOL:
 			template = "elaxfcoc.txt";
 			break;
@@ -83,17 +90,20 @@ public abstract class AbstractOtfProvider extends AbstractXinfoProvider {
 		}
 		
 		try (InputStream is = this.getClass().getClassLoader().getResourceAsStream(template);
-				Reader r = new InputStreamReader(is, StandardCharsets.UTF_8)) {
-				String s = IOUtils.toString(r);
+			Reader r = new InputStreamReader(is, StandardCharsets.UTF_8)) {
+			String s = IOUtils.toString(r);
 			
-				Stream<String> lines = MessageFormat.format(s
-						, getConfiguration().get(XinfoFtpConfig.XINFO_OTF_JOBCARD).orElseThrow()
-						, inputDsn
-						, sysxmlsd
-						, getConfiguration().get(XinfoFtpConfig.XINFO_OTF_SYSLIB).orElseThrow()).lines();
+			Stream<String> lines = MessageFormat.format(s
+					, getConfiguration().get(XinfoFtpConfig.XINFO_OTF_JOBCARD).orElseThrow()
+					, inputDsn
+					, sysxmlsd
+					, getConfiguration().get(XinfoFtpConfig.XINFO_OTF_SYSLIB).orElseThrow()
+					, comp
+					, db2
+					, cics).lines();
 				
-				return lines.filter(x -> !x.startsWith("//*")).collect(Collectors.joining(System.lineSeparator()));
-			}
+			return lines.filter(x -> !x.startsWith("//*")).collect(Collectors.joining(System.lineSeparator()));
+		}
 	}
 	private void store(InputFile pgm, byte[] xinfo) {
 		Optional<String> oRoot = getConfiguration().get(XinfoProjectConfig.XINFO_ROOT);
@@ -111,6 +121,20 @@ public abstract class AbstractOtfProvider extends AbstractXinfoProvider {
 			}
 		} else {
 			LOGGER.warn("No location specified for storing XINFO locally");
+		}
+	}
+	private String getDb2(InputFile pgm) throws IOException {
+		if (P_DB2.matcher(pgm.contents()).find()) {
+			return Language.getByFilename(pgm.filename()) == Language.PLI ? "',PP(SQL)'" : "',SQL'";
+		} else {
+			return "";
+		}
+	}
+	private String getCics(InputFile pgm) throws IOException {
+		if (P_CICS.matcher(pgm.contents()).find()) {
+			return Language.getByFilename(pgm.filename()) == Language.PLI ? "',PP(CICS)'" : "',CICS'";
+		} else {
+			return "";
 		}
 	}
 }
