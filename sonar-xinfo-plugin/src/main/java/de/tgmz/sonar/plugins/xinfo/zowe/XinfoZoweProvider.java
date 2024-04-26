@@ -52,7 +52,6 @@ public class XinfoZoweProvider extends AbstractOtfProvider {
 	private static final Random RANDOM = new SecureRandom();
 
 	private ZosConnection connection;
-	private CreateParams createParms;
 
 	public XinfoZoweProvider(Configuration configuration) {
 		super(configuration);
@@ -61,15 +60,6 @@ public class XinfoZoweProvider extends AbstractOtfProvider {
 				, configuration.get(XinfoFtpConfig.XINFO_OTF_PORT).orElseThrow()
 				, configuration.get(XinfoFtpConfig.XINFO_OTF_USER).orElseThrow()
 				, configuration.get(XinfoFtpConfig.XINFO_OTF_PASS).orElseThrow());
-		
-		createParms = new CreateParams.Builder()
-                .dsorg("PS")
-                .alcunit("CYL")
-                .primary(1)
-                .secondary(1)
-                .recfm("FB")
-                .lrecl(120)
-                .build();
 	}
 
 	@Override
@@ -80,14 +70,14 @@ public class XinfoZoweProvider extends AbstractOtfProvider {
 			String inputDsn = connection.getUser() + ".XINFO.T" + RANDOM.nextInt(10_000_000) + ".INPUT";
 			
             DsnCreate dsnCreate = new DsnCreate(connection);
-            response = dsnCreate.create(inputDsn, createParms);
+            response = dsnCreate.create(inputDsn, sequential(Language.getByFilename(pgm.filename())));
             
-            LOGGER.debug("Rersponse from dataset creation: {}", response);
+            LOGGER.debug("Response from dataset creation: {}", response);
 
             DsnWrite dsnWrite = new DsnWrite(connection);
             response = dsnWrite.write(inputDsn, pgm.contents());
 			
-            LOGGER.debug("Rersponse from source upload: {}", response);
+            LOGGER.debug("Response from source upload: {}", response);
 
 			String sysxmlsd = connection.getUser() + ".XINFO.T" + RANDOM.nextInt(10_000_000) + ".XML";
 
@@ -135,5 +125,15 @@ public class XinfoZoweProvider extends AbstractOtfProvider {
         	
         	return os.toByteArray();
         }
+	}
+	private static CreateParams sequential(Language lang) {
+		return new CreateParams.Builder()
+                .dsorg("PS")
+                .alcunit("TRK")
+                .primary(10)
+                .secondary(10)
+                .recfm("FB")
+                .lrecl(lang == Language.C || lang == Language.CPP ? 120 : 80)
+                .build();
 	}
 }
