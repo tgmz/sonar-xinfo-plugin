@@ -11,22 +11,30 @@
 package de.tgmz.sonar.plugins.xinfo.otf;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.config.Configuration;
 
 import de.tgmz.sonar.plugins.xinfo.AbstractXinfoProvider;
 import de.tgmz.sonar.plugins.xinfo.XinfoException;
 import de.tgmz.sonar.plugins.xinfo.config.XinfoFtpConfig;
+import de.tgmz.sonar.plugins.xinfo.config.XinfoProjectConfig;
 import de.tgmz.sonar.plugins.xinfo.generated.plicomp.PACKAGE;
 import de.tgmz.sonar.plugins.xinfo.languages.Language;
 
@@ -34,11 +42,17 @@ import de.tgmz.sonar.plugins.xinfo.languages.Language;
  * Loads issues "on-the-fly", i.e. with no stored XINFO files by invoking the appropriate compiler. 
  */
 public abstract class AbstractOtfProvider extends AbstractXinfoProvider {
+	private static final Logger LOGGER = LoggerFactory.getLogger(AbstractOtfProvider.class);
+	
 	protected AbstractOtfProvider(Configuration configuration) {
 		super(configuration);
 	}
 
 	protected PACKAGE createXinfo(InputFile pgm, byte[] xinfo) throws IOException, XinfoException {
+		if (getConfiguration().getBoolean(XinfoFtpConfig.XINFO_OTF_STORE_LOCAL).orElse(false)) {
+			store(pgm, xinfo);
+		}
+		
 		try (InputStream is = new ByteArrayInputStream(xinfo)) {
 			Language lang = Language.getByFilename(pgm.filename());
 			
@@ -81,5 +95,23 @@ public abstract class AbstractOtfProvider extends AbstractXinfoProvider {
 				
 				return lines.filter(x -> !x.startsWith("//*")).collect(Collectors.joining(System.lineSeparator()));
 			}
+	}
+	private void store(InputFile pgm, byte[] xinfo) {
+		Optional<String> oRoot = getConfiguration().get(XinfoProjectConfig.XINFO_ROOT);
+		
+		if (oRoot.isPresent()) {
+			Language lang = Language.getByFilename(pgm.filename());
+			
+			String xinfoFileName = FilenameUtils.removeExtension(pgm.filename()) 
+					+ (lang == Language.C || lang == Language.CPP ? ".event" : ".xml");
+			
+			try (OutputStream os = new FileOutputStream(oRoot.get() + File.separator + xinfoFileName)) {
+				IOUtils.copy(new ByteArrayInputStream(xinfo), os);
+			} catch (IOException e) {
+				LOGGER.error("Unable to store XINFO locally", e);
+			}
+		} else {
+			LOGGER.warn("No location specified for storing XINFO locally");
+		}
 	}
 }

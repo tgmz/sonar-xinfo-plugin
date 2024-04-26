@@ -51,6 +51,7 @@ public class SensorOnTheFlyTest {
 		ms.setProperty(XinfoProjectConfig.XINFO_INCLUDE_LEVEL, "I,W,E,S,U");
 		ms.setProperty(XinfoProjectConfig.XINFO_NUM_THREADS, "1");
 		ms.setProperty(XinfoFtpConfig.XINFO_OTF, "zowe");
+		ms.setProperty(XinfoFtpConfig.XINFO_OTF_STORE_LOCAL, "true");
 		ms.setProperty(XinfoFtpConfig.XINFO_OTF_JOBCARD, System.getProperty(XinfoFtpConfig.XINFO_OTF_JOBCARD));
 		ms.setProperty(XinfoFtpConfig.XINFO_OTF_PASS, System.getProperty(XinfoFtpConfig.XINFO_OTF_PASS));
 		ms.setProperty(XinfoFtpConfig.XINFO_OTF_SERVER, System.getProperty(XinfoFtpConfig.XINFO_OTF_SERVER));

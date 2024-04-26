@@ -52,6 +52,7 @@ public class XinfoZoweProvider extends AbstractOtfProvider {
 	private static final Random RANDOM = new SecureRandom();
 
 	private ZosConnection connection;
+	private CreateParams createParms;
 
 	public XinfoZoweProvider(Configuration configuration) {
 		super(configuration);
@@ -60,11 +61,17 @@ public class XinfoZoweProvider extends AbstractOtfProvider {
 				, configuration.get(XinfoFtpConfig.XINFO_OTF_PORT).orElseThrow()
 				, configuration.get(XinfoFtpConfig.XINFO_OTF_USER).orElseThrow()
 				, configuration.get(XinfoFtpConfig.XINFO_OTF_PASS).orElseThrow());
+		
+		createParms = new CreateParams.Builder()
+                .dsorg("PS")
+                .alcunit("CYL")
+                .primary(1)
+                .secondary(1)
+                .recfm("FB")
+                .lrecl(120)
+                .build();
 	}
 
-	/**
-	 * The commons-net ftp client is not thread safe so we cannot run multiple tasks simultaneously.
-	 */
 	@Override
 	public PACKAGE getXinfo(InputFile pgm) throws XinfoException {
 		try {
@@ -73,14 +80,7 @@ public class XinfoZoweProvider extends AbstractOtfProvider {
 			String inputDsn = connection.getUser() + ".XINFO.T" + RANDOM.nextInt(10_000_000) + ".INPUT";
 			
             DsnCreate dsnCreate = new DsnCreate(connection);
-            response = dsnCreate.create(inputDsn, new CreateParams.Builder()
-                    .dsorg("PS")
-                    .alcunit("CYL")
-                    .primary(1)
-                    .secondary(1)
-                    .recfm("FB")
-                    .lrecl(120)
-                    .build());
+            response = dsnCreate.create(inputDsn, createParms);
             
             LOGGER.debug("Rersponse from dataset creation: {}", response);
 
