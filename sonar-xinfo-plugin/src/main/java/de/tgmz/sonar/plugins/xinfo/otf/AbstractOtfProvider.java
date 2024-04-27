@@ -22,8 +22,6 @@ import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.util.Optional;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
@@ -93,16 +91,16 @@ public abstract class AbstractOtfProvider extends AbstractXinfoProvider {
 			Reader r = new InputStreamReader(is, StandardCharsets.UTF_8)) {
 			String s = IOUtils.toString(r);
 			
-			Stream<String> lines = MessageFormat.format(s
+			String jcl = MessageFormat.format(s
 					, getConfiguration().get(XinfoFtpConfig.XINFO_OTF_JOBCARD).orElseThrow()
 					, inputDsn
 					, sysxmlsd
 					, getConfiguration().get(XinfoFtpConfig.XINFO_OTF_SYSLIB).orElseThrow()
 					, comp
 					, db2
-					, cics).lines();
+					, cics);
 				
-			return lines.filter(x -> !x.startsWith("//*")).collect(Collectors.joining(System.lineSeparator()));
+			return JclUtil.formatJcl(jcl);
 		}
 	}
 	private void store(InputFile pgm, byte[] xinfo) {

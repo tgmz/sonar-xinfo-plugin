@@ -11,9 +11,15 @@
 package de.tgmz.sonar.plugins.xinfo.sensors;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.nio.charset.StandardCharsets;
+import java.text.MessageFormat;
 import java.util.Locale;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.Phase;
@@ -28,10 +34,16 @@ import de.tgmz.sonar.plugins.xinfo.config.XinfoFtpConfig;
 import de.tgmz.sonar.plugins.xinfo.config.XinfoProjectConfig;
 import de.tgmz.sonar.plugins.xinfo.languages.Language;
 import de.tgmz.sonar.plugins.xinfo.languages.XinfoLanguage;
+import de.tgmz.sonar.plugins.xinfo.otf.JclUtil;
 import zowe.client.sdk.core.ZosConnection;
 import zowe.client.sdk.rest.Response;
 import zowe.client.sdk.rest.exception.ZosmfRequestException;
 import zowe.client.sdk.zosfiles.dsn.methods.DsnWrite;
+import zowe.client.sdk.zosjobs.methods.JobDelete;
+import zowe.client.sdk.zosjobs.methods.JobMonitor;
+import zowe.client.sdk.zosjobs.methods.JobSubmit;
+import zowe.client.sdk.zosjobs.response.Job;
+import zowe.client.sdk.zosjobs.types.JobStatus.Type;
 
 @Phase(name = Name.PRE)
 public class OtfSetupSensor implements Sensor {
@@ -64,18 +76,51 @@ public class OtfSetupSensor implements Sensor {
 			int ctr = 0;
 		
 			for (InputFile inputFile : context.fileSystem().inputFiles(p.hasLanguages(XinfoLanguage.KEY))) {
-				if (Language.getByFilename(inputFile.filename()).isMacro()) {
+				Language lang = Language.getByFilename(inputFile.filename()); 
+						
+				if (lang.isMacro()) {
 		            response = dsnWrite.write(syslib, FilenameUtils.removeExtension(inputFile.filename()).toUpperCase(Locale.getDefault()), inputFile.contents());
 				
 		            LOGGER.debug("Response for uploading {} is {}", inputFile, response);
-		            
-					if (++ctr % threshold == 0) {
-						LOGGER.info("{} files processed, current is {}", ctr, inputFile);
-					}
+				}
+				
+				if (lang.isMask()) {
+					String jcl = createJcl(context.config().get(XinfoFtpConfig.XINFO_OTF_JOBCARD).orElseThrow()
+							, FilenameUtils.removeExtension(inputFile.filename()).toUpperCase(Locale.getDefault())
+							, syslib
+							, inputFile.contents());
+
+			        JobSubmit jobSubmit = new JobSubmit(client);
+			        
+			        Job job = jobSubmit.submitByJcl(jcl, null, null);
+
+			        JobMonitor jobMonitor = new JobMonitor(client);
+			        
+			        job = jobMonitor.waitByStatus(job, Type.OUTPUT);
+			        
+			        if (context.config().getBoolean(XinfoFtpConfig.XINFO_OTF_CLEANUP).orElse(true)) {
+			            response = new JobDelete(client).deleteByJob(job, "2.0");
+						
+			            LOGGER.debug("Response for deleting job {} is {}", job, response);
+			        }
+				}
+				
+				if (++ctr % threshold == 0) {
+					LOGGER.info("{} files processed, current is {}", ctr, inputFile);
 				}
 			}
 	    } catch (IOException | ZosmfRequestException e) {
 			LOGGER.error("{} failed.", this.getClass().getSimpleName(), e);
 	    }
+	}
+	private String createJcl(String jobCard, String mbr, String syslib, String content) throws IOException {
+		try (InputStream is = this.getClass().getClassLoader().getResourceAsStream("elaxfbms.txt");
+				Reader r = new InputStreamReader(is, StandardCharsets.UTF_8)) {
+			String s = IOUtils.toString(r);
+				
+			String jcl = MessageFormat.format(s, jobCard, mbr, syslib, content);
+					
+			return JclUtil.formatJcl(jcl);
+		}		
 	}
 }

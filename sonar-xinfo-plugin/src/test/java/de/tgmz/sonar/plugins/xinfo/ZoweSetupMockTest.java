@@ -14,9 +14,12 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 
 import javax.net.ssl.HttpsURLConnection;
 
+import org.apache.commons.io.IOUtils;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -55,6 +58,7 @@ public class ZoweSetupMockTest {
 		ms.setProperty(XinfoProjectConfig.XINFO_ROOT, LOC + File.separator +"xinfo");
 		ms.setProperty(XinfoProjectConfig.XINFO_LOG_THRESHOLD, "1");
 		ms.setProperty(XinfoFtpConfig.XINFO_OTF, "zowe");
+		ms.setProperty(XinfoFtpConfig.XINFO_OTF_JOBCARD, "//JOBNAME JOB 'account'");
 		ms.setProperty(XinfoFtpConfig.XINFO_OTF_PASS, "bar");
 		ms.setProperty(XinfoFtpConfig.XINFO_OTF_SERVER, "localhost");
 		ms.setProperty(XinfoFtpConfig.XINFO_OTF_PORT, server.getPort());
@@ -82,7 +86,13 @@ public class ZoweSetupMockTest {
 	private static void setupServer() throws IOException, FileNotFoundException {
 		HttpsURLConnection.setDefaultSSLSocketFactory(new KeyStoreFactory(Configuration.configuration(), new MockServerLogger()).sslContext().getSocketFactory());
 		server = ClientAndServer.startClientAndServer(PortFactory.findFreePort());
-		server.when(HttpRequest.request().withMethod("PUT")).respond(HttpResponse.response().withStatusCode(204));
+		
+		try (InputStream is0 = SensorZoweMockTest.class.getClassLoader().getResourceAsStream("submit0.json");
+				InputStream is1 = SensorZoweMockTest.class.getClassLoader().getResourceAsStream("submit1.json")) {
+			server.when(HttpRequest.request().withMethod("PUT")).respond(HttpResponse.response(IOUtils.toString(is0, StandardCharsets.UTF_8)));
+			server.when(HttpRequest.request().withMethod("GET")).respond(HttpResponse.response(IOUtils.toString(is1, StandardCharsets.UTF_8)));
+		}
+		server.when(HttpRequest.request().withMethod("DELETE")).respond(HttpResponse.response().withStatusCode(204));
 	}
 	
 	@AfterClass
