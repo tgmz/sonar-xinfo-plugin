@@ -99,7 +99,9 @@ public class XinfoFtpProvider extends AbstractOtfProvider {
 
 			byte[] xinfo = retrieveXinfo(sysxmlsd);
 		
-			cleanup(sysxmlsd, xinfoJob);
+	        if (getConfiguration().getBoolean(XinfoFtpConfig.XINFO_OTF_CLEANUP).orElse(true)) {
+	        	cleanup(sysxmlsd, xinfoJob);
+	        }
 
 			return createXinfo(pgm, xinfo);
 		} catch (IOException e) {
