@@ -91,7 +91,9 @@ public class XinfoZoweProvider extends AbstractOtfProvider {
 
 	        byte[] xinfo = retrieveXinfo(sysxmlsd);
 		
-			cleanup(sysxmlsd, job);
+	        if (getConfiguration().getBoolean(XinfoFtpConfig.XINFO_OTF_CLEANUP).orElse(true)) {
+	        	cleanup(sysxmlsd, job);
+	        }
 
 			return createXinfo(pgm, xinfo);
 		} catch (ZosmfRequestException | IOException e) {
