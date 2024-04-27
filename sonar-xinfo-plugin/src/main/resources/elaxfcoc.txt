@@ -21,4 +21,5 @@
 //         UNIT=VIO,SPACE=(CYL,(1,1)),
 //         DCB=(RECFM=VBA,LRECL=16383,BLKSIZE=0)
 //SYSLIB   DD DISP=SHR,DSN={3}
+//         DD DISP=SHR,DSN=&DFH..SDFHCOB
 //
