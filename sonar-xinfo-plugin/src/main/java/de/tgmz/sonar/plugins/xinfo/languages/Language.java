@@ -22,7 +22,7 @@ import org.sonar.api.profiles.RulesProfile;
 public enum Language {
 	PLI("pli,pl1"),
 	COBOL("cbl,cob"),
-	ASSEMBLER("asm"),
+	ASSEMBLER("asm,assemble"),
 	C("c"),
 	CPP("cpp"),
 	INCLUDE("include"),
@@ -30,6 +30,7 @@ public enum Language {
 	MACRO("mac"),
 	HEADER("h,hpp"),
 	REXX("rexx"),
+	BMS("bms")
 	;
 	
 	private List<String> defaultFileSuffixes;
@@ -79,5 +80,9 @@ public enum Language {
 	
 	public boolean isMacro() {
 		return this == COPYBOOK || this == INCLUDE || this == MACRO || this == HEADER;
+	}
+	
+	public boolean isMask() {
+		return this == BMS;
 	}
 }
