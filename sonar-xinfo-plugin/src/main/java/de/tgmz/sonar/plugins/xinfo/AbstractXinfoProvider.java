@@ -68,7 +68,7 @@ public abstract class AbstractXinfoProvider implements IXinfoProvider {
 
 	//Parser may not be thread safe.
 	protected synchronized PACKAGE createXinfo(InputStream is) throws XinfoException {
-		PACKAGE p = null;
+		PACKAGE p = new de.tgmz.sonar.plugins.xinfo.generated.plicomp.ObjectFactory().createPACKAGE();
 		
 		// Perhaps we need to read the InputStream more than once so we save it to a ByteArray first
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -81,6 +81,12 @@ public abstract class AbstractXinfoProvider implements IXinfoProvider {
 		}
 		
 		byte[] buf = baos.toByteArray();
+		
+		if (buf.length == 0) {
+			LOGGER.warn("Xinfo is empty");
+			
+			return p;
+		}
 		
 		Document doc;
 		

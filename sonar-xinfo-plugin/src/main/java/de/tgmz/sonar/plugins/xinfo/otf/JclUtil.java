@@ -13,9 +13,7 @@ package de.tgmz.sonar.plugins.xinfo.otf;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import de.tgmz.sonar.plugins.xinfo.AbstractXinfoProvider;
-
-public abstract class JclUtil extends AbstractXinfoProvider {
+public abstract class JclUtil 	{
 	private JclUtil() {
 	}
 
