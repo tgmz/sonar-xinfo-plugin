@@ -36,7 +36,6 @@ import de.tgmz.sonar.plugins.xinfo.languages.Language;
 import de.tgmz.sonar.plugins.xinfo.languages.XinfoLanguage;
 import de.tgmz.sonar.plugins.xinfo.otf.JclUtil;
 import zowe.client.sdk.core.ZosConnection;
-import zowe.client.sdk.rest.Response;
 import zowe.client.sdk.rest.exception.ZosmfRequestException;
 import zowe.client.sdk.zosfiles.dsn.methods.DsnWrite;
 import zowe.client.sdk.zosjobs.methods.JobDelete;
@@ -48,6 +47,7 @@ import zowe.client.sdk.zosjobs.types.JobStatus.Type;
 @Phase(name = Name.PRE)
 public class OtfSetupSensor implements Sensor {
 	private static final Logger LOGGER = LoggerFactory.getLogger(OtfSetupSensor.class);
+	private	int ctr = 0;
 
 	@Override
 	public void describe(final SensorDescriptor descriptor) {
@@ -71,17 +71,15 @@ public class OtfSetupSensor implements Sensor {
 			FilePredicates p = context.fileSystem().predicates();
 
             DsnWrite dsnWrite = new DsnWrite(client);
-            Response response;
+	        JobSubmit jobSubmit = new JobSubmit(client);
 			
-			int ctr = 0;
-		
 			for (InputFile inputFile : context.fileSystem().inputFiles(p.hasLanguages(XinfoLanguage.KEY))) {
 				Language lang = Language.getByFilename(inputFile.filename()); 
 						
 				if (lang.isMacro()) {
-		            response = dsnWrite.write(syslib, FilenameUtils.removeExtension(inputFile.filename()).toUpperCase(Locale.getDefault()), inputFile.contents());
-				
-		            LOGGER.debug("Response for uploading {} is {}", inputFile, response);
+		            dsnWrite.write(syslib, FilenameUtils.removeExtension(inputFile.filename()).toUpperCase(Locale.getDefault()), inputFile.contents());
+					
+		            writeLog(threshold, inputFile);
 				}
 				
 				if (lang.isMask()) {
@@ -90,8 +88,6 @@ public class OtfSetupSensor implements Sensor {
 							, syslib
 							, inputFile.contents());
 
-			        JobSubmit jobSubmit = new JobSubmit(client);
-			        
 			        Job job = jobSubmit.submitByJcl(jcl, null, null);
 
 			        JobMonitor jobMonitor = new JobMonitor(client);
@@ -99,20 +95,23 @@ public class OtfSetupSensor implements Sensor {
 			        job = jobMonitor.waitByStatus(job, Type.OUTPUT);
 			        
 			        if (context.config().getBoolean(XinfoFtpConfig.XINFO_OTF_CLEANUP).orElse(true)) {
-			            response = new JobDelete(client).deleteByJob(job, "2.0");
-						
-			            LOGGER.debug("Response for deleting job {} is {}", job, response);
+			            new JobDelete(client).deleteByJob(job, "2.0");
 			        }
-				}
-				
-				if (++ctr % threshold == 0) {
-					LOGGER.info("{} files processed, current is {}", ctr, inputFile);
+			        
+		            writeLog(threshold, inputFile);
 				}
 			}
 	    } catch (IOException | ZosmfRequestException e) {
 			LOGGER.error("{} failed.", this.getClass().getSimpleName(), e);
 	    }
 	}
+
+	private void writeLog(int threshold, InputFile inputFile) {
+		if (++ctr % threshold == 0) {
+			LOGGER.info("{} files processed, current is {}", ctr, inputFile);
+		}
+	}
+
 	private String createJcl(String jobCard, String mbr, String syslib, String content) throws IOException {
 		try (InputStream is = this.getClass().getClassLoader().getResourceAsStream("elaxfbms.txt");
 				Reader r = new InputStreamReader(is, StandardCharsets.UTF_8)) {
