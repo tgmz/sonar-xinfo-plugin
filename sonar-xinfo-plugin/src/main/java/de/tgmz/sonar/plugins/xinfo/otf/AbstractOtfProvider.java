@@ -43,7 +43,7 @@ import de.tgmz.sonar.plugins.xinfo.languages.Language;
 public abstract class AbstractOtfProvider extends AbstractXinfoProvider {
 	private static final Logger LOGGER = LoggerFactory.getLogger(AbstractOtfProvider.class);
 	private static final Pattern P_DB2 = Pattern.compile("EXEC\\s+SQL", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
-	private static final Pattern P_CICS = Pattern.compile("EXE\\s+CICS", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
+	private static final Pattern P_CICS = Pattern.compile("EXEC\\s+CICS", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
 
 	protected AbstractOtfProvider(Configuration configuration) {
 		super(configuration);

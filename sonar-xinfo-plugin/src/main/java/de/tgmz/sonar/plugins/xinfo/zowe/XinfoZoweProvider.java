@@ -48,6 +48,13 @@ import zowe.client.sdk.zosjobs.types.JobStatus.Type;
 public class XinfoZoweProvider extends AbstractOtfProvider {
 	private static final Logger LOGGER = LoggerFactory.getLogger(XinfoZoweProvider.class);
 	private static final Random RANDOM = new SecureRandom();
+	private Response response;
+	private DsnCreate dsnCreate;
+	private DsnWrite dsnWrite;
+	private JobSubmit jobSubmit;
+	private JobMonitor jobMonitor;
+	private DsnDelete dsnDelete;
+	private JobDelete jobDelete;
 
 	private ZosConnection connection;
 
@@ -58,21 +65,24 @@ public class XinfoZoweProvider extends AbstractOtfProvider {
 				, configuration.get(XinfoFtpConfig.XINFO_OTF_PORT).orElseThrow()
 				, configuration.get(XinfoFtpConfig.XINFO_OTF_USER).orElseThrow()
 				, configuration.get(XinfoFtpConfig.XINFO_OTF_PASS).orElseThrow());
+		
+		dsnCreate = new DsnCreate(connection);
+		dsnWrite = new DsnWrite(connection);
+		jobSubmit = new JobSubmit(connection);
+		jobMonitor = new JobMonitor(connection);
+		dsnDelete = new DsnDelete(connection);
+		jobDelete = new JobDelete(connection);
 	}
 
 	@Override
 	public PACKAGE getXinfo(InputFile pgm) throws XinfoException {
 		try {
-			Response response; 
-			
 			String inputDsn = connection.getUser() + ".XINFO.T" + RANDOM.nextInt(10_000_000) + ".INPUT";
 			
-            DsnCreate dsnCreate = new DsnCreate(connection);
             response = dsnCreate.create(inputDsn, sequential(Language.getByFilename(pgm.filename())));
             
             LOGGER.debug("Response from dataset creation: {}", response);
 
-            DsnWrite dsnWrite = new DsnWrite(connection);
             response = dsnWrite.write(inputDsn, pgm.contents());
 			
             LOGGER.debug("Response from source upload: {}", response);
@@ -81,12 +91,8 @@ public class XinfoZoweProvider extends AbstractOtfProvider {
 
 			String jcl = createJcl(pgm, inputDsn, sysxmlsd);
 
-	        JobSubmit jobSubmit = new JobSubmit(connection);
-	        
 	        Job job = jobSubmit.submitByJcl(jcl, null, null);
 
-	        JobMonitor jobMonitor = new JobMonitor(connection);
-	        
 	        job = jobMonitor.waitByStatus(job, Type.OUTPUT);
 
 	        byte[] xinfo = retrieveXinfo(sysxmlsd);
@@ -102,15 +108,13 @@ public class XinfoZoweProvider extends AbstractOtfProvider {
 	}
 
 	private void cleanup(String sysxmlsd, Job submitJob) throws ZosmfRequestException {
-        DsnDelete zosDsn = new DsnDelete(connection);
-        Response delete = zosDsn.delete(sysxmlsd);
+        response = dsnDelete.delete(sysxmlsd);
         
-        LOGGER.debug("Response {}", delete);
+        LOGGER.debug("Response {}", response);
         
-        JobDelete zosJob = new JobDelete(connection);
-        delete = zosJob.deleteByJob(submitJob, "2.0");
+        response = jobDelete.deleteByJob(submitJob, "2.0");
         
-        LOGGER.debug("Response {}", delete);
+        LOGGER.debug("Response {}", response);
 	}
 	
 	private byte[] retrieveXinfo(String sysxmlsd) throws IOException, ZosmfRequestException {
