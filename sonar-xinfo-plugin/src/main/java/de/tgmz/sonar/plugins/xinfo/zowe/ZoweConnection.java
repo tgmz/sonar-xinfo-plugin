@@ -1,5 +1,5 @@
 /*******************************************************************************
-  * Copyright (c) 03.03.2024 Thomas Zierer.
+  * Copyright (c) 29.04.2024 Thomas Zierer.
   * All rights reserved. This program and the accompanying materials
   * are made available under the terms of the Eclipse Public License v2.0
   * which accompanies this distribution, and is available at
@@ -19,14 +19,12 @@ import java.util.Random;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.config.Configuration;
 
-import de.tgmz.sonar.plugins.xinfo.XinfoException;
 import de.tgmz.sonar.plugins.xinfo.config.XinfoFtpConfig;
-import de.tgmz.sonar.plugins.xinfo.generated.plicomp.PACKAGE;
 import de.tgmz.sonar.plugins.xinfo.languages.Language;
-import de.tgmz.sonar.plugins.xinfo.otf.AbstractOtfProvider;
+import de.tgmz.sonar.plugins.xinfo.otf.IConnectable;
+import de.tgmz.sonar.plugins.xinfo.otf.OtfException;
 import zowe.client.sdk.core.ZosConnection;
 import zowe.client.sdk.rest.Response;
 import zowe.client.sdk.rest.exception.ZosmfRequestException;
@@ -42,25 +40,22 @@ import zowe.client.sdk.zosjobs.methods.JobSubmit;
 import zowe.client.sdk.zosjobs.response.Job;
 import zowe.client.sdk.zosjobs.types.JobStatus.Type;
 
-/**
- * Loads issues "on-the-fly" by using a ZOWE connection. 
- */
-public class XinfoZoweProvider extends AbstractOtfProvider {
-	private static final Logger LOGGER = LoggerFactory.getLogger(XinfoZoweProvider.class);
+public class ZoweConnection implements IConnectable {
+	private static final Logger LOGGER = LoggerFactory.getLogger(ZoweConnection.class);
 	private static final Random RANDOM = new SecureRandom();
+
+	private ZosConnection connection;
+	
 	private Response response;
 	private DsnCreate dsnCreate;
+	private DsnGet dsnGet;
 	private DsnWrite dsnWrite;
 	private JobSubmit jobSubmit;
 	private JobMonitor jobMonitor;
 	private DsnDelete dsnDelete;
 	private JobDelete jobDelete;
 
-	private ZosConnection connection;
-
-	public XinfoZoweProvider(Configuration configuration) {
-		super(configuration);
-		
+	public ZoweConnection(Configuration configuration) {
 		connection = new ZosConnection(configuration.get(XinfoFtpConfig.XINFO_OTF_SERVER).orElseThrow()
 				, configuration.get(XinfoFtpConfig.XINFO_OTF_PORT).orElseThrow()
 				, configuration.get(XinfoFtpConfig.XINFO_OTF_USER).orElseThrow()
@@ -72,60 +67,77 @@ public class XinfoZoweProvider extends AbstractOtfProvider {
 		jobMonitor = new JobMonitor(connection);
 		dsnDelete = new DsnDelete(connection);
 		jobDelete = new JobDelete(connection);
+		dsnGet = new DsnGet(connection);
 	}
-
+	
 	@Override
-	public PACKAGE getXinfo(InputFile pgm) throws XinfoException {
-		try {
-			String inputDsn = connection.getUser() + ".XINFO.T" + RANDOM.nextInt(10_000_000) + ".INPUT";
+	public void submit(String jcl) throws OtfException {
+        try {
+			Job job = jobSubmit.submitByJcl(jcl, null, null);
+
+			job = jobMonitor.waitByStatus(job, Type.OUTPUT);
 			
-            response = dsnCreate.create(inputDsn, sequential(Language.getByFilename(pgm.filename())));
-            
-            LOGGER.debug("Response from dataset creation: {}", response);
-
-            response = dsnWrite.write(inputDsn, pgm.contents());
-			
-            LOGGER.debug("Response from source upload: {}", response);
-
-			String sysxmlsd = connection.getUser() + ".XINFO.T" + RANDOM.nextInt(10_000_000) + ".XML";
-
-			String jcl = createJcl(pgm, inputDsn, sysxmlsd);
-
-	        Job job = jobSubmit.submitByJcl(jcl, null, null);
-
-	        job = jobMonitor.waitByStatus(job, Type.OUTPUT);
-
-	        byte[] xinfo = retrieveXinfo(sysxmlsd);
-		
-	        if (getConfiguration().getBoolean(XinfoFtpConfig.XINFO_OTF_CLEANUP).orElse(true)) {
-	        	cleanup(sysxmlsd, job);
-	        }
-
-			return createXinfo(pgm, xinfo);
-		} catch (ZosmfRequestException | IOException e) {
-			throw new XinfoException("Error in communication", e);
+			jobDelete.deleteByJob(job, "2.0");
+		} catch (ZosmfRequestException e) {
+        	throw new OtfException("Job failed", e);
 		}
 	}
 
-	private void cleanup(String sysxmlsd, Job submitJob) throws ZosmfRequestException {
-        response = dsnDelete.delete(sysxmlsd);
-        
-        LOGGER.debug("Response {}", response);
-        
-        response = jobDelete.deleteByJob(submitJob, "2.0");
-        
-        LOGGER.debug("Response {}", response);
-	}
-	
-	private byte[] retrieveXinfo(String sysxmlsd) throws IOException, ZosmfRequestException {
+	@Override
+	public byte[] retrieve(String dsn) throws OtfException {
         DownloadParams params = new DownloadParams.Builder().build();
 
-        try (InputStream is = new DsnGet(connection).get(sysxmlsd, params);
+        try (InputStream is = dsnGet.get(dsn, params);
         		ByteArrayOutputStream os = new ByteArrayOutputStream()) {
         	IOUtils.copy(is, os);
         	
         	return os.toByteArray();
-        }
+        } catch (IOException | ZosmfRequestException e) {
+        	throw new OtfException(String.format("Cannot retrieve %s", dsn), e);
+		}
+	}
+
+	@Override
+	public void write(String dsn, String content) throws OtfException {
+		try {
+			response = dsnWrite.write(dsn, content);
+			LOGGER.debug("Result write {}", response);
+		} catch (ZosmfRequestException e) {
+        	throw new OtfException(String.format("Cannot write %s", dsn), e);
+		}
+	}
+
+	@Override
+	public void deleteDsn(String dsn) throws OtfException {
+		try {
+			response = dsnDelete.delete(dsn);
+			LOGGER.debug("Result delete {}", response);
+		} catch (ZosmfRequestException e) {
+        	throw new OtfException(String.format("Cannot delete %s", dsn), e);
+		}
+
+	}
+
+	@Override
+	public String createAndUploadInputDataset(Language lang, String content) throws OtfException {
+		String inputDsn = connection.getUser() + ".XINFO.T" + RANDOM.nextInt(10_000_000) + ".INPUT";
+		
+		try {
+			response = dsnCreate.create(inputDsn, sequential(lang));
+			LOGGER.debug("Result create {}", response);
+			
+			response = dsnWrite.write(inputDsn, content);
+			LOGGER.debug("Result write {}", response);
+		} catch (ZosmfRequestException e) {
+        	throw new OtfException(String.format("Cannot create %s", inputDsn), e);
+		}
+		
+		return inputDsn;
+	}
+
+	@Override
+	public String createSysxml() throws OtfException {
+		return connection.getUser() + ".XINFO.T" + RANDOM.nextInt(10_000_000) + ".XML";
 	}
 	private static CreateParams sequential(Language lang) {
 		return new CreateParams.Builder()
@@ -137,4 +149,5 @@ public class XinfoZoweProvider extends AbstractOtfProvider {
                 .lrecl(lang == Language.C || lang == Language.CPP ? 120 : 80)
                 .build();
 	}
+
 }

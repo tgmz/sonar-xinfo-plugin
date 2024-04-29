@@ -8,7 +8,7 @@
   * Contributors:
   *    Thomas Zierer - initial API and implementation and/or initial documentation
   *******************************************************************************/
-package de.tgmz.sonar.plugins.xinfo;
+package de.tgmz.sonar.plugins.xinfo.otf;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -22,6 +22,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockftpserver.stub.StubFtpServer;
 
+import de.tgmz.sonar.plugins.xinfo.XinfoException;
 import de.tgmz.sonar.plugins.xinfo.ftp.JesClient;
 
 public class JesClientTest {
@@ -56,7 +57,7 @@ public class JesClientTest {
 	}
 	@Test
 	public void testSubmit() throws IOException, XinfoException {
-		assertThrows(XinfoException.class, () -> client.submit(""));
+		assertThrows(IOException.class, () -> client.submit(""));
 		assertEquals(200, client.setOwnerFilter(""));
 		assertNotNull(client.listJobsDetailed());
 	}

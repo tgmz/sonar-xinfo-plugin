@@ -1,5 +1,5 @@
 /*******************************************************************************
-  * Copyright (c) 09.11.2016 Thomas Zierer.
+  * Copyright (c) 29.04.2024 Thomas Zierer.
   * All rights reserved. This program and the accompanying materials
   * are made available under the terms of the Eclipse Public License v2.0
   * which accompanies this distribution, and is available at
@@ -8,32 +8,34 @@
   * Contributors:
   *    Thomas Zierer - initial API and implementation and/or initial documentation
   *******************************************************************************/
-package de.tgmz.sonar.plugins.xinfo;
+package de.tgmz.sonar.plugins.xinfo.otf;
 
 import org.sonar.api.config.Configuration;
 
 import de.tgmz.sonar.plugins.xinfo.config.XinfoFtpConfig;
-import de.tgmz.sonar.plugins.xinfo.otf.OtfProvider;
+import de.tgmz.sonar.plugins.xinfo.ftp.FtpConnection;
+import de.tgmz.sonar.plugins.xinfo.zowe.ZoweConnection;
 
-/**
- * Singleton factory for the XinfoProvider to use.
- */
-public final class XinfoProviderFactory {
-	private static IXinfoProvider provider;
-	
-	private XinfoProviderFactory() {
+public final class ConnectionFactory {
+	private static IConnectable connection;
+
+	private ConnectionFactory() {
 		// Empty private constructor to hide the implicit public one
 	}
 	
-	public static synchronized IXinfoProvider getProvider(Configuration configuration) {
-		if (provider == null) {
-			if (configuration.get(XinfoFtpConfig.XINFO_OTF).isPresent()) {
-				provider = new OtfProvider(configuration);
-			} else {
-				provider = new XinfoFileProvider(configuration);
+	public static synchronized IConnectable getConnactable(Configuration configuration) {
+		if (connection == null) {
+			switch (configuration.get(XinfoFtpConfig.XINFO_OTF).orElseThrow()) {
+			case "ftp":
+				connection = new FtpConnection(configuration);
+				break;
+			case "zowe":
+			default:
+				connection = new ZoweConnection(configuration);
+				break;
 			}
 		}
 		
-		return provider;
+		return connection;
 	}
 }
