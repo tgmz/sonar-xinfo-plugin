@@ -12,6 +12,7 @@ package de.tgmz.sonar.plugins.xinfo.languages;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 import org.apache.commons.io.FilenameUtils;
 import org.sonar.api.profiles.RulesProfile;
@@ -48,7 +49,7 @@ public enum Language {
 	public static Language getByFilename(String f) {
 		for (Language l : values()) {
 			for (String ext : l.defaultFileSuffixes) {
-				if (ext.equals(FilenameUtils.getExtension(f))) {
+				if (ext.equals(FilenameUtils.getExtension(f).toLowerCase(Locale.getDefault()))) {
 					return l;
 				}
 			}
