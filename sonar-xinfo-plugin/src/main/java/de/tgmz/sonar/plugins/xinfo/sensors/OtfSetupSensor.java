@@ -34,15 +34,10 @@ import de.tgmz.sonar.plugins.xinfo.config.XinfoFtpConfig;
 import de.tgmz.sonar.plugins.xinfo.config.XinfoProjectConfig;
 import de.tgmz.sonar.plugins.xinfo.languages.Language;
 import de.tgmz.sonar.plugins.xinfo.languages.XinfoLanguage;
+import de.tgmz.sonar.plugins.xinfo.otf.ConnectionFactory;
+import de.tgmz.sonar.plugins.xinfo.otf.IConnectable;
 import de.tgmz.sonar.plugins.xinfo.otf.JclUtil;
-import zowe.client.sdk.core.ZosConnection;
-import zowe.client.sdk.rest.exception.ZosmfRequestException;
-import zowe.client.sdk.zosfiles.dsn.methods.DsnWrite;
-import zowe.client.sdk.zosjobs.methods.JobDelete;
-import zowe.client.sdk.zosjobs.methods.JobMonitor;
-import zowe.client.sdk.zosjobs.methods.JobSubmit;
-import zowe.client.sdk.zosjobs.response.Job;
-import zowe.client.sdk.zosjobs.types.JobStatus.Type;
+import de.tgmz.sonar.plugins.xinfo.otf.OtfException;
 
 @Phase(name = Name.PRE)
 public class OtfSetupSensor implements Sensor {
@@ -58,10 +53,7 @@ public class OtfSetupSensor implements Sensor {
 	
 	@Override
 	public void execute(final SensorContext context) {
-		ZosConnection client = new ZosConnection(context.config().get(XinfoFtpConfig.XINFO_OTF_SERVER).orElseThrow()
-				, context.config().get(XinfoFtpConfig.XINFO_OTF_PORT).orElseThrow()
-				, context.config().get(XinfoFtpConfig.XINFO_OTF_USER).orElseThrow()
-				, context.config().get(XinfoFtpConfig.XINFO_OTF_PASS).orElseThrow());
+		IConnectable connection = ConnectionFactory.getConnactable(context.config());
 		
 	    int threshold = context.config().getInt(XinfoProjectConfig.XINFO_LOG_THRESHOLD).orElse(100);
 	    
@@ -70,14 +62,13 @@ public class OtfSetupSensor implements Sensor {
 			
 			FilePredicates p = context.fileSystem().predicates();
 
-            DsnWrite dsnWrite = new DsnWrite(client);
-	        JobSubmit jobSubmit = new JobSubmit(client);
-			
 			for (InputFile inputFile : context.fileSystem().inputFiles(p.hasLanguages(XinfoLanguage.KEY))) {
 				Language lang = Language.getByFilename(inputFile.filename()); 
 						
 				if (lang.isMacro()) {
-		            dsnWrite.write(syslib, FilenameUtils.removeExtension(inputFile.filename()).toUpperCase(Locale.getDefault()), inputFile.contents());
+					String mbr = FilenameUtils.removeExtension(inputFile.filename()).toUpperCase(Locale.getDefault());
+					
+		            connection.write(String.format("%s(%s)",  syslib, mbr), inputFile.contents());
 					
 		            writeLog(threshold, inputFile);
 				}
@@ -88,20 +79,12 @@ public class OtfSetupSensor implements Sensor {
 							, syslib
 							, inputFile.contents());
 
-			        Job job = jobSubmit.submitByJcl(jcl, null, null);
-
-			        JobMonitor jobMonitor = new JobMonitor(client);
-			        
-			        job = jobMonitor.waitByStatus(job, Type.OUTPUT);
-			        
-			        if (context.config().getBoolean(XinfoFtpConfig.XINFO_OTF_CLEANUP).orElse(true)) {
-			            new JobDelete(client).deleteByJob(job, "2.0");
-			        }
+			        connection.submit(jcl);
 			        
 		            writeLog(threshold, inputFile);
 				}
 			}
-	    } catch (IOException | ZosmfRequestException e) {
+	    } catch (IOException | OtfException e) {
 			LOGGER.error("{} failed.", this.getClass().getSimpleName(), e);
 	    }
 	}

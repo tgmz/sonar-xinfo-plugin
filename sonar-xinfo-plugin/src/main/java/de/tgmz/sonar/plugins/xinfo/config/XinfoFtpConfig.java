@@ -29,7 +29,6 @@ public final class XinfoFtpConfig {
 	public static final String XINFO_OTF_PASS = "sonar.xinfo.otf.pass";
 	public static final String XINFO_OTF_TIMEOUT = "sonar.xinfo.otf.timeout";
 	public static final String XINFO_OTF_SYSLIB = "sonar.xinfo.otf.syslib";
-	public static final String XINFO_OTF_CLEANUP = "sonar.xinfo.otf.cleanup";
 	public static final String CATEGORY = "Xinfo";
 
 	private XinfoFtpConfig() {
@@ -82,12 +81,6 @@ public final class XinfoFtpConfig {
 			, PropertyDefinition.builder(XINFO_OTF_SYSLIB)
 				.name("OtfSyslib")
 				.description("XINFO SYSLIB")
-				.category(CATEGORY)
-				.build()
-			, PropertyDefinition.builder(XINFO_OTF_CLEANUP)
-				.name("OtfCleanup")
-				.description("XINFO remove temp files and jobs after execution")
-				.defaultValue("true")
 				.category(CATEGORY)
 				.build()
 		);

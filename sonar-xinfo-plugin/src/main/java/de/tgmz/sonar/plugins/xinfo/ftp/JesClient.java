@@ -21,8 +21,6 @@ import java.util.regex.Pattern;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
 
-import de.tgmz.sonar.plugins.xinfo.XinfoException;
-
 /**
  * Extend FTPClient for JES interaction.
  */
@@ -50,7 +48,7 @@ public class JesClient extends FTPClient {
         return jobs;
     }
 
-    public JesJob submit(String sourceJCL) throws IOException, XinfoException {
+    public JesJob submit(String sourceJCL) throws IOException {
         if (storeFile("job", new ByteArrayInputStream(sourceJCL.getBytes(StandardCharsets.UTF_8)))) {
         	Matcher matcher = JES_PATTERN.matcher(getReplyString());
         	
@@ -60,10 +58,10 @@ public class JesClient extends FTPClient {
         		
             	return job;
         	} else {
-               	throw new XinfoException("Failed to receive job information");
+               	throw new IOException("Failed to receive job information");
         	}
         }
         	
-       	throw new XinfoException("Failed to submit job");
+       	throw new IOException("Failed to submit job");
     }
 }

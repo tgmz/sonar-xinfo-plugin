@@ -1,5 +1,5 @@
 /*******************************************************************************
-  * Copyright (c) 03.03.2024 Thomas Zierer.
+  * Copyright (c) 29.04.2024 Thomas Zierer.
   * All rights reserved. This program and the accompanying materials
   * are made available under the terms of the Eclipse Public License v2.0
   * which accompanies this distribution, and is available at
@@ -37,31 +37,46 @@ import de.tgmz.sonar.plugins.xinfo.config.XinfoProjectConfig;
 import de.tgmz.sonar.plugins.xinfo.generated.plicomp.PACKAGE;
 import de.tgmz.sonar.plugins.xinfo.languages.Language;
 
-/**
- * Loads issues "on-the-fly", i.e. with no stored XINFO files by invoking the appropriate compiler. 
- */
-public abstract class AbstractOtfProvider extends AbstractXinfoProvider {
-	private static final Logger LOGGER = LoggerFactory.getLogger(AbstractOtfProvider.class);
+public class OtfProvider extends AbstractXinfoProvider {
+	private static final Logger LOGGER = LoggerFactory.getLogger(OtfProvider.class);
 	private static final Pattern P_DB2 = Pattern.compile("EXEC\\s+SQL", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
 	private static final Pattern P_CICS = Pattern.compile("EXEC\\s+CICS", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
-
-	protected AbstractOtfProvider(Configuration configuration) {
+	private IConnectable connection;
+	
+	public OtfProvider(Configuration configuration) {
 		super(configuration);
-	}
-
-	protected PACKAGE createXinfo(InputFile pgm, byte[] xinfo) throws IOException, XinfoException {
-		if (getConfiguration().getBoolean(XinfoFtpConfig.XINFO_OTF_STORE_LOCAL).orElse(false)) {
-			store(pgm, xinfo);
-		}
 		
-		try (InputStream is = new ByteArrayInputStream(xinfo)) {
-			Language lang = Language.getByFilename(pgm.filename());
+		connection = ConnectionFactory.getConnactable(configuration);
+	}
+	@Override
+	public PACKAGE getXinfo(InputFile pgm) throws XinfoException {
+		try {
+			String inputDsn = connection.createAndUploadInputDataset(Language.getByFilename(pgm.filename()), pgm.contents());
 			
+			String sysxmlsd = connection.createSysxml();
+
+			String jcl = createJcl(pgm, inputDsn, sysxmlsd);
+			
+			connection.submit(jcl);
+			
+			byte[] bs = connection.retrieve(sysxmlsd);
+			
+			connection.deleteDsn(sysxmlsd);
+			
+			if (getConfiguration().getBoolean(XinfoFtpConfig.XINFO_OTF_STORE_LOCAL).orElse(false)) {
+				store(pgm, bs);
+			}
+			
+			InputStream is = new ByteArrayInputStream(bs);
+			
+			Language lang = Language.getByFilename(pgm.filename());
+				
 			return (lang == Language.C || lang == Language.CPP) ? super.createXinfoFromEvent(is) : super.createXinfo(is);
+		} catch (IOException e) {
+			throw new XinfoException("Error in communication", e);
 		}
 	}
-
-	protected String createJcl(InputFile pgm, String inputDsn, String sysxmlsd) throws IOException, XinfoException {
+	private String createJcl(InputFile pgm, String inputDsn, String sysxmlsd) throws IOException {
 		String template = null;
 
 		String comp = "";
