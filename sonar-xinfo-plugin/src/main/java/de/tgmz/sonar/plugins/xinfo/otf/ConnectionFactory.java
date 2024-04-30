@@ -12,7 +12,7 @@ package de.tgmz.sonar.plugins.xinfo.otf;
 
 import org.sonar.api.config.Configuration;
 
-import de.tgmz.sonar.plugins.xinfo.config.XinfoFtpConfig;
+import de.tgmz.sonar.plugins.xinfo.config.XinfoOtfConfig;
 import de.tgmz.sonar.plugins.xinfo.ftp.FtpConnection;
 import de.tgmz.sonar.plugins.xinfo.zowe.ZoweConnection;
 
@@ -25,7 +25,7 @@ public final class ConnectionFactory {
 	
 	public static synchronized IConnectable getConnactable(Configuration configuration) {
 		if (connection == null) {
-			switch (configuration.get(XinfoFtpConfig.XINFO_OTF).orElseThrow()) {
+			switch (configuration.get(XinfoOtfConfig.XINFO_OTF).orElseThrow()) {
 			case "ftp":
 				connection = new FtpConnection(configuration);
 				break;
