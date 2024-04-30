@@ -24,7 +24,7 @@ import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.config.internal.MapSettings;
 
 import de.tgmz.sonar.plugins.xinfo.SonarTestFileUtil;
-import de.tgmz.sonar.plugins.xinfo.config.XinfoFtpConfig;
+import de.tgmz.sonar.plugins.xinfo.config.XinfoOtfConfig;
 import de.tgmz.sonar.plugins.xinfo.config.XinfoProjectConfig;
 import de.tgmz.sonar.plugins.xinfo.sensors.OtfSetupSensor;
 import de.tgmz.sonar.plugins.xinfo.sensors.XinfoIssuesLoader;
@@ -44,16 +44,16 @@ public abstract class AbstractSensorOtfTest {
 		ms.setProperty(XinfoProjectConfig.XINFO_LOG_THRESHOLD, "1");
 		ms.setProperty(XinfoProjectConfig.XINFO_NUM_THREADS, "1");
 		
-		ms.setProperty(XinfoFtpConfig.XINFO_OTF, provider);
-		ms.setProperty(XinfoFtpConfig.XINFO_OTF_PORT, port);
+		ms.setProperty(XinfoOtfConfig.XINFO_OTF, provider);
+		ms.setProperty(XinfoOtfConfig.XINFO_OTF_PORT, port);
 
-		ms.setProperty(XinfoFtpConfig.XINFO_OTF_JOBCARD, System.getProperty(XinfoFtpConfig.XINFO_OTF_JOBCARD, ""));
-		ms.setProperty(XinfoFtpConfig.XINFO_OTF_PASS, System.getProperty(XinfoFtpConfig.XINFO_OTF_PASS, "bar"));
-		ms.setProperty(XinfoFtpConfig.XINFO_OTF_SERVER, System.getProperty(XinfoFtpConfig.XINFO_OTF_SERVER, "localhost"));
-		ms.setProperty(XinfoFtpConfig.XINFO_OTF_USER, System.getProperty(XinfoFtpConfig.XINFO_OTF_USER, "foo"));
-		ms.setProperty(XinfoFtpConfig.XINFO_OTF_TIMEOUT, System.getProperty(XinfoFtpConfig.XINFO_OTF_TIMEOUT, "10"));
-		ms.setProperty(XinfoFtpConfig.XINFO_OTF_SYSLIB, System.getProperty(XinfoFtpConfig.XINFO_OTF_SYSLIB, "HLQ.XINFO.MACLIB"));
-		ms.setProperty(XinfoFtpConfig.XINFO_OTF_STORE_LOCAL, "true");
+		ms.setProperty(XinfoOtfConfig.XINFO_OTF_JOBCARD, System.getProperty(XinfoOtfConfig.XINFO_OTF_JOBCARD, ""));
+		ms.setProperty(XinfoOtfConfig.XINFO_OTF_PASS, System.getProperty(XinfoOtfConfig.XINFO_OTF_PASS, "bar"));
+		ms.setProperty(XinfoOtfConfig.XINFO_OTF_SERVER, System.getProperty(XinfoOtfConfig.XINFO_OTF_SERVER, "localhost"));
+		ms.setProperty(XinfoOtfConfig.XINFO_OTF_USER, System.getProperty(XinfoOtfConfig.XINFO_OTF_USER, "foo"));
+		ms.setProperty(XinfoOtfConfig.XINFO_OTF_TIMEOUT, System.getProperty(XinfoOtfConfig.XINFO_OTF_TIMEOUT, "10"));
+		ms.setProperty(XinfoOtfConfig.XINFO_OTF_SYSLIB, System.getProperty(XinfoOtfConfig.XINFO_OTF_SYSLIB, "HLQ.XINFO.MACLIB"));
+		ms.setProperty(XinfoOtfConfig.XINFO_OTF_STORE_LOCAL, "true");
 		
 		File baseDir = new File(LOC);
 		

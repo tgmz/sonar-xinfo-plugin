@@ -26,10 +26,11 @@ import org.sonar.api.config.Configuration;
 
 import de.tgmz.sonar.plugins.xinfo.XinfoException;
 import de.tgmz.sonar.plugins.xinfo.XinfoRuntimeException;
-import de.tgmz.sonar.plugins.xinfo.config.XinfoFtpConfig;
+import de.tgmz.sonar.plugins.xinfo.config.XinfoOtfConfig;
 import de.tgmz.sonar.plugins.xinfo.config.XinfoProjectConfig;
 import de.tgmz.sonar.plugins.xinfo.languages.Language;
 import de.tgmz.sonar.plugins.xinfo.otf.IConnectable;
+import de.tgmz.sonar.plugins.xinfo.otf.IJob;
 
 public class FtpConnection implements IConnectable {
 	private static final Logger LOGGER = LoggerFactory.getLogger(FtpConnection.class);
@@ -52,17 +53,17 @@ public class FtpConnection implements IConnectable {
 	}
 	
 	@Override
-	public void submit(String jcl) throws XinfoException {
+	public IJob submit(String jcl) throws XinfoException {
 		try {
 			client.site(TYPE_JES);
 
 			JesJob xinfoJob = client.submit(jcl);
 			xinfoJob.setStatus("");
 
-			client.setOwnerFilter(configuration.get(XinfoFtpConfig.XINFO_OTF_USER).orElseThrow());
+			client.setOwnerFilter(configuration.get(XinfoOtfConfig.XINFO_OTF_USER).orElseThrow());
 			
 			long start = System.currentTimeMillis();
-			int timeout = configuration.getInt(XinfoFtpConfig.XINFO_OTF_TIMEOUT).orElse(10) * 1_000;
+			int timeout = configuration.getInt(XinfoOtfConfig.XINFO_OTF_TIMEOUT).orElse(10) * 1_000;
 
 			while (System.currentTimeMillis() - start < timeout && !"OUTPUT".equals(xinfoJob.getStatus())) {
 				List<JesJob> listJobs = client.listJobsDetailed();
@@ -76,6 +77,8 @@ public class FtpConnection implements IConnectable {
 			
 			LOGGER.debug("Job finished in {} msecs", System.currentTimeMillis() - start);
 			LOGGER.debug("Job details: {}", xinfoJob);
+			
+			return xinfoJob;
 		} catch (IOException e) {
 			throw new XinfoException("Submit failed", e);
 		}
@@ -126,7 +129,7 @@ public class FtpConnection implements IConnectable {
 			client.site("PRIMARY=100");
 			client.site("SECONDARY=100");
 		
-			String s = configuration.get(XinfoFtpConfig.XINFO_OTF_USER).orElseThrow() + ".XINFO.T" + RANDOM.nextInt(10_000_000) + ".INPUT";
+			String s = configuration.get(XinfoOtfConfig.XINFO_OTF_USER).orElseThrow() + ".XINFO.T" + RANDOM.nextInt(10_000_000) + ".INPUT";
 		
 			try (InputStream is = IOUtils.toInputStream(content, configuration.get(XinfoProjectConfig.XINFO_ENCODING).orElse("UTF-8"))) {
 				client.storeFile(s, is);
@@ -140,14 +143,14 @@ public class FtpConnection implements IConnectable {
 
 	@Override
 	public String createSysxml() throws XinfoException {
-		return configuration.get(XinfoFtpConfig.XINFO_OTF_USER).orElseThrow() + ".XINFO.T" + RANDOM.nextInt(10_000_000) + ".XML";
+		return configuration.get(XinfoOtfConfig.XINFO_OTF_USER).orElseThrow() + ".XINFO.T" + RANDOM.nextInt(10_000_000) + ".XML";
 	}
 	
 	private void connect() throws IOException {
 		int reply;
 		
-		client.connect(configuration.get(XinfoFtpConfig.XINFO_OTF_SERVER).orElseThrow()
-					, configuration.getInt(XinfoFtpConfig.XINFO_OTF_PORT).orElse(21));
+		client.connect(configuration.get(XinfoOtfConfig.XINFO_OTF_SERVER).orElseThrow()
+					, configuration.getInt(XinfoOtfConfig.XINFO_OTF_PORT).orElse(21));
 
 		// After connection attempt, you should check the reply code to verify
 		// success.
@@ -158,8 +161,8 @@ public class FtpConnection implements IConnectable {
 			throw new IOException("Connect unsuccessfull");
 		}
 
-		if (client.login(configuration.get(XinfoFtpConfig.XINFO_OTF_USER).orElseThrow()
-				, configuration.get(XinfoFtpConfig.XINFO_OTF_PASS).orElseThrow())) {
+		if (client.login(configuration.get(XinfoOtfConfig.XINFO_OTF_USER).orElseThrow()
+				, configuration.get(XinfoOtfConfig.XINFO_OTF_PASS).orElseThrow())) {
 			client.enterLocalPassiveMode();
             client.site(TYPE_JES + " JesJOBNAME=*");
 		} else {		
@@ -170,5 +173,15 @@ public class FtpConnection implements IConnectable {
 		Optional<JesJob> o = list.stream().filter(n -> job.getHandle().equals(n.getHandle())).findFirst();
 
 		return o.isPresent() ? o.get() : job;
+	}
+
+	@Override
+	public void deleteJob(IJob job) throws XinfoException {
+		try {
+			client.site(TYPE_JES);
+			client.deleteFile(job.getHandle());
+		} catch (IOException e) {
+			throw new XinfoException(String.format("Cannot delete job %s", job), e);
+		}
 	}
 }

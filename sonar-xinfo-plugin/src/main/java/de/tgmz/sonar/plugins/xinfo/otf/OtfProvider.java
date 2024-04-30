@@ -32,7 +32,7 @@ import org.sonar.api.config.Configuration;
 
 import de.tgmz.sonar.plugins.xinfo.AbstractXinfoProvider;
 import de.tgmz.sonar.plugins.xinfo.XinfoException;
-import de.tgmz.sonar.plugins.xinfo.config.XinfoFtpConfig;
+import de.tgmz.sonar.plugins.xinfo.config.XinfoOtfConfig;
 import de.tgmz.sonar.plugins.xinfo.config.XinfoProjectConfig;
 import de.tgmz.sonar.plugins.xinfo.generated.plicomp.PACKAGE;
 import de.tgmz.sonar.plugins.xinfo.languages.Language;
@@ -60,13 +60,17 @@ public class OtfProvider extends AbstractXinfoProvider {
 
 			String jcl = createJcl(pgm, inputDsn, sysxmlsd);
 			
-			connection.submit(jcl);
+			IJob submit = connection.submit(jcl);
 			
 			byte[] bs = connection.retrieve(sysxmlsd);
 			
-			connection.deleteDsn(sysxmlsd);
+	        if (!getConfiguration().getBoolean(XinfoOtfConfig.XINFO_OTF_KEEP).orElse(false)) {
+				connection.deleteDsn(sysxmlsd);
+				connection.deleteDsn(inputDsn);
+				connection.deleteJob(submit);
+	        }
 			
-			if (getConfiguration().getBoolean(XinfoFtpConfig.XINFO_OTF_STORE_LOCAL).orElse(false)) {
+			if (getConfiguration().getBoolean(XinfoOtfConfig.XINFO_OTF_STORE_LOCAL).orElse(false)) {
 				store(pgm, bs);
 			}
 			
@@ -110,10 +114,10 @@ public class OtfProvider extends AbstractXinfoProvider {
 			String s = IOUtils.toString(r);
 			
 			String jcl = MessageFormat.format(s
-					, getConfiguration().get(XinfoFtpConfig.XINFO_OTF_JOBCARD).orElseThrow()
+					, getConfiguration().get(XinfoOtfConfig.XINFO_OTF_JOBCARD).orElseThrow()
 					, inputDsn
 					, sysxmlsd
-					, getConfiguration().get(XinfoFtpConfig.XINFO_OTF_SYSLIB).orElseThrow()
+					, getConfiguration().get(XinfoOtfConfig.XINFO_OTF_SYSLIB).orElseThrow()
 					, comp
 					, db2
 					, cics);

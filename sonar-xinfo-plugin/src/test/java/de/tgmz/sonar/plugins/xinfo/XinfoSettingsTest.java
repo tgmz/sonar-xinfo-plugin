@@ -15,7 +15,7 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import de.tgmz.sonar.plugins.xinfo.config.XinfoConfig;
-import de.tgmz.sonar.plugins.xinfo.config.XinfoFtpConfig;
+import de.tgmz.sonar.plugins.xinfo.config.XinfoOtfConfig;
 import de.tgmz.sonar.plugins.xinfo.config.XinfoProjectConfig;
 
 /**
@@ -25,7 +25,7 @@ public class XinfoSettingsTest {
 	@Test
 	public void testSettings() {
 		assertTrue(XinfoConfig.definitions().size() > 0);
-		assertTrue(XinfoFtpConfig.definitions().size() > 0);
+		assertTrue(XinfoOtfConfig.definitions().size() > 0);
 		assertTrue(XinfoProjectConfig.definitions().size() > 0);
 	}
 }

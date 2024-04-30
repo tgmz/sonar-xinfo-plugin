@@ -19,7 +19,7 @@ import org.sonar.api.config.PropertyDefinition;
 /**
  * Runtime config for on-the-fly processing.
  */
-public final class XinfoFtpConfig {
+public final class XinfoOtfConfig {
 	public static final String XINFO_OTF = "sonar.xinfo.otf";
 	public static final String XINFO_OTF_STORE_LOCAL = "sonar.xinfo.otf.storelocal";
 	public static final String XINFO_OTF_JOBCARD = "sonar.xinfo.otf.jobcard";
@@ -29,9 +29,10 @@ public final class XinfoFtpConfig {
 	public static final String XINFO_OTF_PASS = "sonar.xinfo.otf.pass";
 	public static final String XINFO_OTF_TIMEOUT = "sonar.xinfo.otf.timeout";
 	public static final String XINFO_OTF_SYSLIB = "sonar.xinfo.otf.syslib";
+	public static final String XINFO_OTF_KEEP = "sonar.xinfo.otf.keep";
 	public static final String CATEGORY = "Xinfo";
 
-	private XinfoFtpConfig() {
+	private XinfoOtfConfig() {
 		// Only statics
 	}
 
@@ -82,6 +83,12 @@ public final class XinfoFtpConfig {
 				.name("OtfSyslib")
 				.description("XINFO SYSLIB")
 				.category(CATEGORY)
+				.build()
+			, PropertyDefinition.builder(XINFO_OTF_KEEP)
+				.name("OtfKeep")
+				.description("Keep on-the-fly input dsn and job")
+				.category(CATEGORY)
+				.defaultValue("false")
 				.build()
 		);
 	}

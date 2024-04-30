@@ -14,7 +14,7 @@ import java.util.Optional;
 
 import org.sonar.api.config.Configuration;
 
-import de.tgmz.sonar.plugins.xinfo.config.XinfoFtpConfig;
+import de.tgmz.sonar.plugins.xinfo.config.XinfoOtfConfig;
 import de.tgmz.sonar.plugins.xinfo.otf.OtfProvider;
 
 /**
@@ -29,7 +29,7 @@ public final class XinfoProviderFactory {
 	
 	public static synchronized IXinfoProvider getProvider(Configuration configuration) {
 		if (provider == null) {
-			Optional<String> oOtf = configuration.get(XinfoFtpConfig.XINFO_OTF);
+			Optional<String> oOtf = configuration.get(XinfoOtfConfig.XINFO_OTF);
 			
 			if (oOtf.isPresent() && !"off".equalsIgnoreCase(oOtf.get())) {
 				provider = new OtfProvider(configuration);

@@ -31,12 +31,13 @@ import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.SensorDescriptor;
 
 import de.tgmz.sonar.plugins.xinfo.XinfoException;
-import de.tgmz.sonar.plugins.xinfo.config.XinfoFtpConfig;
+import de.tgmz.sonar.plugins.xinfo.config.XinfoOtfConfig;
 import de.tgmz.sonar.plugins.xinfo.config.XinfoProjectConfig;
 import de.tgmz.sonar.plugins.xinfo.languages.Language;
 import de.tgmz.sonar.plugins.xinfo.languages.XinfoLanguage;
 import de.tgmz.sonar.plugins.xinfo.otf.ConnectionFactory;
 import de.tgmz.sonar.plugins.xinfo.otf.IConnectable;
+import de.tgmz.sonar.plugins.xinfo.otf.IJob;
 import de.tgmz.sonar.plugins.xinfo.otf.JclUtil;
 
 @Phase(name = Name.PRE)
@@ -48,7 +49,7 @@ public class OtfSetupSensor implements Sensor {
 	public void describe(final SensorDescriptor descriptor) {
 		descriptor.name("XinfoOtfSetup")
 					.onlyOnLanguages(XinfoLanguage.KEY)
-					.onlyWhenConfiguration(c -> c.get(XinfoFtpConfig.XINFO_OTF).isPresent());
+					.onlyWhenConfiguration(c -> c.get(XinfoOtfConfig.XINFO_OTF).isPresent());
 	}
 	
 	@Override
@@ -58,7 +59,7 @@ public class OtfSetupSensor implements Sensor {
 	    int threshold = context.config().getInt(XinfoProjectConfig.XINFO_LOG_THRESHOLD).orElse(100);
 	    
 	    try {
-			String syslib = context.config().get(XinfoFtpConfig.XINFO_OTF_SYSLIB).orElseThrow();
+			String syslib = context.config().get(XinfoOtfConfig.XINFO_OTF_SYSLIB).orElseThrow();
 			
 			FilePredicates p = context.fileSystem().predicates();
 
@@ -74,12 +75,16 @@ public class OtfSetupSensor implements Sensor {
 				}
 				
 				if (lang.isMask()) {
-					String jcl = createJcl(context.config().get(XinfoFtpConfig.XINFO_OTF_JOBCARD).orElseThrow()
+					String jcl = createJcl(context.config().get(XinfoOtfConfig.XINFO_OTF_JOBCARD).orElseThrow()
 							, FilenameUtils.removeExtension(inputFile.filename()).toUpperCase(Locale.getDefault())
 							, syslib
 							, inputFile.contents());
 
-			        connection.submit(jcl);
+			        IJob submit = connection.submit(jcl);
+			        
+			        if (!context.config().getBoolean(XinfoOtfConfig.XINFO_OTF_KEEP).orElse(false)) {
+			        	connection.deleteJob(submit);
+			        }
 			        
 		            writeLog(threshold, inputFile);
 				}

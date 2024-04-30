@@ -22,9 +22,10 @@ import org.slf4j.LoggerFactory;
 import org.sonar.api.config.Configuration;
 
 import de.tgmz.sonar.plugins.xinfo.XinfoException;
-import de.tgmz.sonar.plugins.xinfo.config.XinfoFtpConfig;
+import de.tgmz.sonar.plugins.xinfo.config.XinfoOtfConfig;
 import de.tgmz.sonar.plugins.xinfo.languages.Language;
 import de.tgmz.sonar.plugins.xinfo.otf.IConnectable;
+import de.tgmz.sonar.plugins.xinfo.otf.IJob;
 import zowe.client.sdk.core.ZosConnection;
 import zowe.client.sdk.rest.Response;
 import zowe.client.sdk.rest.exception.ZosmfRequestException;
@@ -56,10 +57,10 @@ public class ZoweConnection implements IConnectable {
 	private JobDelete jobDelete;
 
 	public ZoweConnection(Configuration configuration) {
-		connection = new ZosConnection(configuration.get(XinfoFtpConfig.XINFO_OTF_SERVER).orElseThrow()
-				, configuration.get(XinfoFtpConfig.XINFO_OTF_PORT).orElseThrow()
-				, configuration.get(XinfoFtpConfig.XINFO_OTF_USER).orElseThrow()
-				, configuration.get(XinfoFtpConfig.XINFO_OTF_PASS).orElseThrow());
+		connection = new ZosConnection(configuration.get(XinfoOtfConfig.XINFO_OTF_SERVER).orElseThrow()
+				, configuration.get(XinfoOtfConfig.XINFO_OTF_PORT).orElseThrow()
+				, configuration.get(XinfoOtfConfig.XINFO_OTF_USER).orElseThrow()
+				, configuration.get(XinfoOtfConfig.XINFO_OTF_PASS).orElseThrow());
 		
 		dsnCreate = new DsnCreate(connection);
 		dsnWrite = new DsnWrite(connection);
@@ -71,13 +72,13 @@ public class ZoweConnection implements IConnectable {
 	}
 	
 	@Override
-	public void submit(String jcl) throws XinfoException {
+	public IJob submit(String jcl) throws XinfoException {
         try {
 			Job job = jobSubmit.submitByJcl(jcl, null, null);
 
 			job = jobMonitor.waitByStatus(job, Type.OUTPUT);
 			
-			jobDelete.deleteByJob(job, "2.0");
+			return new JobWrapper(job);
 		} catch (ZosmfRequestException e) {
         	throw new XinfoException("Job failed", e);
 		}
@@ -100,7 +101,7 @@ public class ZoweConnection implements IConnectable {
 	@Override
 	public void write(String dsn, String content) throws XinfoException {
 		try {
-			response = dsnWrite.write(dsn, content);
+			response = dsnWrite.write(dsn, content.replaceAll("\\r\\n?", "\n"));
 			LOGGER.debug("Result write {}", response);
 		} catch (ZosmfRequestException e) {
         	throw new XinfoException(String.format("Cannot write %s", dsn), e);
@@ -126,7 +127,7 @@ public class ZoweConnection implements IConnectable {
 			response = dsnCreate.create(inputDsn, sequential(lang));
 			LOGGER.debug("Result create {}", response);
 			
-			response = dsnWrite.write(inputDsn, content);
+			response = dsnWrite.write(inputDsn, content.replaceAll("\\r\\n?", "\n"));
 			LOGGER.debug("Result write {}", response);
 		} catch (ZosmfRequestException e) {
         	throw new XinfoException(String.format("Cannot create %s", inputDsn), e);
@@ -148,6 +149,15 @@ public class ZoweConnection implements IConnectable {
                 .recfm("FB")
                 .lrecl(lang == Language.C || lang == Language.CPP ? 120 : 80)
                 .build();
+	}
+
+	@Override
+	public void deleteJob(IJob job) throws XinfoException {
+		try {
+			jobDelete.deleteByJob(new Job.Builder().jobId(job.getHandle()).jobName(job.getName()).build(), "2.0");
+		} catch (ZosmfRequestException e) {
+        	throw new XinfoException(String.format("Cannot delete job %s", job), e);
+		}
 	}
 
 }
