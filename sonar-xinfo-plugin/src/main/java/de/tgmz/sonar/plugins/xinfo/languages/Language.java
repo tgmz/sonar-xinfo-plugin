@@ -31,7 +31,8 @@ public enum Language {
 	MACRO("mac"),
 	HEADER("h,hpp"),
 	REXX("rexx"),
-	BMS("bms")
+	BMS("bms"),
+	NONE("")
 	;
 	
 	private List<String> defaultFileSuffixes;
@@ -55,7 +56,7 @@ public enum Language {
 			}
 		}
 
-		throw new IllegalArgumentException("No language for file [" + f + "]");
+		return NONE;
 	}
 
 	public List<String> getDefaultFileSuffixes() {

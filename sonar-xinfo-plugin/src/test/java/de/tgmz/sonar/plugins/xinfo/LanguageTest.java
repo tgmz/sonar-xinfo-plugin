@@ -10,12 +10,12 @@
   *******************************************************************************/
 
 package de.tgmz.sonar.plugins.xinfo;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.File;
 
 import org.junit.Test;
-import org.junit.Test.None;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
 
 import de.tgmz.sonar.plugins.xinfo.languages.Language;
@@ -31,13 +31,11 @@ public class LanguageTest {
 		assertNotNull(new XinfoLanguage(SensorContextTester.create(new File(LOC)).config()).getFileSuffixes());
 	}
 	
-	@Test(expected=None.class)
+	@Test
 	public void testLanguageByFile() {
-		Language.getByFilename("temp.pli");
-	}
-	
-	@Test(expected=IllegalArgumentException.class)
-	public void testLanguageByFileError() {
-		Language.getByFilename("temp.php");
+		assertEquals(Language.PLI, Language.getByFilename("temp.pli"));
+		assertEquals(Language.BMS, Language.getByFilename("temp.bms"));
+		assertEquals(Language.COBOL, Language.getByFilename("TEMP.COB"));
+		assertEquals(Language.NONE, Language.getByFilename("temp.php"));
 	}
 }
