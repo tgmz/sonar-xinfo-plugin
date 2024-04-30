@@ -24,12 +24,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.config.Configuration;
 
+import de.tgmz.sonar.plugins.xinfo.XinfoException;
 import de.tgmz.sonar.plugins.xinfo.XinfoRuntimeException;
 import de.tgmz.sonar.plugins.xinfo.config.XinfoFtpConfig;
 import de.tgmz.sonar.plugins.xinfo.config.XinfoProjectConfig;
 import de.tgmz.sonar.plugins.xinfo.languages.Language;
 import de.tgmz.sonar.plugins.xinfo.otf.IConnectable;
-import de.tgmz.sonar.plugins.xinfo.otf.OtfException;
 
 public class FtpConnection implements IConnectable {
 	private static final Logger LOGGER = LoggerFactory.getLogger(FtpConnection.class);
@@ -52,7 +52,7 @@ public class FtpConnection implements IConnectable {
 	}
 	
 	@Override
-	public void submit(String jcl) throws OtfException {
+	public void submit(String jcl) throws XinfoException {
 		try {
 			client.site(TYPE_JES);
 
@@ -71,18 +71,18 @@ public class FtpConnection implements IConnectable {
 			}
 
 			if (!"OUTPUT".equals(xinfoJob.getStatus())) {
-				throw new OtfException("Job didn't finish");
+				throw new XinfoException("Job didn't finish");
 			}
 			
 			LOGGER.debug("Job finished in {} msecs", System.currentTimeMillis() - start);
 			LOGGER.debug("Job details: {}", xinfoJob);
 		} catch (IOException e) {
-			throw new OtfException("Submit failed", e);
+			throw new XinfoException("Submit failed", e);
 		}
 	}
 
 	@Override
-	public byte[] retrieve(String dsn) throws OtfException {
+	public byte[] retrieve(String dsn) throws XinfoException {
 		try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
 			client.site(TYPE_SEQ);
 
@@ -97,27 +97,27 @@ public class FtpConnection implements IConnectable {
 	}
 
 	@Override
-	public void write(String dsn, String content) throws OtfException {
+	public void write(String dsn, String content) throws XinfoException {
 		try (InputStream is = IOUtils.toInputStream(content, configuration.get(XinfoProjectConfig.XINFO_ENCODING).orElse("UTF-8"))) {
 			client.site(TYPE_SEQ);
 			client.storeFile("//" + dsn, is);
 		} catch (IOException e) {
-			throw new OtfException(String.format("Cannot write to %s", dsn), e);
+			throw new XinfoException(String.format("Cannot write to %s", dsn), e);
 		}
 	}
 
 	@Override
-	public void deleteDsn(String dsn) throws OtfException {
+	public void deleteDsn(String dsn) throws XinfoException {
 		try {
 			client.site(TYPE_SEQ);
 			client.deleteFile("//" + dsn);
 		} catch (IOException e) {
-			throw new OtfException(String.format("Cannot delete %s", dsn), e);
+			throw new XinfoException(String.format("Cannot delete %s", dsn), e);
 		}
 	}
 
 	@Override
-	public String createAndUploadInputDataset(Language lang, String content) throws OtfException {
+	public String createAndUploadInputDataset(Language lang, String content) throws XinfoException {
 		try {
 			client.site(TYPE_SEQ);
 			client.site("DSNTYPE=BASIC");
@@ -134,12 +134,12 @@ public class FtpConnection implements IConnectable {
 		
 			return s;
 		} catch (IOException e) {
-			throw new OtfException("Cannot create/upload input dataset", e);
+			throw new XinfoException("Cannot create/upload input dataset", e);
 		}
 	}
 
 	@Override
-	public String createSysxml() throws OtfException {
+	public String createSysxml() throws XinfoException {
 		return configuration.get(XinfoFtpConfig.XINFO_OTF_USER).orElseThrow() + ".XINFO.T" + RANDOM.nextInt(10_000_000) + ".XML";
 	}
 	

@@ -42,11 +42,14 @@ public class OtfProvider extends AbstractXinfoProvider {
 	private static final Pattern P_DB2 = Pattern.compile("EXEC\\s+SQL", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
 	private static final Pattern P_CICS = Pattern.compile("EXEC\\s+CICS", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
 	private IConnectable connection;
+	private File xinfoRoot;
 	
 	public OtfProvider(Configuration configuration) {
 		super(configuration);
 		
 		connection = ConnectionFactory.getConnactable(configuration);
+		
+		setupLocal();
 	}
 	@Override
 	public PACKAGE getXinfo(InputFile pgm) throws XinfoException {
@@ -119,21 +122,36 @@ public class OtfProvider extends AbstractXinfoProvider {
 		}
 	}
 	private void store(InputFile pgm, byte[] xinfo) {
+		Language lang = Language.getByFilename(pgm.filename());
+			
+		String xinfoFileName = FilenameUtils.removeExtension(pgm.filename()) 
+				+ (lang == Language.C || lang == Language.CPP ? ".event" : ".xml");
+			
+		try (OutputStream os = new FileOutputStream(new File(xinfoRoot, xinfoFileName))) {
+			IOUtils.copy(new ByteArrayInputStream(xinfo), os);
+		} catch (IOException e) {
+			LOGGER.error("Unable to store XINFO locally", e);
+		}
+	}
+	private void setupLocal() {
 		Optional<String> oRoot = getConfiguration().get(XinfoProjectConfig.XINFO_ROOT);
 		
 		if (oRoot.isPresent()) {
-			Language lang = Language.getByFilename(pgm.filename());
+			File f = new File(oRoot.get());
 			
-			String xinfoFileName = FilenameUtils.removeExtension(pgm.filename()) 
-					+ (lang == Language.C || lang == Language.CPP ? ".event" : ".xml");
-			
-			try (OutputStream os = new FileOutputStream(oRoot.get() + File.separator + xinfoFileName)) {
-				IOUtils.copy(new ByteArrayInputStream(xinfo), os);
-			} catch (IOException e) {
-				LOGGER.error("Unable to store XINFO locally", e);
+			if (f.exists()) {
+				if (f.isDirectory()) {
+					xinfoRoot = f;
+				} else {
+					LOGGER.warn("The file {} for storing XINFO locally is not a directory", f);
+				}
+			} else {
+				if (f.mkdirs()) {
+					xinfoRoot = f;
+				} else {
+					LOGGER.warn("Unable to create {} for storing XINFO", f);
+				}
 			}
-		} else {
-			LOGGER.warn("No location specified for storing XINFO locally");
 		}
 	}
 	private String getDb2(InputFile pgm) throws IOException {

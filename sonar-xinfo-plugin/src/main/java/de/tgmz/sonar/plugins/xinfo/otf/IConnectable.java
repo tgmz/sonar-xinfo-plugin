@@ -10,13 +10,14 @@
   *******************************************************************************/
 package de.tgmz.sonar.plugins.xinfo.otf;
 
+import de.tgmz.sonar.plugins.xinfo.XinfoException;
 import de.tgmz.sonar.plugins.xinfo.languages.Language;
 
 public interface IConnectable {
-	void submit(String jcl) throws OtfException;
-	byte[] retrieve(String dsn) throws OtfException;
-	void write(String dsn, String content) throws OtfException;
-	void deleteDsn(String dsn) throws OtfException;
-	String createAndUploadInputDataset(Language lang, String content) throws OtfException;
-	String createSysxml() throws OtfException;
+	void submit(String jcl) throws XinfoException;
+	byte[] retrieve(String dsn) throws XinfoException;
+	void write(String dsn, String content) throws XinfoException;
+	void deleteDsn(String dsn) throws XinfoException;
+	String createAndUploadInputDataset(Language lang, String content) throws XinfoException;
+	String createSysxml() throws XinfoException;
 }
