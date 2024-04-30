@@ -30,6 +30,7 @@ import org.sonar.api.batch.sensor.Sensor;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.SensorDescriptor;
 
+import de.tgmz.sonar.plugins.xinfo.XinfoException;
 import de.tgmz.sonar.plugins.xinfo.config.XinfoFtpConfig;
 import de.tgmz.sonar.plugins.xinfo.config.XinfoProjectConfig;
 import de.tgmz.sonar.plugins.xinfo.languages.Language;
@@ -37,7 +38,6 @@ import de.tgmz.sonar.plugins.xinfo.languages.XinfoLanguage;
 import de.tgmz.sonar.plugins.xinfo.otf.ConnectionFactory;
 import de.tgmz.sonar.plugins.xinfo.otf.IConnectable;
 import de.tgmz.sonar.plugins.xinfo.otf.JclUtil;
-import de.tgmz.sonar.plugins.xinfo.otf.OtfException;
 
 @Phase(name = Name.PRE)
 public class OtfSetupSensor implements Sensor {
@@ -84,7 +84,7 @@ public class OtfSetupSensor implements Sensor {
 		            writeLog(threshold, inputFile);
 				}
 			}
-	    } catch (IOException | OtfException e) {
+	    } catch (IOException | XinfoException e) {
 			LOGGER.error("{} failed.", this.getClass().getSimpleName(), e);
 	    }
 	}

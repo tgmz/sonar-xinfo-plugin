@@ -21,10 +21,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.config.Configuration;
 
+import de.tgmz.sonar.plugins.xinfo.XinfoException;
 import de.tgmz.sonar.plugins.xinfo.config.XinfoFtpConfig;
 import de.tgmz.sonar.plugins.xinfo.languages.Language;
 import de.tgmz.sonar.plugins.xinfo.otf.IConnectable;
-import de.tgmz.sonar.plugins.xinfo.otf.OtfException;
 import zowe.client.sdk.core.ZosConnection;
 import zowe.client.sdk.rest.Response;
 import zowe.client.sdk.rest.exception.ZosmfRequestException;
@@ -71,7 +71,7 @@ public class ZoweConnection implements IConnectable {
 	}
 	
 	@Override
-	public void submit(String jcl) throws OtfException {
+	public void submit(String jcl) throws XinfoException {
         try {
 			Job job = jobSubmit.submitByJcl(jcl, null, null);
 
@@ -79,12 +79,12 @@ public class ZoweConnection implements IConnectable {
 			
 			jobDelete.deleteByJob(job, "2.0");
 		} catch (ZosmfRequestException e) {
-        	throw new OtfException("Job failed", e);
+        	throw new XinfoException("Job failed", e);
 		}
 	}
 
 	@Override
-	public byte[] retrieve(String dsn) throws OtfException {
+	public byte[] retrieve(String dsn) throws XinfoException {
         DownloadParams params = new DownloadParams.Builder().build();
 
         try (InputStream is = dsnGet.get(dsn, params);
@@ -93,33 +93,33 @@ public class ZoweConnection implements IConnectable {
         	
         	return os.toByteArray();
         } catch (IOException | ZosmfRequestException e) {
-        	throw new OtfException(String.format("Cannot retrieve %s", dsn), e);
+        	throw new XinfoException(String.format("Cannot retrieve %s", dsn), e);
 		}
 	}
 
 	@Override
-	public void write(String dsn, String content) throws OtfException {
+	public void write(String dsn, String content) throws XinfoException {
 		try {
 			response = dsnWrite.write(dsn, content);
 			LOGGER.debug("Result write {}", response);
 		} catch (ZosmfRequestException e) {
-        	throw new OtfException(String.format("Cannot write %s", dsn), e);
+        	throw new XinfoException(String.format("Cannot write %s", dsn), e);
 		}
 	}
 
 	@Override
-	public void deleteDsn(String dsn) throws OtfException {
+	public void deleteDsn(String dsn) throws XinfoException {
 		try {
 			response = dsnDelete.delete(dsn);
 			LOGGER.debug("Result delete {}", response);
 		} catch (ZosmfRequestException e) {
-        	throw new OtfException(String.format("Cannot delete %s", dsn), e);
+        	throw new XinfoException(String.format("Cannot delete %s", dsn), e);
 		}
 
 	}
 
 	@Override
-	public String createAndUploadInputDataset(Language lang, String content) throws OtfException {
+	public String createAndUploadInputDataset(Language lang, String content) throws XinfoException {
 		String inputDsn = connection.getUser() + ".XINFO.T" + RANDOM.nextInt(10_000_000) + ".INPUT";
 		
 		try {
@@ -129,14 +129,14 @@ public class ZoweConnection implements IConnectable {
 			response = dsnWrite.write(inputDsn, content);
 			LOGGER.debug("Result write {}", response);
 		} catch (ZosmfRequestException e) {
-        	throw new OtfException(String.format("Cannot create %s", inputDsn), e);
+        	throw new XinfoException(String.format("Cannot create %s", inputDsn), e);
 		}
 		
 		return inputDsn;
 	}
 
 	@Override
-	public String createSysxml() throws OtfException {
+	public String createSysxml() throws XinfoException {
 		return connection.getUser() + ".XINFO.T" + RANDOM.nextInt(10_000_000) + ".XML";
 	}
 	private static CreateParams sequential(Language lang) {
