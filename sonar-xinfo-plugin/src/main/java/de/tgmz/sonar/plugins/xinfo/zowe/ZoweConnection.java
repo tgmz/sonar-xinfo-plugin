@@ -120,15 +120,12 @@ public class ZoweConnection implements IConnectable {
 	}
 
 	@Override
-	public String createAndUploadInputDataset(Language lang, String content) throws XinfoException {
+	public String createInputDataset(Language lang) throws XinfoException {
 		String inputDsn = connection.getUser() + ".XINFO.T" + RANDOM.nextInt(10_000_000) + ".INPUT";
 		
 		try {
 			response = dsnCreate.create(inputDsn, sequential(lang));
 			LOGGER.debug("Result create {}", response);
-			
-			response = dsnWrite.write(inputDsn, content.replaceAll("\\r\\n?", "\n"));
-			LOGGER.debug("Result write {}", response);
 		} catch (ZosmfRequestException e) {
         	throw new XinfoException(String.format("Cannot create %s", inputDsn), e);
 		}
@@ -137,9 +134,10 @@ public class ZoweConnection implements IConnectable {
 	}
 
 	@Override
-	public String createSysxml() throws XinfoException {
+	public String computeSysxml() {
 		return connection.getUser() + ".XINFO.T" + RANDOM.nextInt(10_000_000) + ".XML";
 	}
+	
 	private static CreateParams sequential(Language lang) {
 		return new CreateParams.Builder()
                 .dsorg("PS")
@@ -154,7 +152,7 @@ public class ZoweConnection implements IConnectable {
 	@Override
 	public void deleteJob(IJob job) throws XinfoException {
 		try {
-			jobDelete.deleteByJob(new Job.Builder().jobId(job.getHandle()).jobName(job.getName()).build(), "2.0");
+			jobDelete.deleteByJob(new Job.Builder().jobId(job.getId()).jobName(job.getName()).build(), "2.0");
 		} catch (ZosmfRequestException e) {
         	throw new XinfoException(String.format("Cannot delete job %s", job), e);
 		}

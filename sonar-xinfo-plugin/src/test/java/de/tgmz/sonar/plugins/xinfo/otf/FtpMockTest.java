@@ -33,7 +33,7 @@ public class FtpMockTest extends AbstractSensorOtfTest {
 	public static void setupOnce() throws IOException {
 		setupServer();
 		
-		setupEnvironment("ftp", server.getServerControlPort());
+		setupEnvironment("ftp", server.getServerControlPort(), true);
 	}
 
 	private static void setupServer() throws IOException, FileNotFoundException {

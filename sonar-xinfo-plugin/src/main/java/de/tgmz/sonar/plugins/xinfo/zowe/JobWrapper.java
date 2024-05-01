@@ -10,24 +10,37 @@
   *******************************************************************************/
 package de.tgmz.sonar.plugins.xinfo.zowe;
 
+import de.tgmz.sonar.plugins.xinfo.ftp.JesJob;
 import de.tgmz.sonar.plugins.xinfo.otf.IJob;
 import zowe.client.sdk.zosjobs.response.Job;
 
 public class JobWrapper implements IJob {
 	private Job zoweJob;
+	private JesJob jesJob;
 	
 	public JobWrapper(Job zoweJob) {
-		super();
 		this.zoweJob = zoweJob;
+	}
+
+	public JobWrapper(JesJob jesJob) {
+		this.jesJob = jesJob;
 	}
 
 	@Override
 	public String getName() {
-		return zoweJob.getJobName().orElseThrow();
+		if (jesJob != null) {
+			return jesJob.getName();
+		} else {
+			return zoweJob.getJobName().orElseThrow();
+		}
 	}
 
 	@Override
-	public String getHandle() {
-		return zoweJob.getJobId().orElseThrow();
+	public String getId() {
+		if (jesJob != null) {
+			return jesJob.getHandle();
+		} else {
+			return zoweJob.getJobId().orElseThrow();
+		}
 	}
 }

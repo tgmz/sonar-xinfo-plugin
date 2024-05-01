@@ -13,6 +13,7 @@ package de.tgmz.sonar.plugins.xinfo.otf;
 import java.io.File;
 import java.io.IOException;
 
+import org.apache.commons.io.FileUtils;
 import org.junit.AfterClass;
 import org.junit.Test;
 import org.sonar.api.batch.rule.CheckFactory;
@@ -32,15 +33,20 @@ import de.tgmz.sonar.plugins.xinfo.sensors.XinfoIssuesLoader;
 public abstract class AbstractSensorOtfTest {
 	private static final String LOG_LEVEL_KEY = "org.slf4j.simpleLogger.defaultLogLevel"; 
 	private static final String LOC = "otftestresources";
+	private static final String LOC_XINFO = LOC + File.separator +"xinfo";
 	private static SensorContext sensorContext;
 	private static String logLevel;
 	
-	protected static void setupEnvironment(String provider, int port) throws IOException {
+	protected static void setupEnvironment(String provider, int port, boolean clean) throws IOException {
 		logLevel = System.getProperty(LOG_LEVEL_KEY, "INFO");
 		System.setProperty(LOG_LEVEL_KEY, "DEBUG");	// Force noisy logging
+		
+		if (clean) {
+			FileUtils.deleteDirectory(new File(LOC_XINFO));
+		}
 
 		MapSettings ms = new MapSettings();
-		ms.setProperty(XinfoProjectConfig.XINFO_ROOT, LOC + File.separator +"xinfo");
+		ms.setProperty(XinfoProjectConfig.XINFO_ROOT, LOC_XINFO);
 		ms.setProperty(XinfoProjectConfig.XINFO_LOG_THRESHOLD, "1");
 		ms.setProperty(XinfoProjectConfig.XINFO_NUM_THREADS, "1");
 		

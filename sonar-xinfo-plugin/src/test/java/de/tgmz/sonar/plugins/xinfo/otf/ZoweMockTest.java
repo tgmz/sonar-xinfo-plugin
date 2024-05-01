@@ -33,7 +33,7 @@ public class ZoweMockTest extends AbstractSensorOtfTest {
 	public static void setupOnce() throws IOException {
 		setupServer();
 		
-		setupEnvironment("zowe", server.getPort());
+		setupEnvironment("zowe", server.getPort(), false);
 	}
 
 	private static void setupServer() throws IOException {
@@ -42,9 +42,12 @@ public class ZoweMockTest extends AbstractSensorOtfTest {
 		
 		try (InputStream is0 = ZoweMockTest.class.getClassLoader().getResourceAsStream("submit0.json");
 				InputStream is1 = ZoweMockTest.class.getClassLoader().getResourceAsStream("submit1.json")) {
-			server.when(HttpRequest.request().withMethod("PUT")).respond(HttpResponse.response(IOUtils.toString(is0, StandardCharsets.UTF_8)));
-			server.when(HttpRequest.request().withMethod("GET")).respond(HttpResponse.response(IOUtils.toString(is1, StandardCharsets.UTF_8)));
+			server.when(HttpRequest.request().withMethod("PUT").withPath(".*restjobs.*")).respond(HttpResponse.response(IOUtils.toString(is0, StandardCharsets.UTF_8)));
+			server.when(HttpRequest.request().withMethod("GET").withPath(".*restjobs.*")).respond(HttpResponse.response(IOUtils.toString(is1, StandardCharsets.UTF_8)));
 		}
+		
+		server.when(HttpRequest.request().withMethod("PUT").withPath(".*restfiles.*")).respond(HttpResponse.response().withStatusCode(204));
+		server.when(HttpRequest.request().withMethod("GET").withPath(".*restfiles.*")).respond(HttpResponse.response().withStatusCode(200));
 		
 		server.when(HttpRequest.request().withMethod("POST")).respond(HttpResponse.response().withStatusCode(201));
 		server.when(HttpRequest.request().withMethod("DELETE")).respond(HttpResponse.response().withStatusCode(204));
