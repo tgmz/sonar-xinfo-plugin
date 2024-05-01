@@ -20,6 +20,6 @@ import org.junit.BeforeClass;
 public class SensorOnTheFlyTest extends AbstractSensorOtfTest {
 	@BeforeClass
 	public static void setupOnce() throws IOException {
-		setupEnvironment("zowe", 10443);
+		setupEnvironment("zowe", 10443, true);
 	}
 }

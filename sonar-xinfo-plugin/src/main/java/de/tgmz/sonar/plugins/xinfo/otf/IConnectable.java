@@ -19,6 +19,6 @@ public interface IConnectable {
 	void write(String dsn, String content) throws XinfoException;
 	void deleteDsn(String dsn) throws XinfoException;
 	void deleteJob(IJob job) throws XinfoException;
-	String createAndUploadInputDataset(Language lang, String content) throws XinfoException;
-	String createSysxml() throws XinfoException;
+	String createInputDataset(Language lang) throws XinfoException;
+	String computeSysxml();
 }

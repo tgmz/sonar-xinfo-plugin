@@ -10,7 +10,10 @@
   *******************************************************************************/
 package de.tgmz.sonar.plugins.xinfo.otf;
 
+/**
+ * Wrapper for different JCL job implementations.
+ */
 public interface IJob {
 	String getName();
-	String getHandle();
+	String getId();
 }

@@ -13,9 +13,7 @@ package de.tgmz.sonar.plugins.xinfo.ftp;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import de.tgmz.sonar.plugins.xinfo.otf.IJob;
-
-public class JesJob implements IJob {
+public class JesJob {
 	private static final Pattern JOB_DETAIL_PATTERN = Pattern
             .compile("(?<name>[^ ]+) +(?<handle>[^ ]+) +(?<owner>[^ ]+) +(?<status>[^ ]+) +(?<class>[^ ]+)"
                     + "(?<completion> +(?<result>[^=]+)=(?<code>\\d+)(?<spool> +(?<files>\\d+) +spool files)?)? +");

@@ -19,6 +19,7 @@ import java.util.Optional;
 import java.util.Random;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.input.NullInputStream;
 import org.apache.commons.net.ftp.FTPReply;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +32,7 @@ import de.tgmz.sonar.plugins.xinfo.config.XinfoProjectConfig;
 import de.tgmz.sonar.plugins.xinfo.languages.Language;
 import de.tgmz.sonar.plugins.xinfo.otf.IConnectable;
 import de.tgmz.sonar.plugins.xinfo.otf.IJob;
+import de.tgmz.sonar.plugins.xinfo.zowe.JobWrapper;
 
 public class FtpConnection implements IConnectable {
 	private static final Logger LOGGER = LoggerFactory.getLogger(FtpConnection.class);
@@ -78,7 +80,7 @@ public class FtpConnection implements IConnectable {
 			LOGGER.debug("Job finished in {} msecs", System.currentTimeMillis() - start);
 			LOGGER.debug("Job details: {}", xinfoJob);
 			
-			return xinfoJob;
+			return new JobWrapper(xinfoJob);
 		} catch (IOException e) {
 			throw new XinfoException("Submit failed", e);
 		}
@@ -120,7 +122,7 @@ public class FtpConnection implements IConnectable {
 	}
 
 	@Override
-	public String createAndUploadInputDataset(Language lang, String content) throws XinfoException {
+	public String createInputDataset(Language lang) throws XinfoException {
 		try {
 			client.site(TYPE_SEQ);
 			client.site("DSNTYPE=BASIC");
@@ -131,18 +133,18 @@ public class FtpConnection implements IConnectable {
 		
 			String s = configuration.get(XinfoOtfConfig.XINFO_OTF_USER).orElseThrow() + ".XINFO.T" + RANDOM.nextInt(10_000_000) + ".INPUT";
 		
-			try (InputStream is = IOUtils.toInputStream(content, configuration.get(XinfoProjectConfig.XINFO_ENCODING).orElse("UTF-8"))) {
+			try (InputStream is = new NullInputStream()) {
 				client.storeFile(s, is);
 			}
 		
 			return s;
 		} catch (IOException e) {
-			throw new XinfoException("Cannot create/upload input dataset", e);
+			throw new XinfoException("Cannot create input dataset", e);
 		}
 	}
 
 	@Override
-	public String createSysxml() throws XinfoException {
+	public String computeSysxml() {
 		return configuration.get(XinfoOtfConfig.XINFO_OTF_USER).orElseThrow() + ".XINFO.T" + RANDOM.nextInt(10_000_000) + ".XML";
 	}
 	
@@ -179,7 +181,7 @@ public class FtpConnection implements IConnectable {
 	public void deleteJob(IJob job) throws XinfoException {
 		try {
 			client.site(TYPE_JES);
-			client.deleteFile(job.getHandle());
+			client.deleteFile(job.getId());
 		} catch (IOException e) {
 			throw new XinfoException(String.format("Cannot delete job %s", job), e);
 		}

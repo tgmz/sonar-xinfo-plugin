@@ -54,9 +54,11 @@ public class OtfProvider extends AbstractXinfoProvider {
 	@Override
 	public PACKAGE getXinfo(InputFile pgm) throws XinfoException {
 		try {
-			String inputDsn = connection.createAndUploadInputDataset(Language.getByFilename(pgm.filename()), pgm.contents());
+			String inputDsn = connection.createInputDataset(Language.getByFilename(pgm.filename()));
 			
-			String sysxmlsd = connection.createSysxml();
+			connection.write(inputDsn, pgm.contents());
+			
+			String sysxmlsd = connection.computeSysxml();
 
 			String jcl = createJcl(pgm, inputDsn, sysxmlsd);
 			
