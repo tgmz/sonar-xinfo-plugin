@@ -139,13 +139,15 @@ public class ZoweConnection implements IConnectable {
 	}
 	
 	private static CreateParams sequential(Language lang) {
+		boolean isC = lang == Language.C || lang == Language.CPP;
+		
 		return new CreateParams.Builder()
                 .dsorg("PS")
                 .alcunit("TRK")
                 .primary(10)
                 .secondary(10)
-                .recfm("FB")
-                .lrecl(lang == Language.C || lang == Language.CPP ? 120 : 80)
+                .recfm(isC ? "VB" : "FB")
+                .lrecl(isC ? 260 : 80)
                 .build();
 	}
 

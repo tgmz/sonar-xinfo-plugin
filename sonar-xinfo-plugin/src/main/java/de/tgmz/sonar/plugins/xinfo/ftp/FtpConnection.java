@@ -123,11 +123,13 @@ public class FtpConnection implements IConnectable {
 
 	@Override
 	public String createInputDataset(Language lang) throws XinfoException {
+		boolean isC = lang == Language.C || lang == Language.CPP;
+		
 		try {
 			client.site(TYPE_SEQ);
 			client.site("DSNTYPE=BASIC");
-			client.site("RECFM=FB");
-			client.site("LRECL=" + (lang == Language.C || lang == Language.CPP ? "120" : "80"));
+			client.site("RECFM=" + (isC ? "VB" : "FB"));
+			client.site("LRECL=" + (isC ? "260" : "80"));
 			client.site("PRIMARY=100");
 			client.site("SECONDARY=100");
 		
