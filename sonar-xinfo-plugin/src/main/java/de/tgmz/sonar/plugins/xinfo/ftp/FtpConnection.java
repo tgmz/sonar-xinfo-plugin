@@ -122,7 +122,9 @@ public class FtpConnection implements IConnectable {
 	}
 
 	@Override
-	public String createInputDataset(Language lang) throws XinfoException {
+	public String createInputDataset(String name) throws XinfoException {
+		Language lang = Language.getByFilename(name);
+		
 		boolean isC = lang == Language.C || lang == Language.CPP;
 		
 		try {
@@ -146,7 +148,7 @@ public class FtpConnection implements IConnectable {
 	}
 
 	@Override
-	public String computeSysxml() {
+	public String computeSysxml(String name) {
 		return configuration.get(XinfoOtfConfig.XINFO_OTF_USER).orElseThrow() + ".XINFO.T" + RANDOM.nextInt(10_000_000) + ".XML";
 	}
 	

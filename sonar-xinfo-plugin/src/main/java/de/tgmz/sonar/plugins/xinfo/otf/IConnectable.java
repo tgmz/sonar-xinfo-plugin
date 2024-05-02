@@ -11,7 +11,6 @@
 package de.tgmz.sonar.plugins.xinfo.otf;
 
 import de.tgmz.sonar.plugins.xinfo.XinfoException;
-import de.tgmz.sonar.plugins.xinfo.languages.Language;
 
 public interface IConnectable {
 	IJob submit(String jcl) throws XinfoException;
@@ -19,6 +18,6 @@ public interface IConnectable {
 	void write(String dsn, String content) throws XinfoException;
 	void deleteDsn(String dsn) throws XinfoException;
 	void deleteJob(IJob job) throws XinfoException;
-	String createInputDataset(Language lang) throws XinfoException;
-	String computeSysxml();
+	String createInputDataset(String name) throws XinfoException;
+	String computeSysxml(String name);
 }

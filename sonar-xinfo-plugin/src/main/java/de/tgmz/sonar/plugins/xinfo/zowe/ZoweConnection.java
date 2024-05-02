@@ -14,9 +14,14 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.SecureRandom;
+import java.text.Normalizer;
+import java.text.Normalizer.Form;
+import java.util.Locale;
 import java.util.Random;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.config.Configuration;
@@ -44,6 +49,7 @@ import zowe.client.sdk.zosjobs.types.JobStatus.Type;
 public class ZoweConnection implements IConnectable {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ZoweConnection.class);
 	private static final Random RANDOM = new SecureRandom();
+	private static final String ZOS_IDENTIFIEER = "[A-Z§\\$#][A-Z\\d§\\$#]{0,7}";
 
 	private ZosConnection connection;
 	
@@ -104,7 +110,11 @@ public class ZoweConnection implements IConnectable {
 			response = dsnWrite.write(dsn, content.replaceAll("\\r\\n?", "\n"));
 			LOGGER.debug("Result write {}", response);
 		} catch (ZosmfRequestException e) {
-        	throw new XinfoException(String.format("Cannot write %s", dsn), e);
+			if (e.getMessage().contains("EDC5003I")) {
+				LOGGER.warn("Truncation occurred writing {}", dsn);
+			} else {
+				throw new XinfoException(String.format("Cannot write %s", dsn), e);
+			}
 		}
 	}
 
@@ -120,8 +130,10 @@ public class ZoweConnection implements IConnectable {
 	}
 
 	@Override
-	public String createInputDataset(Language lang) throws XinfoException {
-		String inputDsn = connection.getUser() + ".XINFO.T" + RANDOM.nextInt(10_000_000) + ".INPUT";
+	public String createInputDataset(String name) throws XinfoException {
+		Language lang = Language.getByFilename(name);
+		
+		String inputDsn = computeCompatibleName(name) + ".INPUT";
 		
 		try {
 			response = dsnCreate.create(inputDsn, sequential(lang));
@@ -134,8 +146,8 @@ public class ZoweConnection implements IConnectable {
 	}
 
 	@Override
-	public String computeSysxml() {
-		return connection.getUser() + ".XINFO.T" + RANDOM.nextInt(10_000_000) + ".XML";
+	public String computeSysxml(String name) {
+		return computeCompatibleName(name) + ".XML";
 	}
 	
 	private static CreateParams sequential(Language lang) {
@@ -159,5 +171,15 @@ public class ZoweConnection implements IConnectable {
         	throw new XinfoException(String.format("Cannot delete job %s", job), e);
 		}
 	}
-
+	private String computeCompatibleName(String name) {
+		// Try to convert name into a z/OS compatible identifier
+		String s = StringUtils.substring(Normalizer.normalize(FilenameUtils.removeExtension(name), Form.NFKC), 0, 8).toUpperCase(Locale.US);
+		
+		// Failover
+		if (!s.matches(ZOS_IDENTIFIEER)) {
+			s = "DUMMY";
+		}
+		
+		return connection.getUser() + ".XINFO.T" + RANDOM.nextInt(10_000_000) + "." + s;
+	}
 }
