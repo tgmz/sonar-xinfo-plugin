@@ -19,6 +19,8 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
+import java.util.Deque;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -158,6 +160,8 @@ public abstract class AbstractXinfoProvider implements IXinfoProvider {
 
 		List<String> readLines = IOUtils.readLines(is, Charset.defaultCharset());
 		
+		Deque<FILE> fileStack = new LinkedList<>();
+		
 		for (String line : readLines) {
 			// See https://www.ibm.com/docs/en/SSLTBW_2.3.0/pdf/cbcux01_v2r3.pdf appendix e
 			// page 671 for the detailed format of the SYSEVENT file
@@ -190,6 +194,27 @@ public abstract class AbstractXinfoProvider implements IXinfoProvider {
 				f.setINCLUDEDONLINE(s[3]);				// C: The line number of the #include directive. For the primary source file this value is 0
 				f.setFILENAME(s[5])	;					// E: String containing file/dataset name.
 				
+				fileStack.push(f);
+			}
+			if (line.startsWith("FILEEND")) {
+				// The FILEEND field looks like this:
+				// FILEID 0 1 0
+				//        | | |
+				//        A B C							// B: File number that has been processed to end of line
+				String[] s = line.split("\\s", 4);
+				
+				FILE f = fileStack.pop();
+				
+				// Failsafe
+				if (!s[2].equals(f.getFILENUMBER())) {
+					LOGGER.warn("Filestack corrupted: Expected filenumer is {} but was {}", f.getFILENUMBER(), s[2]);
+				}
+				
+				// When the main file is processed to the end the file stack is empty
+				if (!fileStack.isEmpty()) {
+					f.setINCLUDEDFROMFILE(fileStack.peek().getFILENUMBER());
+				}
+			
 				ccomp.getFILEREFERENCETABLE().getFILE().add(f);
 			}
 		}
