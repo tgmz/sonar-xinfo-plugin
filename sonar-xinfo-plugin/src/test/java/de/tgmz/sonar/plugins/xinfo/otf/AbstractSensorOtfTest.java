@@ -37,9 +37,9 @@ public abstract class AbstractSensorOtfTest {
 	private static SensorContext sensorContext;
 	private static String logLevel;
 	
-	protected static void setupEnvironment(String provider, int port, boolean clean) throws IOException {
+	protected static void setupEnvironment(String provider, int port, int numThreads, boolean clean) throws IOException {
 		logLevel = System.getProperty(LOG_LEVEL_KEY, "INFO");
-		System.setProperty(LOG_LEVEL_KEY, "DEBUG");	// Force noisy logging
+		//System.setProperty(LOG_LEVEL_KEY, "DEBUG");	// Force noisy logging
 		
 		if (clean) {
 			FileUtils.deleteDirectory(new File(LOC_XINFO));
@@ -48,7 +48,7 @@ public abstract class AbstractSensorOtfTest {
 		MapSettings ms = new MapSettings();
 		ms.setProperty(XinfoProjectConfig.XINFO_ROOT, LOC_XINFO);
 		ms.setProperty(XinfoProjectConfig.XINFO_LOG_THRESHOLD, "1");
-		ms.setProperty(XinfoProjectConfig.XINFO_NUM_THREADS, "1");
+		ms.setProperty(XinfoProjectConfig.XINFO_NUM_THREADS, numThreads);
 		
 		ms.setProperty(XinfoOtfConfig.XINFO_OTF, provider);
 		ms.setProperty(XinfoOtfConfig.XINFO_OTF_PORT, port);

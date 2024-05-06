@@ -133,16 +133,20 @@ public class ZoweConnection implements IConnectable {
 	public String createInputDataset(String name) throws XinfoException {
 		Language lang = Language.getByFilename(name);
 		
-		String inputDsn = computeCompatibleName(name) + ".INPUT";
+		for (int i = 0; i < 5; ++i) {
+			String inputDsn = computeCompatibleName(name) + ".INPUT";
 		
-		try {
-			response = dsnCreate.create(inputDsn, sequential(lang));
-			LOGGER.debug("Result create {}", response);
-		} catch (ZosmfRequestException e) {
-        	throw new XinfoException(String.format("Cannot create %s", inputDsn), e);
+			try {
+				response = dsnCreate.create(inputDsn, sequential(lang));
+				LOGGER.debug("Result create {}", response);
+				
+				return inputDsn;
+			} catch (ZosmfRequestException e) {
+				LOGGER.warn("Creation of {} failed, retrying", inputDsn);
+			}
 		}
 		
-		return inputDsn;
+    	throw new XinfoException("Creation of input dataset failed");
 	}
 
 	@Override
@@ -150,7 +154,7 @@ public class ZoweConnection implements IConnectable {
 		return computeCompatibleName(name) + ".XML";
 	}
 	
-	private static CreateParams sequential(Language lang) {
+	private CreateParams sequential(Language lang) {
 		boolean isC = lang == Language.C || lang == Language.CPP;
 		
 		return new CreateParams.Builder()

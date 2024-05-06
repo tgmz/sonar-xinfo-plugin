@@ -10,7 +10,6 @@
   *******************************************************************************/
 package de.tgmz.sonar.plugins.xinfo.sensors;
 
-import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
@@ -38,6 +37,6 @@ public class XinfoExecutor implements Callable<Map<InputFile,PACKAGE>> {
 	public Map<InputFile, PACKAGE> call() throws XinfoException {
 		PACKAGE xinfo = xinfoProvider.getXinfo(inputFile);
 		
-		return Collections.singletonMap(inputFile, xinfo);
+		return Map.of(inputFile, xinfo);
 	}
 }

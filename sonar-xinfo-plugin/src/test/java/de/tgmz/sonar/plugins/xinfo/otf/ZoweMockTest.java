@@ -33,7 +33,7 @@ public class ZoweMockTest extends AbstractSensorOtfTest {
 	public static void setupOnce() throws IOException {
 		setupServer();
 		
-		setupEnvironment("zowe", server.getPort(), false);
+		setupEnvironment("zowe", server.getPort(), 2, false);
 	}
 
 	private static void setupServer() throws IOException {
