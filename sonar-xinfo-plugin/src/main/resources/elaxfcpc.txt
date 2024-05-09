@@ -15,7 +15,7 @@
 //        SET CICS={6}
 //STP0000 EXEC PROC=ELAXFCPC
 //SYSIN    DD DISP=SHR,DSN={1}
-//SYSEVENT DD DISP=(NEW,CATLG,DELETE),                           	
+//SYSEVENT DD DISP=(NEW,KEEP,KEEP),
 //         DSN={2},
 //         UNIT=VIO,SPACE=(CYL,(1,1)),
 //         DCB=(RECFM=VBA,LRECL=16383,BLKSIZE=0)
