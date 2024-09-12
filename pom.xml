@@ -139,7 +139,6 @@
 		<profile>
 			<id>dc</id>
 			<properties>
-				<dependency-check.version>9.1.0</dependency-check.version>
 				<dependency-check.suppressionFile></dependency-check.suppressionFile>
 				<sonar.dependencyCheck.htmlReportPath>${project.build.directory}/dependency-check-report.html</sonar.dependencyCheck.htmlReportPath>
 			</properties>
@@ -148,7 +147,7 @@
 					<plugin>
 						<groupId>org.owasp</groupId>
 						<artifactId>dependency-check-maven</artifactId>
-						<version>${dependency-check.version}</version>
+						<version>10.0.4</version>
 						<configuration>
 							<assemblyAnalyzerEnabled>false</assemblyAnalyzerEnabled>
 							<centralAnalyzerEnabled>false</centralAnalyzerEnabled>
