@@ -22,7 +22,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockftpserver.stub.StubFtpServer;
 
-import de.tgmz.sonar.plugins.xinfo.XinfoException;
 import de.tgmz.sonar.plugins.xinfo.ftp.JesClient;
 
 public class JesClientTest {
@@ -56,7 +55,7 @@ public class JesClientTest {
 		assertTrue(client.login("foo", "bar"));
 	}
 	@Test
-	public void testSubmit() throws IOException, XinfoException {
+	public void testSubmit() throws IOException {
 		assertThrows(IOException.class, () -> client.submit(""));
 		assertEquals(200, client.setOwnerFilter(""));
 		assertNotNull(client.listJobsDetailed());

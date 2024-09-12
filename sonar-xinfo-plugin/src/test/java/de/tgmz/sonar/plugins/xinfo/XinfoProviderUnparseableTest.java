@@ -13,7 +13,6 @@ package de.tgmz.sonar.plugins.xinfo;
 
 import static org.junit.Assert.assertThrows;
 
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collection;
@@ -33,17 +32,17 @@ public class XinfoProviderUnparseableTest {
 		this.xml = xml;
 	}
 	@Test
-	public void testUnparseable() throws IOException {
+	public void testUnparseable() {
 		assertThrows(XinfoException.class, () -> new DummyXinfoProvider().createXinfo(IOUtils.toInputStream(xml, StandardCharsets.UTF_8)));
 	}
 	
 	@Test
-	public void testUnmarshalable() throws IOException {
+	public void testUnmarshalable() {
 		assertThrows(XinfoException.class, () -> new DummyXinfoProvider().createXinfo(IOUtils.toInputStream(xml, StandardCharsets.UTF_8)));
 	}
 	
 	@Test
-	public void testUnparseableWrongEncoding() throws IOException {
+	public void testUnparseableWrongEncoding() {
 		assertThrows(XinfoException.class, () -> new DummyXinfoProvider().createXinfo(IOUtils.toInputStream(xml, StandardCharsets.UTF_8)));
 	}
 	@Parameters(name = "{index}: Check for language [{0}]")

@@ -86,7 +86,7 @@ public class XinfoUtilTest {
 	}
 	
 	@Test
-	public void testMainFile() throws XinfoException  {
+	public void testMainFile() {
 		assertEquals("0", XinfoUtil.getMainFileNumber(Language.PLI));
 		
 		assertEquals("1", XinfoUtil.getMainFileNumber(Language.COBOL));

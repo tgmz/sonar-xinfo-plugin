@@ -11,8 +11,6 @@
 
 package de.tgmz.sonar.plugins.xinfo;
 
-import java.lang.reflect.InvocationTargetException;
-
 import org.junit.Test;
 import org.sonar.api.server.profile.BuiltInQualityProfilesDefinition;
 
@@ -23,7 +21,7 @@ import de.tgmz.sonar.plugins.xinfo.languages.XinfoQualityProfile;
  */
 public class QualityProfileTest {
 	@Test(expected = Test.None.class)
-	public void test() throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
+	public void test() {
 		new XinfoQualityProfile().define(new BuiltInQualityProfilesDefinition.Context());
 	}
 }

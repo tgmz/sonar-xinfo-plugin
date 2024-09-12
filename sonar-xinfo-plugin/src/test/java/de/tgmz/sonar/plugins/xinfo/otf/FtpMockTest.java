@@ -10,7 +10,6 @@
   *******************************************************************************/
 
 package de.tgmz.sonar.plugins.xinfo.otf;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -36,7 +35,7 @@ public class FtpMockTest extends AbstractSensorOtfTest {
 		setupEnvironment("ftp", server.getServerControlPort(), true);
 	}
 
-	private static void setupServer() throws IOException, FileNotFoundException {
+	private static void setupServer() throws IOException {
 		server = new StubFtpServer();
 		server.setServerControlPort(8021);
 		

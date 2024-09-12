@@ -73,7 +73,7 @@ public class SensorTest {
 	}
 	
 	@AfterClass
-	public static void teardownOnce() throws IOException {
+	public static void teardownOnce() {
 		new File("testresources/xinfo/plitst6.xml").delete();
 	}
 	
