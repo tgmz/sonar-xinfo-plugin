@@ -38,4 +38,11 @@
    <packageUrl regex="true">^pkg:maven/org\.apache\.pdfbox/pdfbox@.*$</packageUrl>
    <vulnerabilityName>CVE-2021-31812</vulnerabilityName>
 </suppress>
+<suppress>
+   <notes><![CDATA[
+   file name: zowe-client-java-sdk-2.2.0.jar
+   ]]></notes>
+   <packageUrl regex="true">^pkg:maven/org\.zowe\.client\.java\.sdk/zowe-client-java-sdk@.*$</packageUrl>
+   <cve>CVE-2024-6916</cve>
+</suppress>
 </suppressions>
