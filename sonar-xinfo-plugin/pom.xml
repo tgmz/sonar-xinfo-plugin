@@ -28,7 +28,7 @@
 
 	<properties>
 		<tycho.version>4.0.4</tycho.version>
-		<jdk.min.version>14</jdk.min.version>
+		<jdk.min.version>17</jdk.min.version>
 		<maven.build.timestamp.format>yyyyMMdd</maven.build.timestamp.format>
 	</properties>
 
@@ -48,7 +48,7 @@
 		<dependency>
   			<groupId>commons-net</groupId>
   			<artifactId>commons-net</artifactId>
-  			<version>3.9.0</version>
+  			<version>3.12.0</version>
 		</dependency>
         <dependency>
             <groupId>org.zowe.client.java.sdk</groupId>
@@ -58,7 +58,7 @@
 		<dependency>
     		<groupId>io.github.classgraph</groupId>
     		<artifactId>classgraph</artifactId>
-    		<version>4.8.165</version>
+    		<version>4.8.184</version>
 		</dependency>
 		<dependency>
 			<groupId>com.google.code.findbugs</groupId>
@@ -68,12 +68,12 @@
 		<dependency>
 			<groupId>jakarta.xml.bind</groupId>
 			<artifactId>jakarta.xml.bind-api</artifactId>
-			<version>3.0.1</version>
+			<version>4.0.4</version>
 		</dependency>
 		<dependency>
 			<groupId>org.glassfish.jaxb</groupId>
 			<artifactId>jaxb-runtime</artifactId>
-			<version>3.0.1</version>
+			<version>4.0.6</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-logging</groupId>
@@ -97,7 +97,7 @@
 		<dependency>
     		<groupId>org.mockftpserver</groupId>
     		<artifactId>MockFtpServer</artifactId>
-    		<version>3.1.0</version>
+    		<version>3.2.0</version>
     		<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -115,13 +115,13 @@
 		<dependency>
     		<groupId>org.mockito</groupId>
     		<artifactId>mockito-core</artifactId>
-    		<version>5.11.0</version>
+    		<version>5.21.0</version>
 	    	<scope>test</scope>
 		</dependency>
 		<dependency>
     		<groupId>org.mock-server</groupId>
     		<artifactId>mockserver-netty</artifactId>
-    		<version>5.14.0</version>
+    		<version>5.15.0</version>
 	    	<scope>test</scope>
 		</dependency>		
 	</dependencies>
@@ -187,7 +187,7 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>build-helper-maven-plugin</artifactId>
-				<version>3.2.0</version>
+				<version>3.6.1</version>
 				<executions>
 					<execution>
 						<id>add-source</id>
@@ -206,7 +206,7 @@
 			<plugin>
 				<groupId>org.sonarsource.sonar-packaging-maven-plugin</groupId>
 				<artifactId>sonar-packaging-maven-plugin</artifactId>
-				<version>1.16</version>
+				<version>1.25.1.3002</version>
 				<extensions>true</extensions>
 				<configuration>
 					<pluginClass>de.tgmz.sonar.plugins.xinfo.XinfoPlugin</pluginClass>
@@ -218,7 +218,6 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.7.0</version>
 				<configuration>
 					<!-- Choose "javac" for the JDK Compiler or "jdt" for Eclipse JDT: -->
 					<compilerId>javac</compilerId>
@@ -236,7 +235,6 @@
 			</plugin>
 			<plugin>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<version>2.22.0</version>
 				<configuration>
 					<reuseForks>false</reuseForks>
 					<redirectTestOutputToFile>false</redirectTestOutputToFile>
@@ -245,7 +243,7 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>jaxb2-maven-plugin</artifactId>
-				<version>3.1.0</version>
+				<version>4.0.0</version>
 				<executions>
 					<execution>
 						<id>xjc-plicomp</id>
@@ -319,22 +317,7 @@
 				</executions>
 			</plugin>
 			<plugin>
-				<!-- UTF-8 bundles are not supported by Java, so they must be converted 
-					during build -->
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>native2ascii-maven-plugin</artifactId>
-				<version>1.0-beta-1</version>
-				<executions>
-					<execution>
-						<goals>
-							<goal>native2ascii</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
 				<artifactId>maven-resources-plugin</artifactId>
-				<version>3.1.0</version>
 				<executions>
 					<execution>
 						<id>copy-resource-one</id>

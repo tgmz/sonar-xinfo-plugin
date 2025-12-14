@@ -408,8 +408,7 @@ public class XinfoMojo extends AbstractMojo {
 		}
 		
 		switch (c) {
-		case 'I':
-		case 'N':
+		case 'I', 'N':
 			return("INFO");
 		case 'W':
 			return("MINOR");

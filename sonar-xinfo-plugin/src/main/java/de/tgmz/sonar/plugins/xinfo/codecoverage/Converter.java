@@ -63,7 +63,7 @@ public class Converter {
 		cf.setPath(root.toString() + File.separator + csect.getEXTNAME() + ext);
 		
 		for (EXECUTED ex : csect.getEXECUTED()) {
-			String[] executed = ex .getvalue().split("\\s");
+			String[] executed = ex.getValue().split("\\s");
 			
 			for (String s : executed) {
 				LineToCover ltc = OF.createCoverageFileLineToCover();
@@ -75,7 +75,7 @@ public class Converter {
 		}
 		
 		for (UNEXECUTED unex : csect.getUNEXECUTED()) {
-			String[] unexecuted = unex.getvalue().split("\\s");
+			String[] unexecuted = unex.getValue().split("\\s");
 			
 			for (String s : unexecuted) {
 				LineToCover ltc = OF.createCoverageFileLineToCover();
