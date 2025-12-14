@@ -66,7 +66,7 @@ public abstract class AbstractSensorOtfTest {
 		sensorContext = SensorContextTester.create(baseDir);
 		((SensorContextTester) sensorContext).setSettings(ms);
 		
-		File[] testresources = new File(LOC).listFiles(c -> c.isFile());
+		File[] testresources = new File(LOC).listFiles(File::isFile);
 		
 		for (File f : testresources) {
 			((SensorContextTester) sensorContext).fileSystem().add(SonarTestFileUtil.create(LOC, f.getName()));

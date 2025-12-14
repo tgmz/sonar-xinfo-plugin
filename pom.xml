@@ -26,6 +26,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<jacoco.version>0.8.14</jacoco.version>
+		<dependency-check.version>12.1.9</dependency-check.version>
 	</properties>
 
 	<licenses>
@@ -210,7 +211,7 @@
 					<plugin>
 						<groupId>org.owasp</groupId>
 						<artifactId>dependency-check-maven</artifactId>
-						<version>12.1.9</version>
+						<version>${dependency-check.version}</version>
 						<configuration>
 							<assemblyAnalyzerEnabled>false</assemblyAnalyzerEnabled>
 							<centralAnalyzerEnabled>false</centralAnalyzerEnabled>

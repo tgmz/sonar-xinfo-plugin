@@ -52,7 +52,9 @@ public class XinfoFileProvider extends AbstractXinfoProvider {
 		
 		Path p = Paths.get(compOutputRoot == null ? "" : compOutputRoot).toAbsolutePath();
 		
-		Collection<File> listFiles = FileUtils.listFiles(p.toFile(), new WildcardFileFilter(compOutput + ".*", IOCase.SYSTEM), TrueFileFilter.TRUE);
+		WildcardFileFilter wff = WildcardFileFilter.builder().setWildcards(compOutput + ".*").setIoCase(IOCase.SYSTEM).get();
+		
+		Collection<File> listFiles = FileUtils.listFiles(p.toFile(), wff, TrueFileFilter.TRUE);
 		
 		switch (listFiles.size()) {
 		case 0:

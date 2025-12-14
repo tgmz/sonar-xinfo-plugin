@@ -25,10 +25,12 @@ public abstract class AbstractXinfoMojoTest {
 	public static MojoRule rule = new MojoRule() {
 		@Override
 		protected void before() throws Throwable {
+			// Do nothing
 		}
 
 		@Override
 		protected void after() {
+			// Do nothing
 		}
 	};
 	

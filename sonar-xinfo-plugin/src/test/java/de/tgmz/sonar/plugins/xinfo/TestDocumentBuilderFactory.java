@@ -36,6 +36,7 @@ public class TestDocumentBuilderFactory extends DocumentBuilderFactory {
 
 	@Override
 	public void setAttribute(String name, Object value) throws IllegalArgumentException {
+		// Do nothing
 	}
 
 	@Override

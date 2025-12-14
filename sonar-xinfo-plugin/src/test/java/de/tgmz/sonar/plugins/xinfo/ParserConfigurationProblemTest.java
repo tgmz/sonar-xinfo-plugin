@@ -21,7 +21,7 @@ import org.sonar.api.config.internal.MapSettings;
  * Testcase with dummy DocumentBuilderFactory to force {@link XinfoRuntimeException}.
  */
 public class ParserConfigurationProblemTest {
-	private final static String DOC_BUILDER_PROPERTY_NAME = "javax.xml.parsers.DocumentBuilderFactory";
+	private static final String DOC_BUILDER_PROPERTY_NAME = "javax.xml.parsers.DocumentBuilderFactory";
 	private static final Configuration CONFIGURATION = new ConfigurationBridge(new MapSettings());
 
 	@Test(expected=XinfoRuntimeException.class)

@@ -12,6 +12,10 @@
   *******************************************************************************/
 -->
 <suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
+<!--
+Yields several "Suppression Rule had zero matches" messages but it's better to have a single file and 
+a single configuration
+-->
 <suppress>
 	<!-- A carefully crafted PDF file can trigger an OutOfMemory-Exception while loading the file.
 	Ignore: The pdfs come directly from IBM -->

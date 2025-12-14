@@ -178,7 +178,7 @@
 						<configuration>
 						<!-- Specify the MyMojo parameter -->
 							<outputDirectory>${project.build.directory}/generated-sources/xinfo</outputDirectory>
-							<document>${project.basedir}/../ibm/ccpp/cbcdg01_v2r4.pdf</document>
+							<document>${project.basedir}/../ibm/ccpp/cbcdg01_v3r1.pdf</document>
 							<lang>ccpp</lang>
 						</configuration>
 					</execution>
@@ -213,6 +213,7 @@
 					<detail>true</detail>
 					<finalName>${project.build.finalName}.${maven.build.timestamp}</finalName>
 					<pluginUrl>https://github.com/tgmz/sonar-xinfo-plugin</pluginUrl>
+					<requiredForLanguages>Enterprise PL/I for z/OS, Enterprise COBOL for z/OS, z/OS XL C/C++, High Level Assembler for z/OS</requiredForLanguages>
 				</configuration>
 			</plugin>
 			<plugin>

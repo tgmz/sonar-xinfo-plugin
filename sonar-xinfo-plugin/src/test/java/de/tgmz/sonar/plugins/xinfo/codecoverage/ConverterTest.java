@@ -25,7 +25,9 @@ public class ConverterTest {
 	@Test
 	public void testConvert() throws IOException, ConverterException {
 		try (InputStream is = ConverterTest.class.getClassLoader().getResourceAsStream("CCOUTPUT.xml"); StringWriter sw = new StringWriter()) {
-			Converter.getInstance().convert(new File("root/pli"), ".pli", is, new WriterOutputStream(sw, StandardCharsets.UTF_8.name()));
+			WriterOutputStream wos = WriterOutputStream.builder().setWriter(sw).setCharset(StandardCharsets.UTF_8).get();
+			
+			Converter.getInstance().convert(new File("root/pli"), ".pli", is, wos);
 			
 			assertTrue(sw.getBuffer().length() > 0);
 		}
@@ -33,7 +35,9 @@ public class ConverterTest {
 	@Test(expected=ConverterException.class)
 	public void testConverterException() throws IOException, ConverterException {
 		try (InputStream is = ConverterTest.class.getClassLoader().getResourceAsStream("CCOUTPUT_broken.xml"); StringWriter sw = new StringWriter()) {
-			Converter.getInstance().convert(new File("root/pli"), ".pli", is, new WriterOutputStream(sw, StandardCharsets.UTF_8.name()));
+			WriterOutputStream wos = WriterOutputStream.builder().setWriter(sw).setCharset(StandardCharsets.UTF_8).get();
+			
+			Converter.getInstance().convert(new File("root/pli"), ".pli", is, wos);
 		}
 	}
 }

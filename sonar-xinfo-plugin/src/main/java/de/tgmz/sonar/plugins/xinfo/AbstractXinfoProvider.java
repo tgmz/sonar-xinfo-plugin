@@ -152,7 +152,7 @@ public abstract class AbstractXinfoProvider implements IXinfoProvider {
 		
 		return p;
 	}
-	protected PACKAGE createXinfoFromEvent(InputStream is) throws IOException {
+	protected PACKAGE createXinfoFromEvent(InputStream is) {
 		de.tgmz.sonar.plugins.xinfo.generated.plicomp.ObjectFactory of = new de.tgmz.sonar.plugins.xinfo.generated.plicomp.ObjectFactory();
 		
 		PACKAGE ccomp = of.createPACKAGE();

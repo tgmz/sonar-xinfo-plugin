@@ -122,10 +122,12 @@ public class XinfoMojo extends AbstractMojo {
 		}
 		
 		String s = stripPdf(document
-				, 9
-				, 185
+				, 8
+				, 186
 				, IBM_COPYRIGHT
-				, "Enterprise PL/I for z/OS: Enterprise PL/I for z/OS Messages and Codes");
+				, "Enterprise PL/I for z/OS: Enterprise PL/I for z/OS Messages and Codes"
+				, "Chapter 2. Compiler Warning Messages"
+				, "Chapter 3. Compiler Error Messages");
 		
 		createRulesFromString(s, "^IBM\\d{4}I\\s[IWESU]\\s", 3, "pli");
 		createRulesFromString(s, "^IBM\\d{4}\\s", 1, "pli");
@@ -172,12 +174,14 @@ public class XinfoMojo extends AbstractMojo {
 	private void generateCcpp() throws IOException {
 		String s = stripPdf(document
 				, 15
-				, 341
+				, 343
 				, IBM_COPYRIGHT
 				, "z/OS: z/OS XL C/C++ Messages");
 		
-		createRulesFromString(s, "(^CCN\\d{4}\\s)|(^CDA\\d{4}\\s)", 1, "ccpp");
-		createRulesFromString(s, "EDC\\d{4}\\s\\d{2}\\s", 4, "ccpp");
+		createRulesFromString(s, "^CCN\\d{4}\\s", 1, "ccpp");
+		createRulesFromString(s, "^CDA\\d{4}\\s", 1, "ccpp");
+		createRulesFromString(s, "^CLB\\d{4}\\s", 1, "ccpp");
+		createRulesFromString(s, "^EDC\\d{4}\\s\\d{2}\\s", 4, "ccpp");
 	}
 	
 	private void generateCobol() throws IOException {
