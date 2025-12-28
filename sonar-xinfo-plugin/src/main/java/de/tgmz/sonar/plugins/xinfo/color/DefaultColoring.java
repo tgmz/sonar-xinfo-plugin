@@ -22,7 +22,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.math.NumberUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.fs.InputFile;
@@ -122,7 +122,7 @@ public class DefaultColoring implements IColoring {
 	}
 	
 	private void colorToken(Map<TypeOfText, List<String>> colorTokens, int lineNumber, int startOffset, int endOffset, String token) {
-		if (NumberUtils.isNumber(token)) {
+		if (NumberUtils.isCreatable(token)) {
 			getAreas().add(new ColoringData(lineNumber, startOffset, lineNumber, endOffset, token, TypeOfText.CONSTANT));
 		} else {
 			for (Entry<TypeOfText, List<String>> entry : colorTokens.entrySet()) {
