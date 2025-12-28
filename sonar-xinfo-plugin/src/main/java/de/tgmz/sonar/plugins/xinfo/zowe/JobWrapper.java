@@ -12,7 +12,7 @@ package de.tgmz.sonar.plugins.xinfo.zowe;
 
 import de.tgmz.sonar.plugins.xinfo.ftp.JesJob;
 import de.tgmz.sonar.plugins.xinfo.otf.IJob;
-import zowe.client.sdk.zosjobs.response.Job;
+import zowe.client.sdk.zosjobs.model.Job;
 
 public class JobWrapper implements IJob {
 	private Job zoweJob;
@@ -31,7 +31,7 @@ public class JobWrapper implements IJob {
 		if (jesJob != null) {
 			return jesJob.getName();
 		} else {
-			return zoweJob.getJobName().orElseThrow();
+			return zoweJob.getJobName();
 		}
 	}
 
@@ -40,7 +40,7 @@ public class JobWrapper implements IJob {
 		if (jesJob != null) {
 			return jesJob.getHandle();
 		} else {
-			return zoweJob.getJobId().orElseThrow();
+			return zoweJob.getJobId();
 		}
 	}
 }

@@ -53,7 +53,19 @@
         <dependency>
             <groupId>org.zowe.client.java.sdk</groupId>
             <artifactId>zowe-client-java-sdk</artifactId>
-            <version>2.2.0</version>
+            <version>5.2.3</version>
+            <exclusions>
+            	<exclusion>
+            		<groupId>com.fasterxml.jackson.core</groupId>
+            		<artifactId>jackson-databind</artifactId>
+            	</exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+   			<groupId>com.fasterxml.jackson.core</groupId>
+   			<artifactId>jackson-databind</artifactId>
+   			<version>2.16.0</version>
+   			<scope>runtime</scope>
         </dependency>
 		<dependency>
     		<groupId>io.github.classgraph</groupId>

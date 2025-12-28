@@ -32,10 +32,11 @@ import de.tgmz.sonar.plugins.xinfo.languages.Language;
 import de.tgmz.sonar.plugins.xinfo.otf.IConnectable;
 import de.tgmz.sonar.plugins.xinfo.otf.IJob;
 import zowe.client.sdk.core.ZosConnection;
+import zowe.client.sdk.core.ZosConnectionFactory;
 import zowe.client.sdk.rest.Response;
 import zowe.client.sdk.rest.exception.ZosmfRequestException;
-import zowe.client.sdk.zosfiles.dsn.input.CreateParams;
-import zowe.client.sdk.zosfiles.dsn.input.DownloadParams;
+import zowe.client.sdk.zosfiles.dsn.input.DsnCreateInputData;
+import zowe.client.sdk.zosfiles.dsn.input.DsnDownloadInputData;
 import zowe.client.sdk.zosfiles.dsn.methods.DsnCreate;
 import zowe.client.sdk.zosfiles.dsn.methods.DsnDelete;
 import zowe.client.sdk.zosfiles.dsn.methods.DsnGet;
@@ -43,7 +44,7 @@ import zowe.client.sdk.zosfiles.dsn.methods.DsnWrite;
 import zowe.client.sdk.zosjobs.methods.JobDelete;
 import zowe.client.sdk.zosjobs.methods.JobMonitor;
 import zowe.client.sdk.zosjobs.methods.JobSubmit;
-import zowe.client.sdk.zosjobs.response.Job;
+import zowe.client.sdk.zosjobs.model.Job;
 import zowe.client.sdk.zosjobs.types.JobStatus.Type;
 
 public class ZoweConnection implements IConnectable {
@@ -63,7 +64,7 @@ public class ZoweConnection implements IConnectable {
 	private JobDelete jobDelete;
 
 	public ZoweConnection(Configuration configuration) {
-		connection = new ZosConnection(configuration.get(XinfoOtfConfig.XINFO_OTF_SERVER).orElseThrow()
+		connection = ZosConnectionFactory.createBasicConnection(configuration.get(XinfoOtfConfig.XINFO_OTF_SERVER).orElseThrow()
 				, configuration.get(XinfoOtfConfig.XINFO_OTF_PORT).orElseThrow()
 				, configuration.get(XinfoOtfConfig.XINFO_OTF_USER).orElseThrow()
 				, configuration.get(XinfoOtfConfig.XINFO_OTF_PASS).orElseThrow());
@@ -92,9 +93,9 @@ public class ZoweConnection implements IConnectable {
 
 	@Override
 	public byte[] retrieve(String dsn) throws XinfoException {
-        DownloadParams params = new DownloadParams.Builder().build();
+		DsnDownloadInputData ddid = new DsnDownloadInputData.Builder().build();
 
-        try (InputStream is = dsnGet.get(dsn, params);
+        try (InputStream is = dsnGet.get(dsn, ddid);
         		ByteArrayOutputStream os = new ByteArrayOutputStream()) {
         	IOUtils.copy(is, os);
         	
@@ -150,10 +151,10 @@ public class ZoweConnection implements IConnectable {
 		return computeCompatibleName(name) + ".XML";
 	}
 	
-	private static CreateParams sequential(Language lang) {
+	private static DsnCreateInputData sequential(Language lang) {
 		boolean isC = lang == Language.C || lang == Language.CPP;
 		
-		return new CreateParams.Builder()
+		return new DsnCreateInputData.Builder()
                 .dsorg("PS")
                 .alcunit("TRK")
                 .primary(10)
@@ -166,7 +167,7 @@ public class ZoweConnection implements IConnectable {
 	@Override
 	public void deleteJob(IJob job) throws XinfoException {
 		try {
-			jobDelete.deleteByJob(new Job.Builder().jobId(job.getId()).jobName(job.getName()).build(), "2.0");
+			jobDelete.delete(job.getName(), job.getId(), "2.0");
 		} catch (ZosmfRequestException e) {
         	throw new XinfoException(String.format("Cannot delete job %s", job), e);
 		}
