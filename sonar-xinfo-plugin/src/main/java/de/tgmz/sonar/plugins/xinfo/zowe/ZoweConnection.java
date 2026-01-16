@@ -65,7 +65,7 @@ public class ZoweConnection implements IConnectable {
 
 	public ZoweConnection(Configuration configuration) {
 		connection = ZosConnectionFactory.createBasicConnection(configuration.get(XinfoOtfConfig.XINFO_OTF_SERVER).orElseThrow()
-				, configuration.get(XinfoOtfConfig.XINFO_OTF_PORT).orElseThrow()
+				, configuration.getInt(XinfoOtfConfig.XINFO_OTF_PORT).orElseThrow()
 				, configuration.get(XinfoOtfConfig.XINFO_OTF_USER).orElseThrow()
 				, configuration.get(XinfoOtfConfig.XINFO_OTF_PASS).orElseThrow());
 		

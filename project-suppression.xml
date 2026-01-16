@@ -44,7 +44,7 @@ a single configuration
 </suppress>
 <suppress>
    <notes><![CDATA[
-   file name: zowe-client-java-sdk-2.2.0.jar
+   file name: zowe-client-java-sdk-6.0.2.jar
    ]]></notes>
    <packageUrl regex="true">^pkg:maven/org\.zowe\.client\.java\.sdk/zowe-client-java-sdk@.*$</packageUrl>
    <cve>CVE-2024-6916</cve>
