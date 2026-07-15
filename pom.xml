@@ -26,7 +26,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<jacoco.version>0.8.14</jacoco.version>
-		<dependency-check.version>12.1.9</dependency-check.version>
+		<dependency-check.version>12.2.2</dependency-check.version>
 	</properties>
 
 	<licenses>
